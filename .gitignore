@@ -1,0 +1,11 @@
+.idea
+.idea/*
+client/node_modules
+client/dist
+server/node_modules
+server/avatars/*.png
+server/avatars/*.jpg
+server/coverage
+node_modules
+
+todo.md
