@@ -1,0 +1,15 @@
+{
+  "db_uri": "mongodb://localhost:27017",
+  "db_name": "nanislice-autbous",
+  "port": 1234,
+  "secret": "<my-secret-key>",
+  "google": {
+    "client_id": "<id>",
+    "client_secret": "<secret>"
+
+  },
+  "discord": {
+    "client_id": "<id>",
+    "client_secret": "<secret>"
+  }
+}
