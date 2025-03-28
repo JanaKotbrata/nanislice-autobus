@@ -1,0 +1,11 @@
+{
+  "name": "nanislice-autobus-g01",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "generate-structure": "node scripts/generateStructure.js",
+    "start": "npm run dev"
+  },
+  "private": true
+}
