@@ -4,6 +4,7 @@ const passport = require('passport');
 const connectToDb = require('./models/connection-db');
 const users = require('./models/users-repository');
 const initGoogleAuth = require("./services/google-auth-service");
+const initDiscordAuth = require("./services/discord-auth-service");
 const config = require("../config/config.json");
 
 
@@ -30,6 +31,7 @@ async function main() {
 
     //Init AUTH
     await initGoogleAuth(passport, app);
+    await initDiscordAuth(passport, app);
 
     //Prepare DB
     connectToDb()

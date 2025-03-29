@@ -1,8 +1,8 @@
 import React from "react";
 import nanislice from "../assets/nanislice.svg";
 import google from "../assets/google.svg";
-import discord from "../assets/discord.svg";
 import Button from "./form/visual/button.jsx";
+import DiscordLogin from "./discord-login.jsx";
 
 function Welcome() {
   function handleGoogleLogin() {
@@ -43,11 +43,7 @@ function Welcome() {
                   </Button>
                 </div>
                 <div className="flex items-center justify-between">
-                  <Button>
-                    {" "}
-                    <img className="mr-2" src={discord} alt="logo" />
-                    <span>Continue with Discord</span>
-                  </Button>
+                  <DiscordLogin />
                 </div>
               </form>
             </div>
