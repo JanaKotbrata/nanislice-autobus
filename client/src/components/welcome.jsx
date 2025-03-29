@@ -1,14 +1,15 @@
 import React from "react";
-import { useGoogleLogin } from "@react-oauth/google";
 import nanislice from "../assets/nanislice.svg";
 import google from "../assets/google.svg";
 import discord from "../assets/discord.svg";
 import Button from "./form/visual/button.jsx";
 
 function Welcome() {
-  const login = useGoogleLogin({
-    onSuccess: (tokenResponse) => console.log(tokenResponse), //TODO tady už můžu volat věci s těma věcma. co mi to vrátí, takže volat cmd, který to předá do toho tam takhle a uloží usera do db a potom se objeví hra(lobby [kde se určuje počet hráčů], po přihlášení věech userů - se objeví hra),
-  });
+  function handleGoogleLogin() {
+    setTimeout(() => {
+      window.location.href = "http://localhost:1234/auth/google";
+    }, 0);
+  }
   return (
     <>
       <section className="bg-gray-50 dark:bg-gray-900">
@@ -36,7 +37,7 @@ function Welcome() {
                 <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
 
                 <div className="flex items-center">
-                  <Button onClick={() => login()}>
+                  <Button onClick={() => handleGoogleLogin()}>
                     <img className="mr-2" src={google} alt="logo" />
                     <span>Continue with Google</span>
                   </Button>

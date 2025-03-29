@@ -11,8 +11,8 @@ async function createIndexes() {
     const collection = await getCollection();
 
     await collection.createIndex({email: 1}, {unique: true});
-    await collection.createIndex({googleId: 1}, {unique: true});
-    await collection.createIndex({discordId: 1}, {unique: true});
+    await collection.createIndex({googleId: 1}, {unique: true, partialFilterExpression: { googleId: { $exists: true } }});
+    await collection.createIndex({discordId: 1}, {unique: true, partialFilterExpression: { discordId: { $exists: true } }});
 }
 
 async function createUser(userData) {
@@ -27,14 +27,18 @@ async function getUserById(id) {
     return collection.findOne({_id: new ObjectId(id)});
 }
 
-async function getUsersByGoogleId(googleId) {
+async function getUserByGoogleId(googleId) {
     const collection = await getCollection();
     return collection.findOne({googleId});
 }
 
-async function getUsersByDiscordId(discordId) {
+async function getUserByDiscordId(discordId) {
     const collection = await getCollection();
     return collection.findOne({discordId});
+}
+async function getUserByEmail(email) {
+    const collection = await getCollection();
+    return collection.findOne({email});
 }
 
 async function listUser() {
@@ -64,7 +68,8 @@ module.exports = {
     getUserById,
     updateUser,
     deleteUser,
-    getUsersByGoogleId,
-    getUsersByDiscordId,
+    getUserByGoogleId,
+    getUserByDiscordId,
+    getUserByEmail,
     listUser,
 };
