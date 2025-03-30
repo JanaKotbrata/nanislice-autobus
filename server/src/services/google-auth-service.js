@@ -45,7 +45,7 @@ async function initGoogleAuth(passport, app) {
         '/auth/google/callback',
         passport.authenticate('google', {failureRedirect: '/'}),
         (req, res) => {
-            res.send('Google Successful!');
+            res.redirect('http://localhost:5173/dashboard');
         }
     );
 }

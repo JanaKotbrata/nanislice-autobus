@@ -40,7 +40,7 @@ async function initDiscordAuth(passport, app) {
         '/auth/discord/callback',
         passport.authenticate('discord', {failureRedirect: '/'}),
         (req, res) => {
-            res.send('Přihlášení přes Discord úspěšné!');
+            res.redirect('http://localhost:5173/dashboard');;
         }
     );
 }
