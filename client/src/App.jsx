@@ -4,6 +4,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Dashboard from "./routes/dashboard.jsx";
 import Welcome from "./routes/welcome.jsx";
+import Game from "./routes/game.jsx";
 
 function App() {
   return (
@@ -14,7 +15,9 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Welcome />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />{" "}
+        {/*TODO obalit přihlášením*/}
+        <Route path="/game" element={<Game />} /> {/*TODO obalit přihlášením*/}
       </Routes>
     </Router>
   );
