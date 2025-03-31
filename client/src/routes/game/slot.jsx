@@ -1,12 +1,15 @@
 import React, { useRef } from "react";
 import { useDrop } from "react-dnd";
+import Card from "./card.jsx";
 
-function Slot({ card, onDropCard }) {
+function Slot({ card, onDropCard, index }) {
   const slotRef = useRef(null);
 
   const [{ isOver }, drop] = useDrop({
     accept: "CARD",
-    drop: (item) => onDropCard?.(item.card),
+    drop: (item) => {
+      onDropCard?.(item.card, index);
+    },
     collect: (monitor) => ({
       isOver: !!monitor.isOver() && onDropCard,
     }),
@@ -21,7 +24,7 @@ function Slot({ card, onDropCard }) {
         isOver ? "bg-gray-300" : "bg-gray-800"
       }`}
     >
-      {card ? `${card.rank} ${card.suit}` : ""}
+      {card?.rank ? <Card card={card} /> : ""}
     </div>
   );
 }

@@ -9,6 +9,7 @@ const maxHandSize = 5;
 function GameBoard({ player }) {
   const gameContext = useContext(GameContext);
   const [emptySlots, setEmptySlots] = useState([]); // TODO useRef
+  const [gameBoard, setGameBoard] = useState([]); // TODO useRef
 
   useEffect(() => {
     const emptySlotList = [];
@@ -19,10 +20,19 @@ function GameBoard({ player }) {
   }, [player.hand]);
 
   function handleDropCard(card) {
-    gameContext.removeCard(card); // Odebrání karty z ruky
-    // pridat na pozici ... pripadne prepsat remove na moveCardInHand
-    console.log("Karta přesunuta:", card);
+    console.log("Drop event!", card);
+    gameContext.moveCardToSlot(card, player.id, "hand");
+    console.log(
+      "Aktualizovaný hráč:",
+      gameContext.players.find((p) => p.id === player.id),
+    );
   }
+
+  const handleCardDrag = (card, targetIndex) => {
+    //TODO
+    // Předá funkci pro přesun karty na herní pole
+    gameContext.moveCardToGameBoard(card, targetIndex, "gameBoard");
+  };
 
   return (
     <div className="h-full flex flex-col gap-4">
@@ -32,6 +42,18 @@ function GameBoard({ player }) {
         </h2>
         <div className="flex justify-center mb-6">
           <CardPack onDrawCard={gameContext.drawCard} />
+        </div>
+        <div className="game-board">
+          {gameBoard.map((slot, index) => (
+            <div
+              key={index}
+              className="game-slot"
+              onDrop={(e) => handleCardDrag(e.card, index)} // Zpracování drop eventu
+              onDragOver={(e) => e.preventDefault()} // Povolit drag
+            >
+              {slot ? <Card card={slot} /> : null}
+            </div>
+          ))}
         </div>
       </div>
 

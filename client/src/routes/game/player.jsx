@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import Card from "./card.jsx";
 import Slot from "./slot.jsx";
 import GameContext from "../../context/game.js";
+
 /*
 * {discardPile.length > 0 ? (
           discardPile.map((card, index) => <Card key={index} card={card} />)
@@ -11,9 +12,10 @@ import GameContext from "../../context/game.js";
 * */
 function Player({ player }) {
   const gameContext = useContext(GameContext);
-  function handleDropCard(card) {
-    gameContext.removeCard(card); // Odebrání karty z ruky
-    console.log("Karta přesunuta PLAYER:", card);
+
+  function handleDropCard(card, dropIndex) {
+    console.log("Drop event!", card, dropIndex);
+    gameContext.moveCardToSlot(card, dropIndex, "busStop");
   }
 
   let extraProps = {};
@@ -29,8 +31,8 @@ function Player({ player }) {
       <div className="flex gap-2 mt-2">
         <Card card={player.bus[0]} />
         <div className="flex gap-2">
-          {player.busStop.map((slot, index) => (
-            <Slot key={index} card={slot.card} {...extraProps} />
+          {player.busStop.map((card, index) => (
+            <Slot key={index} card={card} index={index} {...extraProps} />
           ))}
         </div>
       </div>

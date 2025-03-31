@@ -6,28 +6,7 @@ import GameBoard from "./game/game-board.jsx";
 import GameContextProvider from "../components/providers/game-context-provider.jsx";
 import GameContext from "../context/game.js";
 ///TODO v jednom kole můžeš odložit do zastávky jen jednu kartu
-/*const deck = [
-  {
-    rank: "4",
-    suit: "♦",
-  },
-  {
-    rank: "8",
-    suit: "♠",
-  },
-  {
-    rank: "9",
-    suit: "♣",
-  },
-  {
-    rank: "10",
-    suit: "♣",
-  },
-  {
-    rank: "3",
-    suit: "♦",
-  },
-];*/
+
 const players = [
   {
     //TODO tady se bude rozhodovat na základe id a id v session -
@@ -49,12 +28,12 @@ const players = [
     name: "Hráč 2",
     myself: true,
     hand: [
-      { i: 3247, rank: "Q", suit: "♠" },
-      { i: 3248, rank: "2", suit: "♥" },
+      { i: 3247, rank: "Jr", suit: "♠" },
+      { i: 3248, rank: "A", suit: "♥" },
       { i: 3249, rank: "9", suit: "♣" },
     ],
     bus: [{ rank: "4", suit: "♣" }],
-    busStop: [{}, {}, {}, {}],
+    busStop: [{}, {}, {}, {}], //To by mělo být pole [[],[],[],[]]
   },
 ];
 
