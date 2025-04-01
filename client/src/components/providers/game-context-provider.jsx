@@ -16,6 +16,21 @@ const ranks = [
   "K",
   "A",
 ];
+const cardOrder = [
+  "A",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "10",
+  "J",
+  "Q",
+  "K",
+];
 const suits = ["♥", "♦", "♠", "♣"]; //TOHLE bude potřeba dělat na serveru
 const maxHandSize = 5;
 function GameContextProvider({ children, players }) {
@@ -28,6 +43,7 @@ function GameContextProvider({ children, players }) {
   }
 
   function getCardPack() {
+    //TODO tady se bude volat API?
     const pack = [];
     let i = 0;
     for (const suit of suits) {
@@ -40,14 +56,6 @@ function GameContextProvider({ children, players }) {
     pack.push({ i: i + 2, rank: "Jr", suit: "🃏" });
     return pack;
   }
-
-  // function setHand(hand) {
-  //   setPlayers((currentPlayers) => {
-  //     const myself = getMyself(currentPlayers);
-  //     myself.hand = hand;
-  //     return currentPlayers.map((player) => ({ ...player }));
-  //   });
-  // }
 
   function alterMyself(currentPlayers, changes) {
     const myself = getMyself(currentPlayers);
@@ -73,7 +81,6 @@ function GameContextProvider({ children, players }) {
   }
 
   function drawCard() {
-    console.log("drawCard call");
     const myself = getMyself(gamePlayers);
     if (myself.hand.length === maxHandSize) return;
     const newCard = [...gameDeck].pop();
@@ -95,6 +102,85 @@ function GameContextProvider({ children, players }) {
     return shuffledDeck;
   }
 
+  function canPlaceOnGameBoard(card, gameBoard, targetIndex) {
+    if (["Jr", "A"].includes(card.rank)) {
+      return true;
+    }
+
+    const currentCardIndex = cardOrder.indexOf(card.rank);
+    if (currentCardIndex === -1) {
+      console.warn("Neplatný rank karty!");
+      return false;
+    }
+
+    const previousCard = gameBoard[targetIndex - 1];
+    if (
+      !previousCard ||
+      cardOrder.indexOf(previousCard.rank) === currentCardIndex - 1
+    ) {
+      return true;
+    }
+
+    console.warn(
+      "Nelze přesunout kartu na herní pole, protože předchozí karta není v pořádku!",
+    );
+    return false;
+  }
+
+  const removeCardFromHandOrBusStop = (player, card) => {
+    const newHand = player.hand.filter((c) => c.i !== card.i);
+    const newBusStop = [...player.busStop];
+    const busStopIndex = newBusStop.findIndex((c) => c?.i === card.i);
+
+    if (busStopIndex !== -1) {
+      newBusStop[busStopIndex] = {}; // Vyprázdní původní slot
+    }
+
+    return { newHand, newBusStop };
+  };
+
+  const placeCardOnGameBoard = (gameBoard, card, targetIndex) => {
+    const newGameBoard = [...gameBoard];
+
+    if (
+      !newGameBoard[targetIndex] ||
+      Object.keys(newGameBoard[targetIndex]).length === 0
+    ) {
+      newGameBoard[targetIndex] = card;
+      return newGameBoard;
+    }
+
+    console.warn("Cílový slot na herním poli je už obsazen!", targetIndex);
+    return gameBoard;
+  };
+
+  function canPlaceInBusStop(card, busStop, targetIndex, setErrorMessage) {
+    if (["Jr", "A"].includes(card.rank)) {
+      console.warn("Nelze odložit kartu s rankem:", card.rank);
+      setErrorMessage(`Nelze odložit kartu s rankem: ${card.rank}`);
+      return false;
+    }
+
+    if (
+      busStop[targetIndex] &&
+      Object.keys(busStop[targetIndex]).length !== 0
+    ) {
+      console.warn("Cílový slot je už obsazen!", targetIndex);
+      setErrorMessage(
+        `Tady je plno! Nebo sem hoď kartu s hodnotou: ${card.rank}`,
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  function placeCardInBusStop(busStop, card, targetIndex) {
+    const newBusStop = [...busStop];
+    newBusStop[targetIndex] = card;
+    return newBusStop;
+  }
+
   return (
     <GameContext.Provider
       value={{
@@ -113,71 +199,49 @@ function GameContextProvider({ children, players }) {
           setPlayers((currentPlayers) => {
             const myself = getMyself(currentPlayers);
 
-            console.log("Původní data:", {
-              hand: myself.hand,
-              busStop: myself.busStop,
-            });
-
-            // Zabránění přesunu karty zpět do ruky
             if (destination === "hand") {
               console.warn("Nelze přesouvat kartu zpět do ruky!");
-              return currentPlayers; // Vrátíme beze změny
-            }
-
-            //Joker a eso se nesmí odkládat
-            if (["Jr", "A"].includes(card.rank)) {
-              console.warn("Nelze odložit kartu s rankem:", card.rank);
+              setErrorMessage(
+                `Tak co chceš, cheatovat nebo co? No nemůžeš si tu kartu dát zpátky, že jo...`,
+              );
+              alert("ajhoh");
               return currentPlayers;
             }
 
-            const newBusStop = [...myself.busStop];
+            if (
+              !canPlaceInBusStop(
+                card,
+                myself.busStop,
+                targetIndex,
+                setErrorMessage,
+              )
+            ) {
+              return currentPlayers;
+            }
 
-            const currentIndex = newBusStop.findIndex((c) => c?.i === card.i);
-            console.log(
-              "Aktuální index v zastávce:",
-              currentIndex,
-              "Nový index:",
+            const { newHand, newBusStop } = removeCardFromHandOrBusStop(
+              myself,
+              card,
+            );
+
+            const updatedBusStop = placeCardInBusStop(
+              newBusStop,
+              card,
               targetIndex,
             );
 
-            // Pokud karta existuje v zastávce, vymaže se
-            if (currentIndex !== -1) {
-              newBusStop[currentIndex] = {};
-            }
-
-            // Přesun karty na nový slot (pokud je volný)
-            if (
-              !newBusStop[targetIndex] ||
-              Object.keys(newBusStop[targetIndex]).length === 0
-            ) {
-              newBusStop[targetIndex] = card;
-            } else {
-              console.warn("Cílový slot je už obsazen!", targetIndex);
-              setErrorMessage(
-                  `Tady je plno! Nebo sem hoď kartu s hodnotou: ${card.rank}`,
-              );
-              return currentPlayers;
-            }
-            // Kopie ruky a zastávky
-            const newHand = myself.hand.filter((c) => c.i !== card.i);
-
-            console.log("Aktualizované data:", {
-              hand: newHand,
-              busStop: newBusStop,
-            });
-
             return alterMyself(currentPlayers, {
               hand: newHand,
-              busStop: newBusStop,
+              busStop: updatedBusStop,
             });
           });
         },
+
         moveCardToGameBoard: (card, targetIndex, destination) => {
-          //TODO
           setPlayers((currentPlayers) => {
             const myself = getMyself(currentPlayers);
 
-            console.log("🔄 Původní data:", {
+            console.log("Původní data:", {
               hand: myself.hand,
               busStop: myself.busStop,
               gameBoard: myself.gameBoard,
@@ -189,77 +253,21 @@ function GameContextProvider({ children, players }) {
               return currentPlayers;
             }
 
-            // Joker a eso se nesmí odkládat na herní pole
-            if (["Jr", "A"].includes(card.rank)) {
-              console.warn("Nelze odložit kartu s rankem:", card.rank);
-            } else {
-              const cardOrder = [
-                "A",
-                "2",
-                "3",
-                "4",
-                "5",
-                "6",
-                "7",
-                "8",
-                "9",
-                "10",
-                "J",
-                "Q",
-                "K",
-              ];
-              const currentCardIndex = cardOrder.indexOf(card.rank);
-
-              if (currentCardIndex === -1) {
-                console.warn("Neplatný rank karty!");
-                return currentPlayers;
-              }
-
-              const gameBoard = myself.gameBoard || [];
-              const previousCard = gameBoard[targetIndex - 1];
-
-              if (
-                previousCard &&
-                cardOrder.indexOf(previousCard.rank) !== currentCardIndex - 1
-              ) {
-                console.warn(
-                  "Nelze přesunout kartu na herní pole, protože předchozí karta není v pořádku!",
-                );
-                return currentPlayers;
-              }
-            }
-
-            const newBusStop = [...myself.busStop];
-            const newHand = myself.hand.filter((c) => c.i !== card.i);
-            const newGameBoard = [...myself.gameBoard];
-
-            const currentIndex = newBusStop.findIndex((c) => c?.i === card.i);
-
-            if (currentIndex !== -1) {
-              newBusStop[currentIndex] = {};
-            }
-
-            // Pokud karta existuje v ruce, vymaže se
-            const currentHandIndex = myself.hand.findIndex(
-              (c) => c.i === card.i,
-            );
-            if (currentHandIndex !== -1) {
-              newHand.splice(currentHandIndex, 1);
-            }
-
-            // na nový slot (pokud je volný)
-            if (
-              !newGameBoard[targetIndex] ||
-              Object.keys(newGameBoard[targetIndex]).length === 0
-            ) {
-              newGameBoard[targetIndex] = card;
-            } else {
-              console.warn(
-                "Cílový slot na herním poli je už obsazen!",
-                targetIndex,
-              );
+            // Ověření, zda karta může být položena na herní pole
+            if (!canPlaceOnGameBoard(card, myself.gameBoard, targetIndex)) {
               return currentPlayers;
             }
+
+            const { newHand, newBusStop } = removeCardFromHandOrBusStop(
+              myself,
+              card,
+            );
+
+            const newGameBoard = placeCardOnGameBoard(
+              myself.gameBoard,
+              card,
+              targetIndex,
+            );
 
             console.log("Aktualizované data:", {
               hand: newHand,
