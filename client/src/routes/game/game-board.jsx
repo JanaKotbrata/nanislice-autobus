@@ -3,6 +3,7 @@ import Card from "./card.jsx";
 import CardPack from "./card-pack.jsx";
 import Slot from "./slot.jsx";
 import GameContext from "../../context/game.js";
+import DangerAlert from "../../components/alerts/danger-alert.jsx";
 
 const maxHandSize = 5;
 
@@ -43,7 +44,11 @@ function GameBoard({ player }) {
         <div className="flex justify-center mb-6">
           <CardPack onDrawCard={gameContext.drawCard} />
         </div>
+
         <div className="game-board">
+          {gameContext.errorMessage && (
+            <DangerAlert>{gameContext.errorMessage}</DangerAlert>
+          )}
           {gameBoard.map((slot, index) => (
             <div
               key={index}

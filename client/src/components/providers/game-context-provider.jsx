@@ -21,6 +21,7 @@ const maxHandSize = 5;
 function GameContextProvider({ children, players }) {
   const [gamePlayers, setPlayers] = useState(players);
   const [gameDeck, setGameDeck] = useState([]);
+  const [errorMessage, setErrorMessage] = React.useState(null);
 
   function getMyself(currentPlayers) {
     return currentPlayers.find((player) => player.myself);
@@ -152,6 +153,9 @@ function GameContextProvider({ children, players }) {
               newBusStop[targetIndex] = card;
             } else {
               console.warn("Cílový slot je už obsazen!", targetIndex);
+              setErrorMessage(
+                  `Tady je plno! Nebo sem hoď kartu s hodnotou: ${card.rank}`,
+              );
               return currentPlayers;
             }
             // Kopie ruky a zastávky
@@ -285,7 +289,8 @@ function GameContextProvider({ children, players }) {
           }
           setGameDeck(shuffleDeck(deck));
         },
-        setDeck: () => {},
+        errorMessage,
+        setErrorMessage,
       }}
     >
       {children}
