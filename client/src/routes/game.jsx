@@ -31,6 +31,8 @@ const players = [
       { i: 3247, rank: "Jr", suit: "♠" },
       { i: 3248, rank: "A", suit: "♥" },
       { i: 3249, rank: "9", suit: "♣" },
+      {},
+      {},
     ],
     bus: [{ rank: "4", suit: "♣" }],
     busStop: [{}, {}, {}, {}], //To by mělo být pole [[],[],[],[]]
@@ -38,7 +40,7 @@ const players = [
 ];
 
 function Game() {
-  const [leftWidth, setLeftWidth] = useState(300); // počáteční šířka levé sekce
+  const [leftWidth, setLeftWidth] = useState(350); // počáteční šířka levé sekce
   const [dragging, setDragging] = useState(false);
   const dragRef = useRef(null);
 

@@ -33,10 +33,13 @@ const cardOrder = [
 ];
 const suits = ["♥", "♦", "♠", "♣"]; //TOHLE bude potřeba dělat na serveru
 const maxHandSize = 5;
+
 function GameContextProvider({ children, players }) {
   const [gamePlayers, setPlayers] = useState(players);
   const [gameDeck, setGameDeck] = useState([]);
+  const [gameBoard, setGameBoard] = useState([]);
   const [errorMessage, setErrorMessage] = React.useState(null);
+  const [showAlert, setShowAlert] = useState(false);
 
   function getMyself(currentPlayers) {
     return currentPlayers.find((player) => player.myself);
@@ -106,58 +109,31 @@ function GameContextProvider({ children, players }) {
     if (["Jr", "A"].includes(card.rank)) {
       return true;
     }
-
-    const currentCardIndex = cardOrder.indexOf(card.rank);
-    if (currentCardIndex === -1) {
-      console.warn("Neplatný rank karty!");
-      return false;
-    }
-
-    const previousCard = gameBoard[targetIndex - 1];
-    if (
-      !previousCard ||
-      cardOrder.indexOf(previousCard.rank) === currentCardIndex - 1
-    ) {
-      return true;
-    }
-
-    console.warn(
-      "Nelze přesunout kartu na herní pole, protože předchozí karta není v pořádku!",
-    );
+    showErrorAlert("Tak hele, sem můžeš dát pouze eso nebo žolíka!");
     return false;
   }
 
   const removeCardFromHandOrBusStop = (player, card) => {
-    const newHand = player.hand.filter((c) => c.i !== card.i);
-    const newBusStop = [...player.busStop];
-    const busStopIndex = newBusStop.findIndex((c) => c?.i === card.i);
-
-    if (busStopIndex !== -1) {
-      newBusStop[busStopIndex] = {}; // Vyprázdní původní slot
+    function replaceCard(c) {
+      if (c.i === card.i) {
+        return {};
+      }
+      return c;
     }
+
+    const newHand = player.hand.map(replaceCard);
+    const newBusStop = player.busStop.map(replaceCard);
 
     return { newHand, newBusStop };
   };
 
-  const placeCardOnGameBoard = (gameBoard, card, targetIndex) => {
-    const newGameBoard = [...gameBoard];
-
-    if (
-      !newGameBoard[targetIndex] ||
-      Object.keys(newGameBoard[targetIndex]).length === 0
-    ) {
-      newGameBoard[targetIndex] = card;
-      return newGameBoard;
-    }
-
-    console.warn("Cílový slot na herním poli je už obsazen!", targetIndex);
-    return gameBoard;
+  const placeCardOnGameBoard = (gameBoard, card) => {
+    setGameBoard([...gameBoard, [card]]);
   };
 
   function canPlaceInBusStop(card, busStop, targetIndex, setErrorMessage) {
     if (["Jr", "A"].includes(card.rank)) {
-      console.warn("Nelze odložit kartu s rankem:", card.rank);
-      setErrorMessage(`Nelze odložit kartu s rankem: ${card.rank}`);
+      showErrorAlert(`Nelze odložit kartu s rankem: ${card.rank}`);
       return false;
     }
 
@@ -165,9 +141,8 @@ function GameContextProvider({ children, players }) {
       busStop[targetIndex] &&
       Object.keys(busStop[targetIndex]).length !== 0
     ) {
-      console.warn("Cílový slot je už obsazen!", targetIndex);
-      setErrorMessage(
-        `Tady je plno! Nebo sem hoď kartu s hodnotou: ${card.rank}`,
+      showErrorAlert(
+        `Ti jebe? Tady je plno! Sem nemůžeš dát kartu s hodnotou: ${card.rank}. Hoď sem stejnou, co tu leží, najdi volné místo, anebo si nastup!`,
       );
       return false;
     }
@@ -179,6 +154,12 @@ function GameContextProvider({ children, players }) {
     const newBusStop = [...busStop];
     newBusStop[targetIndex] = card;
     return newBusStop;
+  }
+
+  function showErrorAlert(message) {
+    //Udělat provider pro error(alert)? a tam dávat metody k němu? a nějak to jakoby zavalit
+    setErrorMessage(message);
+    setShowAlert(true);
   }
 
   return (
@@ -200,11 +181,9 @@ function GameContextProvider({ children, players }) {
             const myself = getMyself(currentPlayers);
 
             if (destination === "hand") {
-              console.warn("Nelze přesouvat kartu zpět do ruky!");
-              setErrorMessage(
+              showErrorAlert(
                 `Tak co chceš, cheatovat nebo co? No nemůžeš si tu kartu dát zpátky, že jo...`,
               );
-              alert("ajhoh");
               return currentPlayers;
             }
 
@@ -237,24 +216,28 @@ function GameContextProvider({ children, players }) {
           });
         },
 
-        moveCardToGameBoard: (card, targetIndex, destination) => {
+        moveCardToGameBoard: (card, destination) => {
           setPlayers((currentPlayers) => {
             const myself = getMyself(currentPlayers);
 
-            console.log("Původní data:", {
-              hand: myself.hand,
-              busStop: myself.busStop,
-              gameBoard: myself.gameBoard,
-            });
-
-            // Zabrání přesunu karty zpět do ruky
-            if (destination === "hand") {
-              console.warn("Nelze přesouvat kartu zpět do ruky!");
+            if (destination === "hand" || destination === "busStop") {
+              //TODO asi zbytečný
+              console.warn(
+                "WATAFAWATAWATAFAK Nelze přesouvat kartu zpět do ruky!",
+              );
               return currentPlayers;
             }
 
-            // Ověření, zda karta může být položena na herní pole
-            if (!canPlaceOnGameBoard(card, myself.gameBoard, targetIndex)) {
+            // Zkontroluje zda je karta v ruce nebo zastávce
+            const isInHand = myself.hand.some((c) => c.i === card.i);
+            const isInBusStop = myself.busStop.some((c) => c?.i === card.i);
+
+            if (!isInHand && !isInBusStop) {
+              showErrorAlert("O co se teď snažíš jako? To fakt ne...");
+              return currentPlayers;
+            }
+
+            if (!canPlaceOnGameBoard(card, gameBoard)) {
               return currentPlayers;
             }
 
@@ -263,26 +246,58 @@ function GameContextProvider({ children, players }) {
               card,
             );
 
-            const newGameBoard = placeCardOnGameBoard(
-              myself.gameBoard,
-              card,
-              targetIndex,
-            );
-
-            console.log("Aktualizované data:", {
-              hand: newHand,
-              busStop: newBusStop,
-              gameBoard: newGameBoard,
-            });
+            placeCardOnGameBoard(gameBoard, card);
 
             return alterMyself(currentPlayers, {
               hand: newHand,
               busStop: newBusStop,
-              gameBoard: newGameBoard,
             });
           });
         },
+        reorderHand: (oldIndex, newIndex) => {
+          setPlayers((currentPlayers) => {
+            const myself = getMyself(currentPlayers);
+            console.log(
+              "Player hand BEFORE reorder:",
+              JSON.stringify(myself.hand),
+            );
 
+            if (oldIndex === -1) {
+              showErrorAlert(
+                `Tak co chceš, cheatovat nebo co? No nemůžeš si tu kartu dát zpátky, že jo...`,
+              );
+              return currentPlayers;
+            }
+
+            if (
+              oldIndex < 0 ||
+              newIndex < 0 ||
+              oldIndex >= myself.hand.length ||
+              newIndex >= myself.hand.length
+            ) {
+              console.error(
+                "reorderHand: Invalid indexes",
+                oldIndex,
+                newIndex,
+              );
+              return currentPlayers;
+            }
+
+            const newHand = [...myself.hand];
+            const movedCard = newHand[oldIndex]; // Uložíme kartu, kterou přesouváme
+
+            // SWAP dvou karet
+            newHand[oldIndex] = newHand[newIndex];
+            newHand[newIndex] = movedCard;
+
+            console.log(
+              "Player hand AFTER reorder:",
+              JSON.stringify(newHand),
+            );
+
+            return alterMyself(currentPlayers, { hand: newHand });
+          });
+        },
         deck: gameDeck,
         initDeck: () => {
           let gamePack = getCardPack();
@@ -297,8 +312,11 @@ function GameContextProvider({ children, players }) {
           }
           setGameDeck(shuffleDeck(deck));
         },
+        gameBoard,
         errorMessage,
         setErrorMessage,
+        showAlert,
+        setShowAlert,
       }}
     >
       {children}
