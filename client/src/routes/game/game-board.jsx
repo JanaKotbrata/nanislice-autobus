@@ -10,23 +10,10 @@ const maxHandSize = 5;
 
 function GameBoard({ player }) {
   const gameContext = useContext(GameContext);
-  const [emptySlots, setEmptySlots] = useState([]); // TODO useRef
-
-  useEffect(() => {
-    console.log("Player hand changed, recalculating empty slots...");
-    const emptySlotList = [];
-    for (let i = 0; i < maxHandSize - player.hand.length; i++) {
-      emptySlotList.push(i);
-    }
-    setEmptySlots(emptySlotList);
-  }, [player.hand]);
 
   const boardRef = useRef(null);
 
   const handleCardDrag = (card) => {
-    //TODO
-    // Předá funkci pro přesun karty na herní pole
-    console.log("dropuju na board", card);
     gameContext.moveCardToGameBoard(card, "gameBoard");
   };
 
@@ -89,6 +76,7 @@ function GameBoard({ player }) {
                 />
               );
             }
+            // todo chyba někde
             return <Card key={card.i} card={card} index={index} />;
           })}
         </div>

@@ -1,12 +1,17 @@
 import "./App.css";
-import { motion } from "motion/react";
+import { useAuth } from "context/auth-context.js";
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Dashboard from "./routes/dashboard.jsx";
+import Lobby from "./routes/lobby.jsx";
 import Welcome from "./routes/welcome.jsx";
 import Game from "./routes/game.jsx";
 
 function App() {
+  function ProtectedRoute({ children }) {
+    const { user } = useAuth();
+    return user ? children : <Navigate to="/" />;
+  }
+
   return (
     /*
     <div className="container">
@@ -15,9 +20,16 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Welcome />} />
-        <Route path="/dashboard" element={<Dashboard />} />{" "}
+        <Route path="/lobby" element={<Lobby />} />{" "}
         {/*TODO obalit přihlášením*/}
-        <Route path="/game" element={<Game />} /> {/*TODO obalit přihlášením*/}
+        <Route
+          path="/game"
+          element={
+            <ProtectedRoute>
+              <Game />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

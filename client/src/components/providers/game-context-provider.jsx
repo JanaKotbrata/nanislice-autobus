@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import GameContext from "../../context/game";
+import card from "../../routes/game/card.jsx";
 
 const ranks = [
   "2",
@@ -45,10 +46,9 @@ function GameContextProvider({ children, players }) {
     return currentPlayers.find((player) => player.myself);
   }
 
-  function getCardPack() {
+  function getCardPack(i = 0) {
     //TODO tady se bude volat API?
     const pack = [];
-    let i = 0;
     for (const suit of suits) {
       for (const rank of ranks) {
         pack.push({ i, rank, suit });
@@ -77,15 +77,21 @@ function GameContextProvider({ children, players }) {
   function addCardToHand(newCard) {
     setPlayers((currentPlayers) => {
       const myself = getMyself(currentPlayers);
+      const noCardIndex = myself.hand.findIndex((c) => !c.rank);
+      const newHand = [...myself.hand];
+      if (noCardIndex !== -1) {
+        newHand[noCardIndex] = newCard;
+      }
       return alterMyself(currentPlayers, {
-        hand: [...myself.hand, newCard],
+        hand: newHand,
       });
     });
   }
 
   function drawCard() {
     const myself = getMyself(gamePlayers);
-    if (myself.hand.length === maxHandSize) return;
+    const handLength = myself.hand.filter((c) => c.rank).length;
+    if (handLength === maxHandSize) return;
     const newCard = [...gameDeck].pop();
     addCardToHand(newCard);
     setGameDeck((currentDeck) =>
@@ -220,14 +226,6 @@ function GameContextProvider({ children, players }) {
           setPlayers((currentPlayers) => {
             const myself = getMyself(currentPlayers);
 
-            if (destination === "hand" || destination === "busStop") {
-              //TODO asi zbytečný
-              console.warn(
-                "WATAFAWATAWATAFAK Nelze přesouvat kartu zpět do ruky!",
-              );
-              return currentPlayers;
-            }
-
             // Zkontroluje zda je karta v ruce nebo zastávce
             const isInHand = myself.hand.some((c) => c.i === card.i);
             const isInBusStop = myself.busStop.some((c) => c?.i === card.i);
@@ -301,13 +299,15 @@ function GameContextProvider({ children, players }) {
         deck: gameDeck,
         initDeck: () => {
           let gamePack = getCardPack();
-          let deck = gamePack.concat(gamePack);
+          const lastIndex = gamePack[gamePack.length - 1].i;
+          let deck = gamePack.concat(getCardPack(lastIndex));
           let multiplier = 1;
           const basePlayers = 5;
 
           // Dynamické násobení balíčku
           while (gamePlayers.length > basePlayers * multiplier) {
-            deck = deck.concat(deck);
+            const lastIndex = deck[deck.length - 1].i;
+            deck = deck.concat(getCardPack(lastIndex));
             multiplier *= 2;
           }
           setGameDeck(shuffleDeck(deck));

@@ -1,10 +1,15 @@
+import { useAuth } from "../context/auth-context.js";
+import { useNavigate } from "react-router-dom";
 import React from "react";
 import Member from "../components/form/visual/member.jsx";
 import Invite from "../components/form/visual/invite.jsx";
 import Start from "../components/form/visual/start.jsx";
 import nanislice from "../assets/nanislice.svg";
 
-function Dashboard() {
+function Lobby() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
       <div className="dark:bg-gray-800 dark:border-gray-700">
@@ -32,4 +37,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default Lobby;

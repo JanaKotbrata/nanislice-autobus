@@ -1,12 +1,14 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-
+import axios from "axios";
 function Start() {
   const navigate = useNavigate();
 
-  const handleStartClick = () => {
-    navigate("/game");
+  const handleStartClick = async () => {
+    const res = await axios.post("/create-game", { userId: user.id });
+    navigate(`/game/${res.data.code}`);
   };
+
   return (
     <div className="p-6 ">
       <button
