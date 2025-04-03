@@ -11,6 +11,8 @@ const createGameRouter = require("./routes/game/create");
 const listGameRouter = require("./routes/game/list");
 const getGameRouter = require("./routes/game/get");
 const deleteGameRouter = require("./routes/game/delete");
+const addGamePlayerRouter = require("./routes/game/player-add");
+const removeGamePlayerRouter = require("./routes/game/player-remove");
 
 
 async function main() {
@@ -45,6 +47,8 @@ async function main() {
     app.use("/api", listGameRouter);
     app.use("/api", getGameRouter);
     app.use("/api", deleteGameRouter);
+    app.use("/api", addGamePlayerRouter);
+    app.use("/api", removeGamePlayerRouter);
 
     // Připojení k DB a spuštění serveru
     connectToDb()
