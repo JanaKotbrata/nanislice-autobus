@@ -3,12 +3,16 @@ const session = require('express-session');
 const passport = require('passport');
 const connectToDb = require('./models/connection-db');
 const users = require('./models/users-repository');
+const games = require('./models/games-repository');
 const initGoogleAuth = require("./services/google-auth-service");
 const initDiscordAuth = require("./services/discord-auth-service");
 const config = require("../config/config.json");
+const createGameRouter = require("./routes/game/create");
+const listGameRouter = require("./routes/game/list");
+const getGameRouter = require("./routes/game/get");
+const deleteGameRouter = require("./routes/game/delete");
 
 
-// Nastavení Passport.js
 async function main() {
 // Init express
     const app = express();
@@ -33,11 +37,21 @@ async function main() {
     await initGoogleAuth(passport, app);
     await initDiscordAuth(passport, app);
 
-    //Prepare DB
+    // for parse JSON requests
+    app.use(express.json());
+
+    // Adding router for closing game
+    app.use("/api", createGameRouter);
+    app.use("/api", listGameRouter);
+    app.use("/api", getGameRouter);
+    app.use("/api", deleteGameRouter);
+
+    // Připojení k DB a spuštění serveru
     connectToDb()
         .then(async () => {
             //for creating indexes in db
             await users.createIndexes();
+            await games.createIndexes();
             //for server startup
             app.listen(config.port, () => console.log(`Server run: ${config.port}`))
         })
