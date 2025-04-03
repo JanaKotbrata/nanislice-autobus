@@ -7,6 +7,7 @@ const games = require('./models/games-repository');
 const initGoogleAuth = require("./services/google-auth-service");
 const initDiscordAuth = require("./services/discord-auth-service");
 const config = require("../config/config.json");
+const closeGameRouter = require("./routes/game/close");
 const createGameRouter = require("./routes/game/create");
 const listGameRouter = require("./routes/game/list");
 const getGameRouter = require("./routes/game/get");
@@ -43,6 +44,7 @@ async function main() {
     app.use(express.json());
 
     // Adding router for closing game
+    app.use("/api", closeGameRouter);
     app.use("/api", createGameRouter);
     app.use("/api", listGameRouter);
     app.use("/api", getGameRouter);
