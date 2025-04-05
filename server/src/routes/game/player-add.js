@@ -34,8 +34,8 @@ class AddGamePlayer extends PostResponseHandler {
             return new GameErrors.UserDoesNotExistError(validData);
         }
 
-        //validation of players
-        const isPlayerInGame = game.players.find((player) =>
+        //validation of playerList
+        const isPlayerInGame = game.playerList.find((player) =>
             player.userId === userId
         );
         if (isPlayerInGame) {
@@ -43,7 +43,7 @@ class AddGamePlayer extends PostResponseHandler {
         }
 
         const newPlayers = {
-            players: [...game.players, {userId, name: user.name, creator: false}],
+            playerList: [...game.playerList, {userId, name: user.name, creator: false}],
         };
         try {
             const updatedGame = await games.updateGame(game.id, newPlayers);

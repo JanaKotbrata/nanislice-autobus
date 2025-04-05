@@ -57,8 +57,8 @@ class StartGame extends PostResponseHandler {
             throw new GameErrors.GameDoesNotExistError(validData);
         }
 
-        const fullDeck = this.#initDeck(game.players);
-        const [deck, playerList] = this.#dealCardPerPlayer(fullDeck, game.players);
+        const fullDeck = this.#initDeck(game.playerList);
+        const [deck, playerList] = this.#dealCardPerPlayer(fullDeck, game.playerList);
         let newGame = {...game, status: "active", deck, playerList}
         delete newGame.sys;
         try {

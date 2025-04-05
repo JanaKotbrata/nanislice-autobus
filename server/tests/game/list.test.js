@@ -11,7 +11,7 @@ describe('GET /game/list', () => {
 
     beforeAll(async () => {
         const db = await connectionDb();
-        gamesCollection = db.collection('game');
+        gamesCollection = db.collection('games');
 
         app = express();
         app.use(express.json());
@@ -25,7 +25,7 @@ describe('GET /game/list', () => {
     });
 
     it('should list all game', async () => {
-        const mockGame = {code:"123456", status:"initial", players:[] };
+        const mockGame = {code:"123456", status:"initial", playerList:[] };
 
         await gamesCollection.insertOne(mockGame);
 

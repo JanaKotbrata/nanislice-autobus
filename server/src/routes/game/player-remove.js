@@ -26,14 +26,14 @@ class RemoveGamePlayer extends PostResponseHandler {
         if (!game) {
             return new GameErrors.GameDoesNotExistError(validData);
         }
-        let isPlayerInGame = game.players.find((player) =>
+        let isPlayerInGame = game.playerList.find((player) =>
             player.userId === userId
         );
         if (!isPlayerInGame) {
             return new GameErrors.PlayerNotInGameError(validData);
         }
-        //validation of players
-        const isPossibleToRemove = !!(game.players.length > 1);
+        //validation of playerList
+        const isPossibleToRemove = !!(game.playerList.length > 1);
         if (isPossibleToRemove) {
             const newPlayers = this.#removePlayer(game, userId);
             if (newPlayers) {
@@ -57,15 +57,15 @@ class RemoveGamePlayer extends PostResponseHandler {
     #removePlayer(game, userId) {
         let newPlayers;
         const copiedGame = JSON.parse(JSON.stringify(game));
-        const userToRemove = copiedGame.players.findIndex(player => player.userId === userId);
+        const userToRemove = copiedGame.playerList.findIndex(player => player.userId === userId);
         if (userToRemove !== -1) {
-            const isPlayerCreator = copiedGame.players[userToRemove].creator;
-            copiedGame.players.splice(userToRemove, 1);
+            const isPlayerCreator = copiedGame.playerList[userToRemove].creator;
+            copiedGame.playerList.splice(userToRemove, 1);
             newPlayers = {
-                players: [...copiedGame.players],
+                playerList: [...copiedGame.playerList],
             }
             if (isPlayerCreator) {
-                newPlayers.players[0].creator = true;
+                newPlayers.playerList[0].creator = true;
             }
         }
         return newPlayers;

@@ -12,7 +12,7 @@ describe('POST /game/create', () => {
 
     beforeAll(async () => {
         const db = await connectionDb();
-        gamesCollection = db.collection('game');
+        gamesCollection = db.collection('games');
         usersCollection = db.collection('users');
 
         app = express();

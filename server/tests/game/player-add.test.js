@@ -11,7 +11,7 @@ describe('POST /game/player-add', () => {
     let app;
     beforeAll(async () => {
         const db = await connectionDb();
-        gamesCollection = db.collection('game');
+        gamesCollection = db.collection('games');
         usersCollection = db.collection('users');
 
         app = express();
@@ -26,19 +26,19 @@ describe('POST /game/player-add', () => {
 
         const user = await usersCollection.insertOne(mockUser);
         const id = user.insertedId.toString();
-        const mockGame = {code:"123456", status:"initial", players:[] };
-        const game = await gamesCollection.insertOne(mockGame);
-        const gameId = game.insertedId.toString();
+        const mockGame = {code:"123456", status:"initial", playerList:[] };
+        await gamesCollection.insertOne(mockGame);
+
         const response = await request(app)
             .post(Routes.Games.PLAYER_ADD)
             .send({ userId: id, gameCode: mockGame.code });
 
         expect(response.status).toBe(200);
-        expect(response.body.players).toBeDefined();
-        expect(response.body.players[0].userId).toBe(id);
+        expect(response.body.playerList).toBeDefined();
+        expect(response.body.playerList[0].userId).toBe(id);
     });
     test("should return an error if user does not exist", async () => {
-        const mockGame = {code:"123456", status:"initial", players:[] };
+        const mockGame = {code:"123456", status:"initial", playerList:[] };
         const game = await gamesCollection.insertOne(mockGame);
         const gameId = game.insertedId.toString();
         const response = await request(app)

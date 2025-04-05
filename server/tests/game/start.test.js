@@ -11,7 +11,7 @@ describe('POST /game/start', () => {
 
     beforeAll(async () => {
         const db = await connectionDb();
-        gamesCollection = db.collection('game');
+        gamesCollection = db.collection('games');
 
         app = express();
         app.use(express.json());
@@ -23,7 +23,7 @@ describe('POST /game/start', () => {
     });
 
     it('should start a game', async () => {
-        const mockGame = {code:"123456", status:"initial", players:[{userId:"123"},{userId:"4321"}] };
+        const mockGame = {code:"123456", status:"initial", playerList:[{userId:"123"},{userId:"4321"}] };
         await gamesCollection.insertOne(mockGame);
 
         const response = await request(app)

@@ -12,7 +12,7 @@ describe('POST /game/close', () => {
 
     beforeAll(async () => {
         const db = await connectionDb();
-        gamesCollection = db.collection('game');
+        gamesCollection = db.collection('games');
 
         app = express();
         app.use(express.json());

@@ -11,7 +11,7 @@ describe('POST /game/delete', () => {
 
     beforeAll(async () => {
         const db = await connectionDb();
-        gamesCollection = db.collection('game');
+        gamesCollection = db.collection('games');
 
         app = express();
         app.use(express.json());
@@ -23,7 +23,7 @@ describe('POST /game/delete', () => {
     });
 
     it('should delete a game', async () => {
-        const mockGame = {code:"123456", status:"initial", players:[] };
+        const mockGame = {code:"123456", status:"initial", playerList:[] };
 
         const game = await gamesCollection.insertOne(mockGame);
         const id = game.insertedId.toString();
