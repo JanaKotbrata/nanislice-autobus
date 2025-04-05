@@ -5,6 +5,7 @@ const connectToDb = require('./models/connection-db');
 const usersRepository = require('./models/users-repository');
 const users = new usersRepository();
 
+const ErrorHandler = require("./middlewares/error-handler");
 const initGoogleAuth = require("./services/google-auth-service");
 const initDiscordAuth = require("./services/discord-auth-service");
 const config = require("../config/config.json");
@@ -16,6 +17,8 @@ const deleteGameRouter = require("./routes/game/delete");
 const addGamePlayerRouter = require("./routes/game/player-add");
 const removeGamePlayerRouter = require("./routes/game/player-remove");
 const startGameRouter = require("./routes/game/start");
+const createIndexes = require("./utils/create-indexes");
+const getPathFromRoot = require("./utils/get-path-from-root");
 
 
 
@@ -55,6 +58,8 @@ async function main() {
     app.use("/api", addGamePlayerRouter);
     app.use("/api", removeGamePlayerRouter);
     app.use("/api", startGameRouter);
+
+    app.use(ErrorHandler);
 
     // Připojení k DB a spuštění serveru
     connectToDb()
