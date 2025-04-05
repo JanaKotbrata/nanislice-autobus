@@ -69,6 +69,15 @@ class Model {
         const result = await this.collection.findOne({_id: new ObjectId(id)});
         return this.transformId(result);
     }
+    async get(data){
+        let result;
+        if(data.id) {
+            result = await this.collection.findOne({_id: new ObjectId(data.id)});
+        }else{
+            result = await this.collection.findOne(data);
+        }
+        return this.transformId(result);
+    }
 }
 
 module.exports = Model;

@@ -1,77 +1,57 @@
-const connectToDb = require('./connection-db');
 const {ObjectId} = require('mongodb');
+const Model = require('./model');
 const collectionName = 'users';
 
-async function getCollection() {
-    const db = await connectToDb();
-    return db.collection(collectionName);
+class UsersRepository extends Model {
+    _getCollectionName() {
+        return collectionName;
+    }
+
+    async createIndexes() {
+        await this.collection.createIndex({email: 1}, {unique: true});
+        await this.collection.createIndex({googleId: 1}, {
+            unique: true,
+            partialFilterExpression: {googleId: {$exists: true}}
+        });
+        await this.collection.createIndex({discordId: 1}, {
+            unique: true,
+            partialFilterExpression: {discordId: {$exists: true}}
+        });
+
+    }
+
+    async createUser(userData) {
+        return this.create(userData)
+    }
+
+    async getUserById(id) {
+        return this.get({id});
+    }
+
+    async getUserByGoogleId(googleId) {
+        return this.get({googleId});
+    }
+
+    async getUserByDiscordId(discordId) {
+        return this.get({discordId});
+    }
+
+    async getUserByEmail(email) {
+        return this.get({email});
+    }
+
+    async listUser(pageInfo) {
+        return this.list(pageInfo, {});
+    }
+
+    async updateUser(id, updateData) {
+        return this.update(id, updateData);
+    }
+
+    async deleteUser(id) {
+        const result = await this.collection.deleteOne({_id: new ObjectId(id)});
+        return result.deletedCount;
+    }
 }
 
-
-async function createIndexes() {
-    const collection = await getCollection();
-
-    await collection.createIndex({email: 1}, {unique: true});
-    await collection.createIndex({googleId: 1}, {unique: true, partialFilterExpression: {googleId: {$exists: true}}});
-    await collection.createIndex({discordId: 1}, {unique: true, partialFilterExpression: {discordId: {$exists: true}}});
-}
-
-async function createUser(userData) {
-    const collection = await getCollection();
-    const result = await collection.insertOne(userData);
-    return result.insertedId;
-}
-
-
-async function getUserById(id) {
-    const collection = await getCollection();
-    return collection.findOne({_id: new ObjectId(id)});
-}
-
-async function getUserByGoogleId(googleId) {
-    const collection = await getCollection();
-    return collection.findOne({googleId});
-}
-
-async function getUserByDiscordId(discordId) {
-    const collection = await getCollection();
-    return collection.findOne({discordId});
-}
-
-async function getUserByEmail(email) {
-    const collection = await getCollection();
-    return collection.findOne({email});
-}
-
-async function listUser() {
-    const collection = await getCollection();
-    return collection.find();
-}
-
-async function updateUser(id, updateData) {
-    const collection = await getCollection();
-    const result = await collection.updateOne(
-        {_id: new ObjectId(id)},
-        {$set: updateData}
-    );
-    return result.modifiedCount;
-}
-
-async function deleteUser(id) {
-    const collection = await getCollection();
-
-    const result = await collection.deleteOne({_id: new ObjectId(id)});
-    return result.deletedCount;
-}
-
-module.exports = {
-    createIndexes,
-    createUser,
-    getUserById,
-    updateUser,
-    deleteUser,
-    getUserByGoogleId,
-    getUserByDiscordId,
-    getUserByEmail,
-    listUser,
-};
+module.exports = UsersRepository;

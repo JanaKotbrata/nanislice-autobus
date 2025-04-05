@@ -2,7 +2,8 @@ const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
 const connectToDb = require('./models/connection-db');
-const users = require('./models/users-repository');
+const usersRepository = require('./models/users-repository');
+const users = new usersRepository();
 
 const initGoogleAuth = require("./services/google-auth-service");
 const initDiscordAuth = require("./services/discord-auth-service");
@@ -16,8 +17,7 @@ const addGamePlayerRouter = require("./routes/game/player-add");
 const removeGamePlayerRouter = require("./routes/game/player-remove");
 const startGameRouter = require("./routes/game/start");
 
-const GamesRepository = require('./models/games-repository');
-const games = new GamesRepository();
+
 
 async function main() {
 // Init express
@@ -60,10 +60,7 @@ async function main() {
     connectToDb()
         .then(async () => {
             //for creating indexes in db
-            await users.createIndexes();
-
-
-            await games.createIndexes();
+            await createIndexes(getPathFromRoot("./models"));
             //for server startup
             app.listen(config.port, () => console.log(`Server run: ${config.port}`))
         })

@@ -29,13 +29,11 @@ class GamesRepository extends Model {
     }
 
     async getGameById(id) {
-        let result = await this.collection.findOne({_id: new ObjectId(id)});
-        return this.transformId(result);//TODO udělat v tom modelu a jen převzít
+        return await this.get({id});
     }
 
     async getGameByCode(code) {
-        let result =await this.collection.findOne({code});
-        return this.transformId(result); //TODO udělat v tom modelu a jen převzít
+        return await this.get({code});
     }
 
 
