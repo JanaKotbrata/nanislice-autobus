@@ -1,6 +1,8 @@
 const express = require("express");
-const games = require("../../models/games-repository");
 const {generateGameCode} = require("../../utils/helpers");
+const {getUserById} = require("../../models/users-repository");
+const GamesRepository = require("../../models/games-repository");
+const games = new GamesRepository();
 
 const createGame = express.Router();
 const maxAttempts = 5;
@@ -15,18 +17,22 @@ createGame.post("/game/create", async (req, res) => {
     }
     // generates game code
     // TODO list active games with players- if is this player in some active game - it should throw error
+    const user = await getUserById(userId);
+    if (!user) {
+        return res.status(404).json({success: false, error: "User not found"});
+    }
     do {
         const gameCode = generateGameCode();
 
         // creates new game
         const newGame = {
             code: gameCode,
-            status: "active",
-            players: [{userId, creator: true}],
+            status: "initial",
+            players: [{userId, name:user.name, creator: true}],
         };
         try {
             const game = await games.createGame(newGame);
-            return res.json({gameId: game._id, code: gameCode, success: true});
+            return res.json({...game, success: true});
 
         } catch (error) {
             if (error.code !== 11000) {

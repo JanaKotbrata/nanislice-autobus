@@ -2,37 +2,6 @@ import React, { useState } from "react";
 import GameContext from "../../context/game";
 import card from "../../routes/game/card.jsx";
 
-const ranks = [
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "10",
-  "J",
-  "Q",
-  "K",
-  "A",
-];
-const cardOrder = [
-  "A",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "10",
-  "J",
-  "Q",
-  "K",
-];
-const suits = ["♥", "♦", "♠", "♣"]; //TOHLE bude potřeba dělat na serveru
 const maxHandSize = 5;
 
 function GameContextProvider({ children, players }) {
@@ -44,20 +13,6 @@ function GameContextProvider({ children, players }) {
 
   function getMyself(currentPlayers) {
     return currentPlayers.find((player) => player.myself);
-  }
-
-  function getCardPack(i = 0) {
-    //TODO tady se bude volat API?
-    const pack = [];
-    for (const suit of suits) {
-      for (const rank of ranks) {
-        pack.push({ i, rank, suit });
-        i++;
-      }
-    }
-    pack.push({ i: i + 1, rank: "Jr", suit: "🃏" });
-    pack.push({ i: i + 2, rank: "Jr", suit: "🃏" });
-    return pack;
   }
 
   function alterMyself(currentPlayers, changes) {

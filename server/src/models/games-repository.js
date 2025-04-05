@@ -1,75 +1,48 @@
-const connectToDb = require('./connection-db');
 const {ObjectId} = require('mongodb');
+const Model = require('./model');
 const collectionName = 'games';
 
-async function getCollection() {
-    const db = await connectToDb();
-    return db.collection(collectionName);
-}
-async function list(collection, pageInfo = {pageIndex: 0, pageSize: 1000}, filter) {
-    const list = await collection.find(filter).skip(pageInfo.pageIndex * pageInfo.pageSize).limit(pageInfo.pageSize).toArray();
-    const totalCount = await collection.countDocuments();
-    return {
-        list,
-        pageInfo: {...pageInfo, totalCount}
+class GamesRepository extends Model {
+    _getCollectionName() {
+        return collectionName;
+    }
+
+    async createIndexes() {
+        await this.collection.createIndex({code: 1}, {unique: true});
+    }
+
+    async createGame(userData) {
+        return this.create(userData);
+    }
+
+    async updateGame(id, updateData) {
+        return await this.update(id, updateData);
+    }
+
+    async listGame(pageInfo) {
+        return await this.list(pageInfo);
+    }
+
+    async listGameByState(state, pageInfo) {
+
+        return await this.list(pageInfo, {state});
+    }
+
+    async getGameById(id) {
+        let result = await this.collection.findOne({_id: new ObjectId(id)});
+        return this.transformId(result);//TODO udělat v tom modelu a jen převzít
+    }
+
+    async getGameByCode(code) {
+        let result =await this.collection.findOne({code});
+        return this.transformId(result); //TODO udělat v tom modelu a jen převzít
+    }
+
+
+    async deleteGame(id) {
+        const result = await this.collection.deleteOne({_id: new ObjectId(id)});
+        return result.deletedCount;
     }
 }
-async function createIndexes() {
-    const collection = await getCollection();
 
-    await collection.createIndex({code: 1}, {unique: true});
-}
-
-async function createGame(userData) {
-    const collection = await getCollection();
-    const result = await collection.insertOne(userData);
-    return result.insertedId;
-}
-
-
-async function getGameById(id) {
-    const collection = await getCollection();
-    return collection.findOne({_id: new ObjectId(id)});
-}
-
-async function getGameByCode(code) {
-    const collection = await getCollection();
-    return collection.findOne({code});
-}
-
-async function listGame(pageInfo) {
-    const collection = await getCollection();
-    return await list(collection, pageInfo);
-}
-
-async function listGameByState(state, pageInfo) {
-    const collection = await getCollection();
-    return await list(collection, pageInfo, {state});
-}
-
-async function updateGame(id, updateData) {
-    const collection = await getCollection();
-    const result = await collection.updateOne(
-        {_id: new ObjectId(id)},
-        {$set: updateData}
-    );
-    return result.modifiedCount;
-}
-
-async function deleteGame(id) {
-    const collection = await getCollection();
-
-    const result = await collection.deleteOne({_id: new ObjectId(id)});
-    return result.deletedCount;
-}
-
-module.exports = {
-    createIndexes,
-    createGame,
-    getGameByCode,
-    getGameById,
-    updateGame,
-    deleteGame,
-    listGame,
-    listGameByState
-};
+module.exports = GamesRepository;

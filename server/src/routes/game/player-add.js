@@ -1,7 +1,8 @@
 const express = require("express");
-const games = require("../../models/games-repository");
 const {body, check} = require("express-validator");
-
+const {getUserById} = require("../../models/users-repository");
+const GamesRepository = require("../../models/games-repository");
+const games = new GamesRepository();
 const addGamePlayer = express.Router();
 
 addGamePlayer.post("/game/player/add", [
@@ -23,8 +24,9 @@ addGamePlayer.post("/game/player/add", [
     ],
     async (req, res) => {
         const {userId, gameCode, gameId} = req.body;
-
+//TODO if the game is in active state ends
         let game;
+
         if (gameId) {
             game = await games.getGameById(gameId);
         } else {
@@ -33,6 +35,11 @@ addGamePlayer.post("/game/player/add", [
 
         if (!game) {
             return res.status(404).json({success: false, message: "The game does not exist"});
+        }
+
+        const user = await getUserById(userId);
+        if (!user) {
+            return res.status(404).json({success: false, error: "User not found"});
         }
 
         //validation of players
@@ -44,11 +51,10 @@ addGamePlayer.post("/game/player/add", [
         }
 
         const newPlayers = {
-            players: [...game.players, {userId, creator: false}],
+            players: [...game.players, {userId, name: user.name, creator: false}],
         };
         try {
-            await games.updateGame(game._id, newPlayers);
-            const updatedGame = await games.getGameById(game._id);
+            const updatedGame = await games.updateGame(game.id, newPlayers);
             return res.json({...updatedGame, success: true});
 
         } catch (error) {

@@ -1,6 +1,7 @@
 const express = require("express");
 const {body, check, validationResult} = require("express-validator");
-const games = require("../../models/games-repository");
+const GamesRepository = require("../../models/games-repository");
+const games = new GamesRepository();
 
 const getGame = express.Router();
 
@@ -30,6 +31,7 @@ getGame.get(
             return res.status(400).json({success: false, errors: errors.array()});
         }
         const {id, code} = req.body;
+
 
         if (id) {
             const game = await games.getGameById(id);
