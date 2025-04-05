@@ -1,34 +1,19 @@
-const express = require("express");
-const {body, check, validationResult} = require("express-validator");
 const GamesRepository = require("../../models/games-repository");
+const validateData = require("../../services/validation-service");
+const {gDelete:schema} = require("../../data-validations/game/validation-schemas");
+const { PostResponseHandler} = require("../../services/response-handler");
+const Routes = require("../../../../shared/constants/routes");
+const GameErrors = require("../../errors/game/game-errors");
 const games = new GamesRepository();
-const deleteGame = express.Router();
 
-deleteGame.post(
-    "/game/delete",
-    [
-        body("id").optional().custom((value, {req}) => {
-            if (!value && !req.body.code) {
-                throw new Error("Either 'code' or 'id' is required");
-            }
-            return true;
-        }),
-        check("code")
-            .optional()
-            .custom((value, {req}) => {
-                if (!value && !req.body.id) {
-                    throw new Error("Either 'code' or 'id' is required");
-                }
-                return true;
-            }),
-    ],
-    async (req, res) => {
-        // validation of input
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({success: false, errors: errors.array()});
-        }
-        const {id, code} = req.body;
+class DeleteGame extends PostResponseHandler {
+    constructor(expressApp) {
+        super(expressApp, Routes.Games.DELETE, "delete");
+    }
+
+    async delete(req) {
+        const validData = validateData(req.body, schema);
+        const {id, code} = validData;
 
         let game;
 
@@ -39,17 +24,16 @@ deleteGame.post(
         }
 
         if (!game) {
-            return res.status(404).json({success: false, message: "The game does not exist"});
+            return new GameErrors.GameDoesNotExistError(validData);
         }
         try {
             await games.deleteGame(game.id);
-            return res.json({id: game.id, success: true});
+            return {id: game.id, success: true};
         } catch (e) {
             console.error("Failed to delete game:", e);
-            return res.status(500).json({success: false, message: "Server error"});
+            return new GameErrors.FailedToDeleteGame(e);
         }
-
     }
-);
+}
 
-module.exports = deleteGame;
+module.exports = DeleteGame;

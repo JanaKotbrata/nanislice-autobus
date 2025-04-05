@@ -1,47 +1,33 @@
-const express = require("express");
-const {body, check, validationResult} = require("express-validator");
 const GamesRepository = require("../../models/games-repository");
+const validateData = require("../../services/validation-service");
+const {get: schema} = require("../../data-validations/game/validation-schemas");
+const {GetResponseHandler} = require("../../services/response-handler");
+const Routes = require("../../../../shared/constants/routes");
+const GameErrors = require("../../errors/game/game-errors");
 const games = new GamesRepository();
 
-const getGame = express.Router();
-
-// Endpoint pro uzavření hry
-getGame.get(
-    "/game/get",
-    [
-        body("id").optional().custom((value, { req }) => {
-            if (!value && !req.body.code) {
-                throw new Error("Either 'code' or 'id' is required");
-            }
-            return true;
-        }),
-        check("code")
-            .optional()
-            .custom((value, { req }) => {
-                if (!value && !req.body.id) {
-                    throw new Error("Either 'code' or 'id' is required");
-                }
-                return true;
-            }),
-    ],
-    async (req, res) => {
-        // validation of input
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({success: false, errors: errors.array()});
-        }
-        const {id, code} = req.body;
-
-
-        if (id) {
-            const game = await games.getGameById(id);
-            return res.json({...game, success: true});
-        } else {
-            const game = await games.getGameByCode(code);
-            return res.json({...game, success: true});
-        }
-
+class GetGame extends GetResponseHandler {
+    constructor(expressApp) {
+        super(expressApp, Routes.Games.GET, "get");
     }
-);
 
-module.exports = getGame;
+    async get(req) {
+        const validData = validateData(req.body, schema);
+        const {id, code} = validData;
+
+        let game;
+        if (id) {
+            game = await games.getGameById(id);
+        } else {
+            game = await games.getGameByCode(code);
+
+        }
+        if (!game) {
+          throw new GameErrors.GameDoesNotExistError(validData);
+            // return new GameErrors.GameDoesNotExistError(validData); //Použití jako warning - ale je lepší udělat novou třídu pro Warning
+        }
+        return {...game, success: true};
+    }
+}
+
+module.exports = GetGame;

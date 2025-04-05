@@ -9,14 +9,7 @@ const ErrorHandler = require("./middlewares/error-handler");
 const initGoogleAuth = require("./services/google-auth-service");
 const initDiscordAuth = require("./services/discord-auth-service");
 const config = require("../config/config.json");
-const closeGameRouter = require("./routes/game/close");
-const createGameRouter = require("./routes/game/create");
-const listGameRouter = require("./routes/game/list");
-const getGameRouter = require("./routes/game/get");
-const deleteGameRouter = require("./routes/game/delete");
-const addGamePlayerRouter = require("./routes/game/player-add");
-const removeGamePlayerRouter = require("./routes/game/player-remove");
-const startGameRouter = require("./routes/game/start");
+const registerRoutes = require("./utils/register-routes");
 const createIndexes = require("./utils/create-indexes");
 const getPathFromRoot = require("./utils/get-path-from-root");
 
@@ -49,15 +42,9 @@ async function main() {
     // for parse JSON requests
     app.use(express.json());
 
-    // Adding router for closing game
-    app.use("/api", closeGameRouter);
-    app.use("/api", createGameRouter);
-    app.use("/api", listGameRouter);
-    app.use("/api", getGameRouter);
-    app.use("/api", deleteGameRouter);
-    app.use("/api", addGamePlayerRouter);
-    app.use("/api", removeGamePlayerRouter);
-    app.use("/api", startGameRouter);
+    // Adding routers
+    registerRoutes(getPathFromRoot("./routes"), app);
+
 
     app.use(ErrorHandler);
 

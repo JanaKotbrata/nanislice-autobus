@@ -1,34 +1,30 @@
-const express = require("express");
-const {body, validationResult} = require("express-validator");
 const GamesRepository = require("../../models/games-repository");
+const validateData = require("../../services/validation-service");
+const {list:schema} = require("../../data-validations/game/validation-schemas");
+const { GetResponseHandler} = require("../../services/response-handler");
+const Routes = require("../../../../shared/constants/routes");
+const GameErrors = require("../../errors/game/game-errors");
 const games = new GamesRepository();
-const listGame = express.Router();
 
-// Endpoint pro uzavření hry
-listGame.get(
-    "/game/list",
-    [
-        body("state").optional().isIn(["initial","active", "closed"]).withMessage("State must be either 'active' or 'closed'"),
-    ],
-    async (req, res) => {
-        // validation of input
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({success: false, errors: errors.array()});
-        }
-        const {state} = req.body;
+class ListGame extends GetResponseHandler {
+    constructor(expressApp) {
+        super(expressApp, Routes.Games.LIST, "list");
+    }
 
-        //tries to get the game by code
+    async list(req) {
+        const validData = validateData(req.body, schema);
+        const {state} = validData;
+
+        let gameList;
 
         if (state) {
-            const gameList = await games.listGameByState();
-            return res.json({...gameList, success: true});
+            gameList = await games.listGameByState(state);
         } else {
-            const gameList = await games.listGame();
-            return res.json({...gameList, success: true});
+            gameList = await games.listGame();
         }
 
+        return {...gameList, success: true};
     }
-);
+}
 
-module.exports = listGame;
+module.exports = ListGame;

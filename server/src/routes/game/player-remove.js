@@ -1,85 +1,75 @@
-const express = require("express");
-const {body, check} = require("express-validator");
 const GamesRepository = require("../../models/games-repository");
+const UsersRepository = require("../../models/users-repository");
+const validateData = require("../../services/validation-service");
+const {playerRemove: schema} = require("../../data-validations/game/validation-schemas"); //TODO game vs game - udělat revizi všude ale :D
+const {PostResponseHandler} = require("../../services/response-handler");
+const Routes = require("../../../../shared/constants/routes");
+const GameErrors = require("../../errors/game/game-errors");
 const games = new GamesRepository();
+const users = new UsersRepository();
 
-const removeGamePlayer = express.Router();
-
-function removePlayer(game, userId) {
-    let newPlayers;
-    const copiedGame = JSON.parse(JSON.stringify(game));
-    const userToRemove = copiedGame.players.findIndex(player => player.userId === userId);
-    if (userToRemove !== -1) {
-        const isPlayerCreator = copiedGame.players[userToRemove].creator;
-        copiedGame.players.splice(userToRemove, 1);
-        newPlayers = {
-            players: [...copiedGame.players],
-        }
-        if (isPlayerCreator) {
-            newPlayers.players[0].creator = true;
-        }
+class RemoveGamePlayer extends PostResponseHandler {
+    constructor(expressApp) {
+        super(expressApp, Routes.Games.PLAYER_REMOVE, "remove");
     }
-    return newPlayers;
-}
 
-removeGamePlayer.post("/game/player/remove", [
-        body("gameId").optional().custom((value, {req}) => {
-            if (!value && !req.body.code) {
-                throw new Error("Either 'gameCode' or 'gameId' is required");
-            }
-            return true;
-        }),
-        check("gameCode")
-            .optional()
-            .custom((value, {req}) => {
-                if (!value && !req.body.id) {
-                    throw new Error("Either 'gameCode' or 'gameId' is required");
-                }
-                return true;
-            }),
-        body("userId").isString().notEmpty().withMessage("userId is required"),
-    ],
-    async (req, res) => {
-        const {userId, gameCode, gameId} = req.body;
+    async remove(req) {
+        const validData = await validateData(req.body, schema);
+        const {userId, gameCode, gameId} = validData;
 
         let game;
-
         if (gameId) {
             game = await games.getGameById(gameId);
         } else {
             game = await games.getGameByCode(gameCode);
         }
-
         if (!game) {
-            return res.status(404).json({success: false, message: "The game does not exist"});
+            return new GameErrors.GameDoesNotExistError(validData);
         }
         let isPlayerInGame = game.players.find((player) =>
             player.userId === userId
         );
         if (!isPlayerInGame) {
-            return res.status(400).json({success: false, message: "Player is not in game"});
+            return new GameErrors.PlayerNotInGameError(validData);
         }
-
         //validation of players
         const isPossibleToRemove = !!(game.players.length > 1);
-
         if (isPossibleToRemove) {
-            const newPlayers = removePlayer(game, userId);
-            if(newPlayers) {
+            const newPlayers = this.#removePlayer(game, userId);
+            if (newPlayers) {
                 try {
                     const updatedGame = await games.updateGame(game.id, newPlayers);
-                    return res.json({...updatedGame, success: true});
+                    return {...updatedGame, success: true};
 
                 } catch (error) {
-                    res.status(500).json({error: "Failed to remove player", success: false});
+                    console.error("Failed to remove player:", error);
+                    return new GameErrors.FailedToRemovePlayerError(error);
                 }
             }
         } else {
-            //await games.deleteGame(game.id); //TODO na základě ještě nějaké podmínky
+            //await game.deleteGame(game.id); //TODO na základě ještě nějaké podmínky
             const newGame = await games.updateGame(game.id, {code: `${game.code}-#closed#`, status: "closed"});
-            return res.json({...newGame, success: true});
+            return {...newGame, success: true};
         }
 
-    })
+    }
 
-module.exports = removeGamePlayer;
+    #removePlayer(game, userId) {
+        let newPlayers;
+        const copiedGame = JSON.parse(JSON.stringify(game));
+        const userToRemove = copiedGame.players.findIndex(player => player.userId === userId);
+        if (userToRemove !== -1) {
+            const isPlayerCreator = copiedGame.players[userToRemove].creator;
+            copiedGame.players.splice(userToRemove, 1);
+            newPlayers = {
+                players: [...copiedGame.players],
+            }
+            if (isPlayerCreator) {
+                newPlayers.players[0].creator = true;
+            }
+        }
+        return newPlayers;
+    }
+}
+
+module.exports = RemoveGamePlayer;

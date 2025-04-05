@@ -1,30 +1,22 @@
-const express = require("express");
-const {body, check} = require("express-validator");
-const {getUserById} = require("../../models/users-repository");
 const GamesRepository = require("../../models/games-repository");
+const UsersRepository = require("../../models/users-repository");
+const validateData = require("../../services/validation-service");
+const {playerAdd:schema} = require("../../data-validations/game/validation-schemas");
+const { PostResponseHandler} = require("../../services/response-handler");
+const Routes = require("../../../../shared/constants/routes");
+const GameErrors = require("../../errors/game/game-errors");
 const games = new GamesRepository();
-const addGamePlayer = express.Router();
+const users = new UsersRepository();
 
-addGamePlayer.post("/game/player/add", [
-        body("gameId").optional().custom((value, {req}) => {
-            if (!value && !req.body.code) {
-                throw new Error("Either 'gameCode' or 'gameId' is required");
-            }
-            return true;
-        }),
-        check("gameCode")
-            .optional()
-            .custom((value, {req}) => {
-                if (!value && !req.body.id) {
-                    throw new Error("Either 'gameCode' or 'gameId' is required");
-                }
-                return true;
-            }),
-        body("userId").isString().notEmpty().withMessage("userId is required"),
-    ],
-    async (req, res) => {
-        const {userId, gameCode, gameId} = req.body;
-//TODO if the game is in active state ends
+class AddGamePlayer extends PostResponseHandler {
+    constructor(expressApp) {
+        super(expressApp, Routes.Games.PLAYER_ADD, "add");
+    }
+
+    async add(req) {
+        const validData = validateData(req.body, schema);
+        const {userId, gameCode, gameId} = validData;
+
         let game;
 
         if (gameId) {
@@ -34,12 +26,12 @@ addGamePlayer.post("/game/player/add", [
         }
 
         if (!game) {
-            return res.status(404).json({success: false, message: "The game does not exist"});
+            return new GameErrors.GameDoesNotExistError(validData);
         }
 
-        const user = await getUserById(userId);
+        const user = await users.getUserById(userId);
         if (!user) {
-            return res.status(404).json({success: false, error: "User not found"});
+            return new GameErrors.UserDoesNotExistError(validData);
         }
 
         //validation of players
@@ -47,7 +39,7 @@ addGamePlayer.post("/game/player/add", [
             player.userId === userId
         );
         if (isPlayerInGame) {
-            return res.status(400).json({success: false, message: "Player is already in game"});
+            return new GameErrors.PlayerAlreadyInGameError(validData);
         }
 
         const newPlayers = {
@@ -55,11 +47,12 @@ addGamePlayer.post("/game/player/add", [
         };
         try {
             const updatedGame = await games.updateGame(game.id, newPlayers);
-            return res.json({...updatedGame, success: true});
+            return {...updatedGame, success: true};
 
         } catch (error) {
-            res.status(500).json({error: "Failed to add player", success: false});
+            console.error("Failed to add player:", error);
+            return new GameErrors.FailedToAddPlayerError(error);
         }
-    })
-
-module.exports = addGamePlayer;
+    }
+}
+module.exports = AddGamePlayer;
