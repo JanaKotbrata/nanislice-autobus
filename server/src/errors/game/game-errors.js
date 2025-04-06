@@ -74,6 +74,13 @@ class FailedToRemovePlayerError extends CommonError {
         this.params = params;
     }
 }
+class UserAlreadyInGameError extends CommonError {
+    constructor(params) {
+        super('UserAlreadyInGameError', "User is already in game");
+        this.status = 400;
+        this.params = params;
+    }
+}
 
 module.exports = {
     GameDoesNotExistError,
@@ -84,5 +91,6 @@ module.exports = {
     FailedToAddPlayerError,
     PlayerAlreadyInGameError,
     PlayerNotInGameError,
-    FailedToRemovePlayerError
+    FailedToRemovePlayerError,
+    UserAlreadyInGameError
 };

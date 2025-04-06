@@ -9,6 +9,10 @@ class GamesRepository extends Model {
 
     async createIndexes() {
         await this.collection.createIndex({code: 1}, {unique: true});
+        await this.collection.createIndex({
+            'playerList.userId': 1,
+            'status': 1
+        });
     }
 
     async createGame(userData) {
@@ -41,6 +45,20 @@ class GamesRepository extends Model {
         const result = await this.collection.deleteOne({_id: new ObjectId(id)});
         return result.deletedCount;
     }
+
+    async findNotClosedGamesByUserId(userId) {
+        return await this.collection.find({ //TODO
+            'playerList': {
+                $elemMatch: {
+                    userId: userId
+                }
+            },
+            'status': {
+                $nin: ['closed', 'finished']
+            }
+        }).toArray();
+    }
+
 }
 
 module.exports = GamesRepository;

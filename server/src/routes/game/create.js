@@ -2,7 +2,7 @@ const GamesRepository = require("../../models/games-repository");
 const UsersRepository = require("../../models/users-repository");
 const validateData = require("../../services/validation-service");
 const {create: schema} = require("../../data-validations/game/validation-schemas");
-const { PostResponseHandler} = require("../../services/response-handler");
+const {PostResponseHandler} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes");
 const GameErrors = require("../../errors/game/game-errors");
 
@@ -18,17 +18,23 @@ class CreateGame extends PostResponseHandler {
     }
 
     async create(req) {
-      //  const validData = validateData(req.body, schema);
+        //  const validData = validateData(req.body, schema);
         //const {userId} = validData;
         const userId = req.user._id;
         let isDuplicateKey = false;
         let tryCount = 0;
 
-        // TODO list active game with players- if is this player in some active game - it should throw error
         const user = await users.getUserById(userId);
         if (!user) {
-            return new GameErrors.UserDoesNotExistError(validData);
+            throw new GameErrors.UserDoesNotExistError(user);
         }
+
+        const activeGamesWithUser = await games.findNotClosedGamesByUserId(userId);
+
+        if (activeGamesWithUser.length > 0) {
+            throw new GameErrors.UserAlreadyInGameError(userId); //TODO na FE vyhodit alert, že už je v nějaké hře a jestli chce přesměrovat na existující hru
+        }
+
         do {
             const gameCode = generateGameCode();
 
