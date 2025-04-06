@@ -1,7 +1,9 @@
 const DiscordStrategy = require('passport-discord').Strategy;
 const config = require('../../config/config.json');
-const users = require('../models/users-repository');
-const passport = require("passport");
+const UsersRepository = require('../models/users-repository');
+const users = new UsersRepository();
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = config.secret;
 
 async function initDiscordAuth(passport, app) {
     passport.use(
@@ -36,11 +38,14 @@ async function initDiscordAuth(passport, app) {
     //ROUTES
     app.get('/auth/discord', passport.authenticate('discord'));
 
+
     app.get(
         '/auth/discord/callback',
         passport.authenticate('discord', {failureRedirect: '/'}),
         (req, res) => {
-            res.redirect('http://localhost:5173/dashboard');;
+            const token = jwt.sign({ id: req.user._id }, JWT_SECRET, { expiresIn: '24h' });
+            const userId = req.user._id;
+            res.redirect(`http://localhost:5173/auth-callback?token=${token}&userId=${userId}`);
         }
     );
 }

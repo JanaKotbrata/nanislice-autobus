@@ -40,7 +40,6 @@ describe('POST /game/player-add', () => {
     test("should return an error if user does not exist", async () => {
         const mockGame = {code:"123456", status:"initial", playerList:[] };
         const game = await gamesCollection.insertOne(mockGame);
-        const gameId = game.insertedId.toString();
         const response = await request(app)
             .post(Routes.Games.PLAYER_ADD)
             .send({ userId: "nonexistent", gameCode: mockGame.code });

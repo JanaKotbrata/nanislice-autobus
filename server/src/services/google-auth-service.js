@@ -1,6 +1,9 @@
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const config = require('../../config/config.json');
-const users = require('../models/users-repository');
+const UsersRepository = require('../models/users-repository');
+const jwt = require("jsonwebtoken");
+const users = new UsersRepository();
+const JWT_SECRET = config.secret;
 
 async function initGoogleAuth(passport, app) {
     passport.use(
@@ -45,7 +48,9 @@ async function initGoogleAuth(passport, app) {
         '/auth/google/callback',
         passport.authenticate('google', {failureRedirect: '/'}),
         (req, res) => {
-            res.redirect('http://localhost:5173/dashboard');
+            const token = jwt.sign({ id: req.user._id }, JWT_SECRET, { expiresIn: '24h' });
+            const userId = req.user._id;
+            res.redirect(`http://localhost:5173/auth-callback?token=${token}&userId=${userId}`);
         }
     );
 }

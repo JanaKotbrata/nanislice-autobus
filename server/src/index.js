@@ -1,6 +1,7 @@
 const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
+const cors = require('cors');
 const connectToDb = require('./models/connection-db');
 const usersRepository = require('./models/users-repository');
 const users = new usersRepository();
@@ -19,17 +20,26 @@ async function main() {
 // Init express
     const app = express();
 
+    app.use(cors({
+        origin: 'http://localhost:5173',
+        credentials: true
+    }));
+
     app.use(
         session({
             secret: config.secret,
             resave: false,
             saveUninitialized: true,
+            cookie: {
+                sameSite: 'lax',
+                secure: process.env.NODE_ENV === 'production'
+            }
         })
     );
     app.use(passport.initialize());
     app.use(passport.session());
 
-    passport.serializeUser((user, done) => done(null, user._id));
+    passport.serializeUser((user, done) => done(null, user.id));
     passport.deserializeUser(async (id, done) => {
         const user = await users.getUserById(id);
         done(null, user);
