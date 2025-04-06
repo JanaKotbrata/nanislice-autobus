@@ -1,6 +1,27 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import DangerAlert from "../../alerts/danger-alert.jsx";
+import SuccessAlert from "../../alerts/danger-alert.jsx";
+import GameContext from "../../../context/game.js";
 
-function Invite({ children, onClick }) {
+function Invite({}) {
+  const [copied, setCopied] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const { state } = useLocation();
+  const gameData = state?.gameData;
+
+  const handleCopy = async () => {
+    try {
+      const url = `${window.location.origin}/lobby?code=${gameData.code}`;
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setShowAlert(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Nepodařilo se zkopírovat URL:", err);
+    }
+  };
+
   return (
     <div className="flex bg-gray-200 justify-center items-center h-16 p-4 my-6  rounded-lg  shadow-inner">
       <div className="flex items-center border border-green-700 p-2 border-dashed rounded cursor-pointer">
@@ -20,7 +41,22 @@ function Invite({ children, onClick }) {
             />
           </svg>
         </div>
-        <div className="ml-1 text-gray-500 font-medium">Invite a friend</div>
+        <div className="ml-1 text-gray-500 font-medium" onClick={handleCopy}>
+          Copy - invite a friend
+          {copied ? "Zkopírováno!" : "Pozvat hráče"}
+          {/*showAlert &&
+            (copied ? (
+              <SuccessAlert
+                message="Odkaz byl zkopírován do schránky."
+                onClose={() => setShowAlert(false)}
+              />
+            ) : (
+              <DangerAlert
+                message="Nepodařilo se zkopírovat odkaz."
+                onClose={() => setShowAlert(false)}
+              />
+            ))*/}
+        </div>
       </div>
     </div>
   );

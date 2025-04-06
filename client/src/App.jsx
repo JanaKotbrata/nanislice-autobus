@@ -11,6 +11,7 @@ import Lobby from "./routes/lobby.jsx";
 import Welcome from "./routes/welcome.jsx";
 import Game from "./routes/game.jsx";
 import AuthCallback from "./routes/auth-callback.jsx";
+import StartGame from "./routes/start-game.jsx";
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -28,7 +29,7 @@ function App() {
             path="/start-game"
             element={
               <ProtectedRoute>
-                  {/* TODO start game */}
+                <StartGame />
               </ProtectedRoute>
             }
           />
