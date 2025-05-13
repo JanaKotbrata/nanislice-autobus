@@ -3,8 +3,9 @@ const express = require('express');
 require("../services/setup-db");
 const connectionDb = require("../../src/models/connection-db");
 const CloseGame = require('../../src/routes/game/close');
-const Routes = require("../../../shared/constants/routes");
+const Routes = require("../../../shared/constants/routes.json");
 const {generateGameCode} = require("../../src/utils/helpers");
+const ErrorHandler = require("../../src/middlewares/error-handler");
 let gamesCollection;
 
 describe('POST /game/close', () => {
@@ -17,6 +18,7 @@ describe('POST /game/close', () => {
         app = express();
         app.use(express.json());
         new CloseGame(app);
+        app.use(ErrorHandler);
     });
 
     afterAll(async () => {
@@ -28,12 +30,12 @@ describe('POST /game/close', () => {
         await gamesCollection.insertOne(mockGame);
 
         const response = await request(app)
-            .post(Routes.Games.CLOSE)
+            .post(Routes.Game.CLOSE)
             .send({ gameCode: mockGame.code })
 
         expect(response.status).toBe(200);
         expect(response.body.success).toBe(true);
-        expect(response.body.status).toBe("closed");
+        expect(response.body.state).toBe("closed");
         expect(response.body.code).toBe(mockGame.code+"-#closed#");
 
     });
@@ -41,12 +43,12 @@ describe('POST /game/close', () => {
         const mockGame = { code: 1,  state:"active" };
 
         const response = await request(app)
-            .post(Routes.Games.CLOSE)
+            .post(Routes.Game.CLOSE)
             .send({ gameCode: mockGame.code })
 
         expect(response.status).toBe(400);
-       // expect(response.error.name).toBe("InvalidDataError");
-        expect(response.error.message).toBe("cannot POST /api/game/close (400)"); //TODO
+        expect(response.body.name).toBe("InvalidDataError");
+        expect(response.body.message).toBe(`\"gameCode\" must be a string`);
 
     });
 

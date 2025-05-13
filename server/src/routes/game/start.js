@@ -2,7 +2,7 @@ const GamesRepository = require("../../models/games-repository");
 const validateData = require("../../services/validation-service");
 const {startGame: schema} = require("../../data-validations/game/validation-schemas");
 const {PostResponseHandler} = require("../../services/response-handler");
-const Routes = require("../../../../shared/constants/routes");
+const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
 const games = new GamesRepository();
 
@@ -40,11 +40,11 @@ const cardOrder = [
 
 class StartGame extends PostResponseHandler {
     constructor(expressApp) {
-        super(expressApp, Routes.Games.START, "start");
+        super(expressApp, Routes.Game.START, "start");
     }
 
     async start(req) {
-        const validData = validateData(req.body, schema); //TODO chyba v players vs playerList - ted je to v db redundantní
+        const validData = validateData(req.body, schema);
         const {gameCode, gameId} = validData;
         let game;
 
@@ -52,14 +52,19 @@ class StartGame extends PostResponseHandler {
             game = await games.getGameById(gameId);
         } else {
             game = await games.getGameByCode(gameCode);
-        } //TODO if the game is in active state ends
-        if (!game) {
-            throw new GameErrors.GameDoesNotExistError(validData);
         }
-
+        if (!game) {
+            throw new GameErrors.GameDoesNotExist(validData);
+        }
+        if (game.state === "active") {
+            return {...game, success: true};
+        }
+        if (game.state === "closed") {
+            throw new GameErrors.GameIsClosed(validData);
+        }
         const fullDeck = this.#initDeck(game.playerList);
         const [deck, playerList] = this.#dealCardPerPlayer(fullDeck, game.playerList);
-        let newGame = {...game, status: "active", deck, playerList}
+        let newGame = {...game, state: "active", deck, playerList, currentPlayer: 0}
         delete newGame.sys;
         try {
             const startedGame = await games.updateGame(game.id, newGame);
@@ -84,7 +89,7 @@ class StartGame extends PostResponseHandler {
             //deal bus
             let [finalDeck, bus] = this.#dealCards(newDeck, 10);
             cacheDeck = finalDeck;
-            game.push({...player, hand, bus, busStop: [{}, {}, {}, {}]});
+            game.push({...player, hand, bus, busStop: [{}, {}, {}, {}],isCardDrawed: true});
         }
         return [cacheDeck, game];
     }

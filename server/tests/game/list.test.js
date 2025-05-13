@@ -3,7 +3,7 @@ const express = require('express');
 require("../services/setup-db");
 const connectionDb = require("../../src/models/connection-db");
 const ListGame = require('../../src/routes/game/list');
-const Routes = require("../../../shared/constants/routes");
+const Routes = require("../../../shared/constants/routes.json");
 let gamesCollection;
 
 describe('GET /game/list', () => {
@@ -25,12 +25,12 @@ describe('GET /game/list', () => {
     });
 
     it('should list all game', async () => {
-        const mockGame = {code:"123456", status:"initial", playerList:[] };
+        const mockGame = {code:"123456", state:"initial", playerList:[] };
 
         await gamesCollection.insertOne(mockGame);
 
         const response = await request(app)
-            .get(Routes.Games.LIST)
+            .get(Routes.Game.LIST)
             .send({});
 
         expect(response.status).toBe(200);
@@ -40,7 +40,7 @@ describe('GET /game/list', () => {
     });
     test('should return empty list', async () => {
         const response = await request(app)
-            .get(Routes.Games.LIST)
+            .get(Routes.Game.LIST)
             .send({});
 
         expect(response.status).toBe(200);

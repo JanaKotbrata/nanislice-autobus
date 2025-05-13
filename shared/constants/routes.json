@@ -1,0 +1,15 @@
+{
+    "Game": {
+        "GET": "/api/game/get",
+        "CLOSE": "/api/game/close",
+        "CREATE": "/api/game/create",
+        "DELETE": "/api/game/delete",
+        "LIST": "/api/game/list",
+        "PLAYER_ADD": "/api/game/player/add",
+        "PLAYER_REMOVE": "/api/game/player/remove",
+        "START": "/api/game/start"
+    },
+    "User": {
+        "AUTHENTICATE": "/api/user/authenticate"
+    }
+}

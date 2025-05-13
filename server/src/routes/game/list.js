@@ -2,13 +2,13 @@ const GamesRepository = require("../../models/games-repository");
 const validateData = require("../../services/validation-service");
 const {list:schema} = require("../../data-validations/game/validation-schemas");
 const { GetResponseHandler} = require("../../services/response-handler");
-const Routes = require("../../../../shared/constants/routes");
+const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
 const games = new GamesRepository();
 
 class ListGame extends GetResponseHandler {
     constructor(expressApp) {
-        super(expressApp, Routes.Games.LIST, "list");
+        super(expressApp, Routes.Game.LIST, "list");
     }
 
     async list(req) {

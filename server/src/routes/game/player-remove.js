@@ -3,14 +3,14 @@ const UsersRepository = require("../../models/users-repository");
 const validateData = require("../../services/validation-service");
 const {playerRemove: schema} = require("../../data-validations/game/validation-schemas"); //TODO game vs game - udělat revizi všude ale :D
 const {PostResponseHandler} = require("../../services/response-handler");
-const Routes = require("../../../../shared/constants/routes");
+const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
 const games = new GamesRepository();
 const users = new UsersRepository();
 
 class RemoveGamePlayer extends PostResponseHandler {
     constructor(expressApp) {
-        super(expressApp, Routes.Games.PLAYER_REMOVE, "remove");
+        super(expressApp, Routes.Game.PLAYER_REMOVE, "remove");
     }
 
     async remove(req) {
@@ -24,13 +24,13 @@ class RemoveGamePlayer extends PostResponseHandler {
             game = await games.getGameByCode(gameCode);
         }
         if (!game) {
-            return new GameErrors.GameDoesNotExistError(validData);
+            throw new GameErrors.GameDoesNotExist(validData);
         }
         let isPlayerInGame = game.playerList.find((player) =>
             player.userId === userId
         );
         if (!isPlayerInGame) {
-            return new GameErrors.PlayerNotInGameError(validData);
+            throw new GameErrors.PlayerNotInGame(validData);
         }
         //validation of playerList
         const isPossibleToRemove = !!(game.playerList.length > 1);
@@ -43,12 +43,12 @@ class RemoveGamePlayer extends PostResponseHandler {
 
                 } catch (error) {
                     console.error("Failed to remove player:", error);
-                    return new GameErrors.FailedToRemovePlayerError(error);
+                    throw new GameErrors.FailedToRemovePlayer(error);
                 }
             }
         } else {
             //await game.deleteGame(game.id); //TODO na základě ještě nějaké podmínky
-            const newGame = await games.updateGame(game.id, {code: `${game.code}-#closed#`, status: "closed"});
+            const newGame = await games.updateGame(game.id, {code: `${game.code}-#closed#`, state: "closed"});
             return {...newGame, success: true};
         }
 

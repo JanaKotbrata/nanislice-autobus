@@ -4,7 +4,7 @@ const ErrorHandler = (err, req, res, next) => {
     const errName = err.name || 'Something went wrong';
     const errMsg = err.message || 'Something went wrong';
     const errParams = err.params;
-    res.status(errStatus).json({
+    return res.status(errStatus).json({
         success: false,
         status: errStatus,
         name: errName,

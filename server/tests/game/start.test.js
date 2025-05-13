@@ -3,7 +3,8 @@ const express = require('express');
 require("../services/setup-db");
 const connectionDb = require("../../src/models/connection-db");
 const StartGame = require('../../src/routes/game/start');
-const Routes = require("../../../shared/constants/routes");
+const Routes = require("../../../shared/constants/routes.json");
+const ErrorHandler = require("../../src/middlewares/error-handler");
 let gamesCollection;
 
 describe('POST /game/start', () => {
@@ -16,6 +17,7 @@ describe('POST /game/start', () => {
         app = express();
         app.use(express.json());
         new StartGame(app);
+        app.use(ErrorHandler);
     });
 
     afterAll(async () => {
@@ -23,16 +25,16 @@ describe('POST /game/start', () => {
     });
 
     it('should start a game', async () => {
-        const mockGame = {code:"123456", status:"initial", playerList:[{userId:"123"},{userId:"4321"}] };
+        const mockGame = {code: "123456", state: "initial", playerList: [{userId: "123"}, {userId: "4321"}]};
         await gamesCollection.insertOne(mockGame);
 
         const response = await request(app)
-            .post(Routes.Games.START)
-            .send({ gameCode: mockGame.code});
+            .post(Routes.Game.START)
+            .send({gameCode: mockGame.code});
 
-        expect(response.status).toBe(200); //TODO
+        expect(response.status).toBe(200);
         expect(response.body.success).toBe(true);
-        expect(response.body.status).toBe("active");
+        expect(response.body.state).toBe("active");
         expect(response.body.deck).toBeDefined();
         expect(response.body.playerList[0].hand).toBeDefined();
         expect(response.body.playerList[0].bus).toBeDefined();
@@ -41,9 +43,10 @@ describe('POST /game/start', () => {
 
     it('should return an error if game does not exist', async () => {
         const response = await request(app)
-            .post(Routes.Games.START)
-            .send({ gameCode: "1234F6" });
+            .post(Routes.Game.START)
+            .send({gameCode: "1234F6"});
 
         expect(response.status).toBe(404);
+        expect(response.body.message).toBe("Requested game does not exist");
     });
-})
+});

@@ -1,16 +1,15 @@
-class CommonError extends Error {
-    constructor(name, message) {
-        super();
-        this.status = 400;
-        this.name = name;
-        this.message = message;
-    }
-}
-
-class GameDoesNotExistError extends CommonError {
+const CommonError = require("./../common-errors");
+class GameDoesNotExist extends CommonError {
     constructor(params) {
         super('GameDoesNotExist', "Requested game does not exist");
         this.status = 404;
+        this.params = params;
+    }
+}
+class GameIsClosed extends CommonError {
+    constructor(params) {
+        super('GameIsClosed', "Failed to start game, game is closed");
+        this.status = 400;
         this.params = params;
     }
 }
@@ -23,7 +22,7 @@ class UpdateGameFailed extends CommonError {
     }
 }
 
-class UserDoesNotExistError extends CommonError {
+class UserDoesNotExist extends CommonError {
     constructor(params) {
         super('UserDoesNotExist', "Requested user does not exist");
         this.status = 404;
@@ -46,51 +45,52 @@ class FailedToDeleteGame extends CommonError {
         this.params = params;
     }
 }
-class FailedToAddPlayerError extends CommonError {
+class FailedToAddPlayer extends CommonError {
     constructor(params) {
-        super('FailedToAddPlayerError', "Failed to add player");
+        super('FailedToAddPlayer', "Failed to add player");
         this.status = 500;
         this.params = params;
     }
 }
-class PlayerAlreadyInGameError extends CommonError {
+class PlayerAlreadyInGame extends CommonError {
     constructor(params) {
-        super('PlayerAlreadyInGameError', "Player already in game");
+        super('PlayerAlreadyInGame', "Player already in game");
         this.status = 400;
         this.params = params;
     }
 }
-class PlayerNotInGameError extends CommonError {
+class PlayerNotInGame extends CommonError {
     constructor(params) {
-        super('PlayerNotInGameError', "Player is not in game");
+        super('PlayerNotInGame', "Player is not in game");
         this.status = 400;
         this.params = params;
     }
 }
-class FailedToRemovePlayerError extends CommonError {
+class FailedToRemovePlayer extends CommonError {
     constructor(params) {
-        super('FailedToRemovePlayerError', "Failed to remove player");
+        super('FailedToRemovePlayer', "Failed to remove player");
         this.status = 500;
         this.params = params;
     }
 }
-class UserAlreadyInGameError extends CommonError {
+class UserAlreadyInGame extends CommonError {
     constructor(params) {
-        super('UserAlreadyInGameError', "User is already in game");
+        super('UserAlreadyInGame', "User is already in game");
         this.status = 400;
         this.params = params;
     }
 }
 
 module.exports = {
-    GameDoesNotExistError,
+    GameDoesNotExist,
     UpdateGameFailed,
-    UserDoesNotExistError,
+    UserDoesNotExist,
     FailedToCreateGame,
     FailedToDeleteGame,
-    FailedToAddPlayerError,
-    PlayerAlreadyInGameError,
-    PlayerNotInGameError,
-    FailedToRemovePlayerError,
-    UserAlreadyInGameError
+    FailedToAddPlayer,
+    PlayerAlreadyInGame,
+    PlayerNotInGame,
+    FailedToRemovePlayer,
+    UserAlreadyInGame,
+    GameIsClosed
 };

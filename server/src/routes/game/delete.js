@@ -2,13 +2,13 @@ const GamesRepository = require("../../models/games-repository");
 const validateData = require("../../services/validation-service");
 const {gDelete:schema} = require("../../data-validations/game/validation-schemas");
 const { PostResponseHandler} = require("../../services/response-handler");
-const Routes = require("../../../../shared/constants/routes");
+const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
 const games = new GamesRepository();
 
 class DeleteGame extends PostResponseHandler {
     constructor(expressApp) {
-        super(expressApp, Routes.Games.DELETE, "delete");
+        super(expressApp, Routes.Game.DELETE, "delete");
     }
 
     async delete(req) {
@@ -24,14 +24,14 @@ class DeleteGame extends PostResponseHandler {
         }
 
         if (!game) {
-            return new GameErrors.GameDoesNotExistError(validData);
+            throw new GameErrors.GameDoesNotExist(validData);
         }
         try {
             await games.deleteGame(game.id);
             return {id: game.id, success: true};
         } catch (e) {
             console.error("Failed to delete game:", e);
-            return new GameErrors.FailedToDeleteGame(e);
+            throw new GameErrors.FailedToDeleteGame(e);
         }
     }
 }

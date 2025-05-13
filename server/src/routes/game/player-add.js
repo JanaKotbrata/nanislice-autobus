@@ -3,14 +3,14 @@ const UsersRepository = require("../../models/users-repository");
 const validateData = require("../../services/validation-service");
 const {playerAdd:schema} = require("../../data-validations/game/validation-schemas");
 const { PostResponseHandler} = require("../../services/response-handler");
-const Routes = require("../../../../shared/constants/routes");
+const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
 const games = new GamesRepository();
 const users = new UsersRepository();
 
 class AddGamePlayer extends PostResponseHandler {
     constructor(expressApp) {
-        super(expressApp, Routes.Games.PLAYER_ADD, "add");
+        super(expressApp, Routes.Game.PLAYER_ADD, "add");
     }
 
     async add(req) {
@@ -26,12 +26,12 @@ class AddGamePlayer extends PostResponseHandler {
         }
 
         if (!game) {
-            return new GameErrors.GameDoesNotExistError(validData);
+            throw new GameErrors.GameDoesNotExist(validData);
         }
 
         const user = await users.getUserById(userId);
         if (!user) {
-            return new GameErrors.UserDoesNotExistError(validData);
+            throw new GameErrors.UserDoesNotExist(validData);
         }
 
         //validation of playerList
@@ -39,7 +39,7 @@ class AddGamePlayer extends PostResponseHandler {
             player.userId === userId
         );
         if (isPlayerInGame) {
-            return new GameErrors.PlayerAlreadyInGameError(validData);
+            throw new GameErrors.PlayerAlreadyInGame(validData);
         }
 
         const newPlayers = {
@@ -51,7 +51,7 @@ class AddGamePlayer extends PostResponseHandler {
 
         } catch (error) {
             console.error("Failed to add player:", error);
-            return new GameErrors.FailedToAddPlayerError(error);
+            throw new GameErrors.FailedToAddPlayer(error);
         }
     }
 }

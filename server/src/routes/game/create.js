@@ -3,7 +3,7 @@ const UsersRepository = require("../../models/users-repository");
 const validateData = require("../../services/validation-service");
 const {create: schema} = require("../../data-validations/game/validation-schemas");
 const {PostResponseHandler} = require("../../services/response-handler");
-const Routes = require("../../../../shared/constants/routes");
+const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
 
 const {generateGameCode} = require("../../utils/helpers");
@@ -14,25 +14,26 @@ const maxAttempts = 5;
 
 class CreateGame extends PostResponseHandler {
     constructor(expressApp) {
-        super(expressApp, Routes.Games.CREATE, "create");
+        super(expressApp, Routes.Game.CREATE, "create");
     }
 
     async create(req) {
         //  const validData = validateData(req.body, schema);
         //const {userId} = validData;
-        const userId = req.user._id;
+        const userId = req.user.id;
         let isDuplicateKey = false;
         let tryCount = 0;
 
         const user = await users.getUserById(userId);
         if (!user) {
-            throw new GameErrors.UserDoesNotExistError(user);
+            throw new GameErrors.UserDoesNotExist(user);
         }
 
-        const activeGamesWithUser = await games.findNotClosedGamesByUserId(userId);
+        const activeGamesWithUser = await games.findNotClosedGamesByUserId(userId); //TODO udělat api na tohle, abych mohla použít na klientovi v Router -app.jsx - volat pod session uživatele - když session vyhodnotí,že neni uživatel přihlášený, tak se musí odhlásit na klientovi
 
         if (activeGamesWithUser.length > 0) {
-            throw new GameErrors.UserAlreadyInGameError(userId); //TODO na FE vyhodit alert, že už je v nějaké hře a jestli chce přesměrovat na existující hru
+           // throw new GameErrors.UserAlreadyInGame({userId, gameId: activeGamesWithUser[0]._id.toString()} ); //TODO - id té hry, abyych na GE viděla co vrátit -na FE vyhodit alert, že už je v nějaké hře a jestli chce přesměrovat na existující hru
+        return  activeGamesWithUser[0];
         }
 
         do {
@@ -41,8 +42,8 @@ class CreateGame extends PostResponseHandler {
             // creates new game
             const newGame = {
                 code: gameCode,
-                status: "initial",
-                playerList: [{userId, name: user.name, creator: true}],
+                state: "initial",
+                playerList: [{userId:user.id, picture:user.picture, name: user.name, creator: true}],
             };
             try {
                 const game = await games.createGame(newGame);
