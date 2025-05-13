@@ -16,12 +16,6 @@ function Welcome() {
     window.location.href = `http://localhost:1234/auth/google?redirect_uri=${redirectUrl}`;
   }
 
-  function callApi() {
-    return axios.get("/api/game/list").then((response) => {
-      console.log(response.data);
-    });
-  }
-
   return (
     <section className="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto max-w-sm w-full md:h-auto lg:py-0">
@@ -51,11 +45,6 @@ function Welcome() {
               </div>
               <div className="flex items-center justify-between">
                 <DiscordLogin />
-              </div>
-              <div className="flex items-center">
-                <Button onClick={() => callApi()}>
-                  <span>Continue with Google</span>
-                </Button>
               </div>
             </form>
           </div>

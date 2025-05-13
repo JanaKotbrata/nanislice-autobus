@@ -1,12 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useRef } from "react";
 import Card from "./card.jsx";
 import CardPack from "./card-pack.jsx";
 import Slot from "./slot.jsx";
 import GameContext from "../../context/game.js";
 import DangerAlert from "../../components/alerts/danger-alert.jsx";
 import { useDrop } from "react-dnd";
-
-const maxHandSize = 5;
 
 function GameBoard({ player }) {
   const gameContext = useContext(GameContext);
@@ -67,7 +65,7 @@ function GameBoard({ player }) {
 
       <div className="flex flex-row items-center justify-center">
         <div className="flex gap-4 p-4 border-2 border-dashed border-gray-500 rounded-md justify-center">
-          {player.hand.map((card, index) => {
+          {player?.hand?.map((card, index) => {
             if (!card.rank) {
               return (
                 <Slot

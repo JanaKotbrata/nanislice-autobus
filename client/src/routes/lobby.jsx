@@ -6,16 +6,9 @@ import Start from "../components/form/visual/start.jsx";
 import nanislice from "../assets/nanislice.svg";
 import Instructions from "../components/instructions.jsx";
 
-function Lobby({
-  user = {
-    name: "Karel",
-    avatar:
-      "https://static-cdn.jtvnw.net/jtv_user_pictures/27fdad08-a2c2-4e0b-8983-448c39519643-profile_image-70x70.png",
-  },
-}) {
+function Lobby() {
   const { state } = useLocation();
   const gameData = state?.gameData;
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center p-4">
       <div className="w-full max-w-4xl aspect-square bg-gray-950/50 rounded-2xl shadow-2xl p-6">
@@ -44,12 +37,13 @@ function Lobby({
               <Member
                 key={player.userId}
                 level={player.creator ? "Zakladatel" : "Pleb"}
+                picture={player.picture}
               >
                 {player.name}
               </Member>
             ))}
             <Invite />
-            <Start />
+            <Start gameCode={gameData.code} playerList={gameData.playerList} />
           </div>
           {/* Right box - How to play */}
           <Instructions />

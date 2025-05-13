@@ -1,15 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import GameContext from "../../context/game";
 import card from "../../routes/game/card.jsx";
 
 const maxHandSize = 5;
 
-function GameContextProvider({ children, players }) {
-  const [gamePlayers, setPlayers] = useState(players);
+function GameContextProvider({ children, game }) {
+  const [gamePlayers, setPlayers] = useState([]);
   const [gameDeck, setGameDeck] = useState([]);
   const [gameBoard, setGameBoard] = useState([]);
   const [errorMessage, setErrorMessage] = React.useState(null);
   const [showAlert, setShowAlert] = useState(false);
+
+  useEffect(() => {
+    if (!game) return;
+    setPlayers(game.playerList);
+    setGameDeck(game.deck);
+  }, [game]);
 
   function getMyself(currentPlayers) {
     return currentPlayers.find((player) => player.myself);
@@ -180,7 +186,6 @@ function GameContextProvider({ children, players }) {
         moveCardToGameBoard: (card, destination) => {
           setPlayers((currentPlayers) => {
             const myself = getMyself(currentPlayers);
-
             // Zkontroluje zda je karta v ruce nebo zastávce
             const isInHand = myself.hand.some((c) => c.i === card.i);
             const isInBusStop = myself.busStop.some((c) => c?.i === card.i);
@@ -252,21 +257,6 @@ function GameContextProvider({ children, players }) {
           });
         },
         deck: gameDeck,
-        initDeck: () => {
-          let gamePack = getCardPack();
-          const lastIndex = gamePack[gamePack.length - 1].i;
-          let deck = gamePack.concat(getCardPack(lastIndex));
-          let multiplier = 1;
-          const basePlayers = 5;
-
-          // Dynamické násobení balíčku
-          while (gamePlayers.length > basePlayers * multiplier) {
-            const lastIndex = deck[deck.length - 1].i;
-            deck = deck.concat(getCardPack(lastIndex));
-            multiplier *= 2;
-          }
-          setGameDeck(shuffleDeck(deck));
-        },
         gameBoard,
         errorMessage,
         setErrorMessage,

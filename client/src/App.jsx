@@ -18,12 +18,30 @@ function ProtectedRoute({ children }) {
   return user ? children : <Navigate to="/" />;
 }
 
+function NotAuthenticatedRoute({ children }) {
+  const { user, loading } = useAuth();
+  if (user) {
+    return <Navigate to="/start-game" />;
+  }
+  if (loading) {
+    return <div>Loading...</div>; // FIXME - komponenta pro loading
+  }
+  return children;
+}
+
 function App() {
   return (
     <Router>
       <AuthProvider>
         <Routes>
-          <Route path="/" element={<Welcome />} />
+          <Route
+            path="/"
+            element={
+              <NotAuthenticatedRoute>
+                <Welcome />
+              </NotAuthenticatedRoute>
+            }
+          />
           <Route path="/auth-callback" element={<AuthCallback />} />
           <Route
             path="/start-game"
@@ -42,7 +60,7 @@ function App() {
             }
           />
           <Route
-            path="/game"
+            path="/game/:code"
             element={
               <ProtectedRoute>
                 <Game />

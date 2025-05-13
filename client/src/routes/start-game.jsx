@@ -1,25 +1,35 @@
 import { useNavigate } from "react-router-dom";
 import React from "react";
 import axios from "axios";
-
+import Routes from "./../../../shared/constants/routes.json";
 import Instructions from "../components/instructions.jsx";
+import { useAuth } from "../context/auth-context.jsx";
 
-function StartGame({
-  user = {
-    name: "Karel",
-    avatar:
-      "https://static-cdn.jtvnw.net/jtv_user_pictures/27fdad08-a2c2-4e0b-8983-448c39519643-profile_image-70x70.png",
-  },
-}) {
+function StartGame() {
+  const { user } = useAuth();
   const navigate = useNavigate();
+
   async function createGame() {
     try {
-      const response = await axios.post("/api/game/create");
+      const response = await axios.post(Routes.Game.CREATE, {});
       navigate("/lobby", {
         state: { gameData: response.data },
       });
     } catch (error) {
-      console.error("Chyba při vytváření hry:", error);
+      if (error.response?.data?.name === "UserAlreadyInGame") {
+        //FIXME - mělo by fungovat toto - await axios.get(Routes.Game.GET, {
+        //           params: {
+        //             id: error.response.data.gameId,
+        //           },
+        //         });
+        const game = await axios.get(
+          Routes.Game.GET + `?id=${error.response.data?.params?.gameId}`,
+        );
+        navigate("/lobby", { state: { gameData: game?.data } });
+      } else {
+        alert(error.message);
+        console.error("Chyba při vytváření hry:", error);
+      }
     }
   }
 
@@ -29,7 +39,7 @@ function StartGame({
         {/* Left box - Player info */}
         <div className="flex flex-col items-center justify-center border-r-2 border-cyan-400/50 pr-4 ">
           <img
-            src={user.avatar}
+            src={user.picture}
             alt="avatar"
             className="w-24 h-24 rounded-full shadow-md mb-4"
           />

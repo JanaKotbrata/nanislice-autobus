@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/auth-context";
 
@@ -6,25 +6,20 @@ export default function AuthCallback() {
   const [searchParams] = useSearchParams();
   const { login } = useAuth();
   const navigate = useNavigate();
-  const authAttempted = useRef(false);
 
   useEffect(() => {
     const initAuth = async () => {
-      if (authAttempted.current) return;
-      authAttempted.current = true;
-
       try {
         const token = searchParams.get("token");
-        const userId = searchParams.get("userId");
 
-        if (!token || !userId) {
-          console.error("Chybí token nebo userId");
+        if (!token) {
+          console.error("Chybí token");
           navigate("/", { replace: true });
           return;
         }
 
-        const user = { token, id: userId };
-        await login(user);
+        await login(token);
+
         navigate("/start-game", { replace: true });
       } catch (error) {
         console.error("Chyba:", error);
@@ -33,7 +28,7 @@ export default function AuthCallback() {
     };
 
     initAuth();
-  }, [searchParams, login, navigate]);
+  }, [searchParams]);
 
   return <p>Přihlašujeme tě...</p>;
 }
