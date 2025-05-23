@@ -9,8 +9,6 @@ import GameContext from "../context/game.js";
 import axios from "axios";
 import Routes from "../../../shared/constants/routes.json";
 
-///TODO v jednom kole můžeš odložit do zastávky jen jednu kartu
-
 function Game() {
   const { code } = useParams();
   const [players, setPlayers] = useState([]);
@@ -56,6 +54,12 @@ function Game() {
     //         });
     return await axios.get(Routes.Game.GET + `?code=${code}`);
   };
+  const getPlayers = (players) => {
+    let newPlayers = [...players];
+    let index = newPlayers.findIndex((player) => player?.myself);
+    let myself = newPlayers.splice(index, 1)[0];
+    return [myself, newPlayers];
+  };
   if (!players)
     return (
       <div className="flex items-center justify-center h-full w-full">
@@ -68,6 +72,7 @@ function Game() {
       <DndProvider backend={HTML5Backend}>
         <GameContext.Consumer>
           {(gameContext) => {
+            const [myself, players] = getPlayers(gameContext?.players);
             return (
               <div
                 className="flex flex-col sm:flex-row w-full h-full p-1 bg-gray-800"
@@ -76,15 +81,33 @@ function Game() {
               >
                 {/* Levá sekce - Hráči */}
                 <div
-                  className="bg-gray-800 text-white p-4"
+                  className="bg-gray-800 text-white p-4 flex flex-col"
                   style={{ width: leftWidth }}
                 >
-                  <h2 className="text-xl font-bold mb-4">Autobus</h2>
-                  {gameContext.players.map((player, index) => (
-                    <Player key={index} player={player} />
-                  ))}
+                  <h2 className="text-xl font-bold mb-4">Autobusácí</h2>
+                  <div className="flex-grow">
+                    {players.map((player, index) => (
+                      <Player
+                        key={index}
+                        player={player}
+                        isActivePlayer={
+                          gameContext.players?.[gameContext.currentPlayer]
+                            ?.userId === player?.userId
+                        }
+                      />
+                    ))}
+                  </div>
+                  {myself && (
+                    <Player
+                      key={gameContext.players.length - 1}
+                      player={myself}
+                      isActivePlayer={
+                        gameContext.players?.[gameContext.currentPlayer]
+                          ?.userId === myself?.userId
+                      }
+                    />
+                  )}
                 </div>
-
                 {/* Resize lišta */}
                 <div
                   ref={dragRef}
@@ -98,7 +121,6 @@ function Game() {
                     player={gameContext.players.find((p) => p.myself)}
                     cardPack={gameContext.deck}
                   />
-                  {"TODO dávat tam sebe"}
                 </div>
               </div>
             );

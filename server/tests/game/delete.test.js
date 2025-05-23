@@ -5,6 +5,7 @@ const connectionDb = require("../../src/models/connection-db");
 const DeleteGame = require('../../src/routes/game/delete');
 const Routes = require("../../../shared/constants/routes.json");
 const ErrorHandler = require("../../src/middlewares/error-handler");
+const {initialGame, generateRandomId} = require("../helpers/default-mocks");
 let gamesCollection;
 
 describe('POST /game/delete', () => {
@@ -25,7 +26,7 @@ describe('POST /game/delete', () => {
     });
 
     it('should delete a game', async () => {
-        const mockGame = {code:"123456", state:"initial", playerList:[] };
+        const mockGame = initialGame();
 
         const game = await gamesCollection.insertOne(mockGame);
         const id = game.insertedId.toString();
@@ -41,7 +42,7 @@ describe('POST /game/delete', () => {
     it('should return an error if game does not exist', async () => {
         const response = await request(app)
             .post(Routes.Game.DELETE)
-            .send({ id: "123456789112345678911234" });
+            .send({ id: generateRandomId() });
 
         expect(response.status).toBe(404);
         expect(response.body.message).toBe("Requested game does not exist");

@@ -5,38 +5,7 @@ const {PostResponseHandler} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
 const games = new GamesRepository();
-
-const ranks = [
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10",
-    "J",
-    "Q",
-    "K",
-    "A",
-];
-const suits = ["♥", "♦", "♠", "♣"];
-const cardOrder = [
-    "A",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10",
-    "J",
-    "Q",
-    "K",
-];
+const {initDeck, dealCardPerPlayer} = require("../../services/card-service");
 
 class StartGame extends PostResponseHandler {
     constructor(expressApp) {
@@ -62,9 +31,9 @@ class StartGame extends PostResponseHandler {
         if (game.state === "closed") {
             throw new GameErrors.GameIsClosed(validData);
         }
-        const fullDeck = this.#initDeck(game.playerList);
-        const [deck, playerList] = this.#dealCardPerPlayer(fullDeck, game.playerList);
-        let newGame = {...game, state: "active", deck, playerList, currentPlayer: 0}
+        const fullDeck = initDeck(game.playerList);
+        const [deck, playerList] = dealCardPerPlayer(fullDeck, game.playerList);
+        let newGame = {...game, state: "active", deck, playerList, currentPlayer: 0} //TODO maybe random number between 0 and playerList.length
         delete newGame.sys;
         try {
             const startedGame = await games.updateGame(game.id, newGame);
@@ -74,66 +43,6 @@ class StartGame extends PostResponseHandler {
         }
     }
 
-    #dealCards(deck, cardNumber) {
-        const newDeck = [...deck];
-        const pack = newDeck.splice(-cardNumber);
-        return [newDeck, pack]
-    }
-
-    #dealCardPerPlayer(deck, playerList) {
-        let cacheDeck = [...deck];
-        let game = [];
-        for (let player of playerList) {
-            //deal hand
-            let [newDeck, hand] = this.#dealCards(cacheDeck, 5);
-            //deal bus
-            let [finalDeck, bus] = this.#dealCards(newDeck, 10);
-            cacheDeck = finalDeck;
-            game.push({...player, hand, bus, busStop: [{}, {}, {}, {}],isCardDrawed: true});
-        }
-        return [cacheDeck, game];
-    }
-
-    #getCardDeck(i = 0) {
-        const pack = [];
-        for (const suit of suits) {
-            for (const rank of ranks) {
-                pack.push({i, rank, suit});
-                i++;
-            }
-        }
-        pack.push({i: i + 1, rank: "Jr", suit: "🃏"});
-        pack.push({i: i + 2, rank: "Jr", suit: "🃏"});
-        return pack;
-    }
-
-    #shuffleDeck(deck) {
-        let shuffledDeck = [...deck];
-        for (let i = deck.length - 1; i > 0; i--) {
-            const randomIndex = Math.floor(Math.random() * (i + 1));
-
-            const temp = shuffledDeck[i];
-            shuffledDeck[i] = shuffledDeck[randomIndex];
-            shuffledDeck[randomIndex] = temp;
-        }
-        return shuffledDeck;
-    }
-
-    #initDeck(gamePlayers) {
-        let gamePack = this.#getCardDeck();
-        const lastIndex = gamePack[gamePack.length - 1].i;
-        let deck = gamePack.concat(this.#getCardDeck(lastIndex));
-        let multiplier = 1;
-        const basePlayers = 5;
-
-        // Dynamické násobení balíčku
-        while (gamePlayers.length > basePlayers * multiplier) {
-            const lastIndex = deck[deck.length - 1].i;
-            deck = deck.concat(this.#getCardDeck(lastIndex));
-            multiplier *= 2;
-        }
-        return this.#shuffleDeck(deck);
-    }
 }
 
 

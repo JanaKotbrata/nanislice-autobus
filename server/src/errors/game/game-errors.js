@@ -1,4 +1,5 @@
 const CommonError = require("./../common-errors");
+
 class GameDoesNotExist extends CommonError {
     constructor(params) {
         super('GameDoesNotExist', "Requested game does not exist");
@@ -6,6 +7,7 @@ class GameDoesNotExist extends CommonError {
         this.params = params;
     }
 }
+
 class GameIsClosed extends CommonError {
     constructor(params) {
         super('GameIsClosed', "Failed to start game, game is closed");
@@ -45,6 +47,7 @@ class FailedToDeleteGame extends CommonError {
         this.params = params;
     }
 }
+
 class FailedToAddPlayer extends CommonError {
     constructor(params) {
         super('FailedToAddPlayer', "Failed to add player");
@@ -52,6 +55,7 @@ class FailedToAddPlayer extends CommonError {
         this.params = params;
     }
 }
+
 class PlayerAlreadyInGame extends CommonError {
     constructor(params) {
         super('PlayerAlreadyInGame', "Player already in game");
@@ -59,6 +63,7 @@ class PlayerAlreadyInGame extends CommonError {
         this.params = params;
     }
 }
+
 class PlayerNotInGame extends CommonError {
     constructor(params) {
         super('PlayerNotInGame', "Player is not in game");
@@ -66,6 +71,7 @@ class PlayerNotInGame extends CommonError {
         this.params = params;
     }
 }
+
 class FailedToRemovePlayer extends CommonError {
     constructor(params) {
         super('FailedToRemovePlayer', "Failed to remove player");
@@ -73,6 +79,7 @@ class FailedToRemovePlayer extends CommonError {
         this.params = params;
     }
 }
+
 class UserAlreadyInGame extends CommonError {
     constructor(params) {
         super('UserAlreadyInGame', "User is already in game");
@@ -81,6 +88,70 @@ class UserAlreadyInGame extends CommonError {
     }
 }
 
+class UserNotInGame extends CommonError {
+    constructor(params) {
+        super('UserNotInGame', "User is not in game");
+        this.status = 400;
+        this.params = params;
+    }
+}
+
+class FailedToUpdateGame extends CommonError {
+    constructor(params) {
+        super('FailedToUpdateGame', "Failed to update game");
+        this.status = 500;
+        this.params = params;
+    }
+}
+class InvalidCardInBusStop extends CommonError {
+    constructor(params) {
+        super('InvalidCardInBusStop', "Invalid card in bus stop");
+        this.status = 400;
+        this.params = params;
+    }
+}
+class DestinationDoesNotExist extends CommonError {
+    constructor(params) {
+        super('DestinationDoesNotExist', "Destination does not exist");
+        this.status = 400;
+        this.params = params;
+    }
+}
+class InvalidCardInGameBoard extends CommonError {
+    constructor(params) {
+        super('InvalidCardInGameBoard', "Invalid card in game board");
+        this.status = 400;
+        this.params = params;
+    }
+}
+class CardDoesNotExist extends CommonError {
+    constructor(params) {
+        super('CardDoesNotExist', "Card does not exist");
+        this.status = 400;
+        this.params = params;
+    }
+}
+class ActionIsNotDefined extends CommonError {
+    constructor(params) {
+        super('ActionIsNotDefined', "Action is not defined");
+        this.status = 400;
+        this.params = params;
+    }
+}
+class InvalidHandReorder extends CommonError {
+    constructor(params) {
+        super('InvalidHandReorder', "Invalid hand reorder");
+        this.status = 400;
+        this.params = params;
+    }
+}
+class InvalidBusStopIndex extends CommonError {
+    constructor(params) {
+        super('InvalidBusStopIndex', "Invalid bus stop index");
+        this.status = 400;
+        this.params = params;
+    }
+}
 module.exports = {
     GameDoesNotExist,
     UpdateGameFailed,
@@ -92,5 +163,14 @@ module.exports = {
     PlayerNotInGame,
     FailedToRemovePlayer,
     UserAlreadyInGame,
-    GameIsClosed
+    GameIsClosed,
+    UserNotInGame,
+    FailedToUpdateGame,
+    InvalidCardInBusStop,
+    DestinationDoesNotExist,
+    InvalidCardInGameBoard,
+    CardDoesNotExist,
+    ActionIsNotDefined,
+    InvalidHandReorder,
+    InvalidBusStopIndex
 };

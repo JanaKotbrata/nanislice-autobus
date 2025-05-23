@@ -18,7 +18,7 @@ class CreateGame extends PostResponseHandler {
     }
 
     async create(req) {
-        //  const validData = validateData(req.body, schema);
+        //const validData = validateData(req.body, schema);
         //const {userId} = validData;
         const userId = req.user.id;
         let isDuplicateKey = false;
@@ -44,6 +44,9 @@ class CreateGame extends PostResponseHandler {
                 code: gameCode,
                 state: "initial",
                 playerList: [{userId:user.id, picture:user.picture, name: user.name, creator: true}],
+                gameBoard:[],
+                completedCardList: [],
+
             };
             try {
                 const game = await games.createGame(newGame);

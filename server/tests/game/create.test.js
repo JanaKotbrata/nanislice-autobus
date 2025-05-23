@@ -6,6 +6,7 @@ const CreateGame = require('../../src/routes/game/create');
 const Routes = require("../../../shared/constants/routes.json");
 const TestUserMiddleware = require("../services/test-user-middleware");
 const ErrorHandler = require("../../src/middlewares/error-handler");
+const {userMock, generateRandomId} = require("../helpers/default-mocks");
 let gamesCollection;
 let usersCollection;
 
@@ -31,16 +32,12 @@ describe('POST /game/create', () => {
     });
 
     it('should create a game', async () => {
-        const mockUser = {name:"name", googleId:"1243423", email:"test@test.com" };
-
-        const user = await usersCollection.insertOne(mockUser);
-        const id = user.insertedId.toString();
-
-        testUserId = id;
+        const user = await usersCollection.insertOne(userMock());
+        testUserId = user.insertedId.toString();
 
         const response = await request(app)
             .post(Routes.Game.CREATE)
-            .send({ userId: id });
+            .send({userId: testUserId});
 
         expect(response.status).toBe(200);
         expect(response.body.success).toBe(true);
@@ -49,10 +46,10 @@ describe('POST /game/create', () => {
     });
 
     it('should return an error if user does not exist', async () => {
-        testUserId = "123456789112345678911234";
+        testUserId = generateRandomId();
         const response = await request(app)
             .post(Routes.Game.CREATE)
-            .send({ userId: "12345678910123456789101234" });
+            .send({userId: testUserId});
 
         expect(response.status).toBe(404);
         expect(response.body.message).toBe("Requested user does not exist");

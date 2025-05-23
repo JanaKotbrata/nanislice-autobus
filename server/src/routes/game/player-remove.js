@@ -1,12 +1,10 @@
 const GamesRepository = require("../../models/games-repository");
-const UsersRepository = require("../../models/users-repository");
 const validateData = require("../../services/validation-service");
-const {playerRemove: schema} = require("../../data-validations/game/validation-schemas"); //TODO game vs game - udělat revizi všude ale :D
+const {playerRemove: schema} = require("../../data-validations/game/validation-schemas");
 const {PostResponseHandler} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
 const games = new GamesRepository();
-const users = new UsersRepository();
 
 class RemoveGamePlayer extends PostResponseHandler {
     constructor(expressApp) {

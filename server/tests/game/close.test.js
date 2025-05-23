@@ -4,7 +4,7 @@ require("../services/setup-db");
 const connectionDb = require("../../src/models/connection-db");
 const CloseGame = require('../../src/routes/game/close');
 const Routes = require("../../../shared/constants/routes.json");
-const {generateGameCode} = require("../../src/utils/helpers");
+const {activeGame} = require("../helpers/default-mocks");
 const ErrorHandler = require("../../src/middlewares/error-handler");
 let gamesCollection;
 
@@ -26,25 +26,23 @@ describe('POST /game/close', () => {
     });
 
     it('should close a game by CODE', async () => {
-        const mockGame = { code: generateGameCode(), state:"active" };
-        await gamesCollection.insertOne(mockGame);
+        const mockGame = activeGame();
+            await gamesCollection.insertOne(mockGame);
 
         const response = await request(app)
             .post(Routes.Game.CLOSE)
-            .send({ gameCode: mockGame.code })
+            .send({gameCode: mockGame.code})
 
         expect(response.status).toBe(200);
         expect(response.body.success).toBe(true);
         expect(response.body.state).toBe("closed");
-        expect(response.body.code).toBe(mockGame.code+"-#closed#");
+        expect(response.body.code).toBe(mockGame.code + "-#closed#");
 
     });
     test('CODE must be string with length 6', async () => {
-        const mockGame = { code: 1,  state:"active" };
-
         const response = await request(app)
             .post(Routes.Game.CLOSE)
-            .send({ gameCode: mockGame.code })
+            .send({gameCode: 1})
 
         expect(response.status).toBe(400);
         expect(response.body.name).toBe("InvalidDataError");

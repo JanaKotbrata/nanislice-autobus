@@ -5,6 +5,7 @@ const connectionDb = require("../../src/models/connection-db");
 const GamePlayerRemove = require('../../src/routes/game/player-remove');
 const Routes = require("../../../shared/constants/routes");
 const ErrorHandler = require("../../src/middlewares/error-handler");
+const {userMock, initialGame, generateRandomId, basicUser} = require("../helpers/default-mocks");
 let gamesCollection;
 let usersCollection;
 
@@ -13,7 +14,7 @@ describe('POST /game/player/remove', () => {
     beforeAll(async () => {
         const db = await connectionDb();
         gamesCollection = db.collection('games');
-        usersCollection = db.collection('user');
+        usersCollection = db.collection('users');
 
         app = express();
         app.use(express.json());
@@ -25,38 +26,37 @@ describe('POST /game/player/remove', () => {
     });
 
     it('should be able to remove a game', async () => {
-       const mockUser = {name:"name",googleId:"test",email:"test@gmail.com"};
-         const user = await usersCollection.insertOne(mockUser);
-            const id = user.insertedId.toString();
-           const mockGame = {code:"123456", state:"initial", playerList:[{userId:"67e866929df5a69d7d902978", creator:true},{userId:id, creator:false}] };
-            const game = await gamesCollection.insertOne(mockGame);
-            const response = await request(app)
-                .post(Routes.Game.PLAYER_REMOVE)
-                .send({ userId: id, gameCode: mockGame.code });
+        let mockUser = userMock();
+        delete mockUser.userId;
+        const result = await usersCollection.insertOne(mockUser);
+        const user = await usersCollection.findOne({_id: result.insertedId});
+        const mockGame = initialGame({ user:basicUser({...user, userId: user._id.toString()})});
+        await gamesCollection.insertOne(mockGame);
+        const response = await request(app)
+            .post(Routes.Game.PLAYER_REMOVE)
+            .send({userId: user._id.toString(), gameCode: mockGame.code});
 
-            expect(response.status).toBe(200);
-            expect(response.body.playerList).toBeDefined();
-            expect(response.body.playerList.length).toBe(1);
+        expect(response.status).toBe(200);
+        expect(response.body.playerList).toBeDefined();
+        expect(response.body.playerList.length).toBe(1);
 
     });
     test('should return an error if user does not exist', async () => {
-        const mockGame = {code:"123456", state:"initial", playerList:[] };
-        const game = await gamesCollection.insertOne(mockGame);
-        const gameId = game.insertedId.toString();
+        const mockGame = initialGame();
+        await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.PLAYER_REMOVE)
-            .send({ userId: "123456789112345678911234", gameCode: mockGame.code });
+            .send({userId: generateRandomId(), gameCode: mockGame.code});
 
         expect(response.status).toBe(400);
         expect(response.body.message).toBe("Player is not in game");
     });
     test('should return an error if game does not exist', async () => {
-        const mockUser = {name:"name",googleId:"test",email:"test@gmail.com"};
-        const user = await usersCollection.insertOne(mockUser);
+        const user = await usersCollection.insertOne(userMock());
         const id = user.insertedId.toString();
         const response = await request(app)
             .post(Routes.Game.PLAYER_REMOVE)
-            .send({ userId: id, gameCode: "nonexi" });
+            .send({userId: id, gameCode: "nonexi"});
 
         expect(response.status).toBe(404);
         expect(response.body.message).toBe("Requested game does not exist");

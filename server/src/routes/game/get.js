@@ -4,6 +4,7 @@ const {get: schema} = require("../../data-validations/game/validation-schemas");
 const {GetResponseHandler} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
+const {transformCurrentPlayerData} = require("../../services/game-service");
 const games = new GamesRepository();
 
 class GetGame extends GetResponseHandler {
@@ -24,18 +25,12 @@ class GetGame extends GetResponseHandler {
 
         if (!game) {
           throw new GameErrors.GameDoesNotExist(validData);
-            // return new GameErrors.GameDoesNotExist(validData); //Použití jako warning - ale je lepší udělat novou třídu pro Warning
+            // TODO return new GameErrors.GameDoesNotExist(validData); //Použití jako warning - ale je lepší udělat novou třídu pro Warning
         }
 
         //important is only the current players data - so only other players bus stop and 1 card from autobus
-        for(let player of game.playerList){
-            if(player.userId === req.user.id){
-                player.myself = true;
-            }else{
-                delete player.hand;
-                player.bus = [player.bus[0]];//TODO vrátit počet karet v autobusu aby ostatní věděli jak na tom jsou - vrátim celé pole s null a první "poslední" kartou
-            }
-        }
+        transformCurrentPlayerData(game,req.user.id);
+
         return {...game, success: true};
     }
 }

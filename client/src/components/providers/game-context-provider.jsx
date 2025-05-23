@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import GameContext from "../../context/game";
 import card from "../../routes/game/card.jsx";
+import Routes from "../../../../shared/constants/routes.json";
+import GameActions from "../../../../shared/constants/game-actions.json";
 
 const maxHandSize = 5;
 
 function GameContextProvider({ children, game }) {
   const [gamePlayers, setPlayers] = useState([]);
+  const [currentPlayer, setCurrentPlayer] = useState(null);
   const [gameDeck, setGameDeck] = useState([]);
   const [gameBoard, setGameBoard] = useState([]);
   const [errorMessage, setErrorMessage] = React.useState(null);
@@ -15,10 +19,24 @@ function GameContextProvider({ children, game }) {
     if (!game) return;
     setPlayers(game.playerList);
     setGameDeck(game.deck);
+    setCurrentPlayer(game.currentPlayer);
   }, [game]);
 
   function getMyself(currentPlayers) {
     return currentPlayers.find((player) => player.myself);
+  }
+
+  async function updateGameServerState(actionData) {
+    const newGameState = await axios.post(
+      Routes.Game.ACTION_PROCESS,
+      actionData,
+    );
+    // TODO poresit chybu z volani
+    const game = newGameState.data;
+
+    setPlayers(game.playerList);
+    setGameDeck(game.deck);
+    setCurrentPlayer(game.currentPlayer);
   }
 
   function alterMyself(currentPlayers, changes) {
@@ -60,18 +78,6 @@ function GameContextProvider({ children, game }) {
     );
   }
 
-  function shuffleDeck(deck) {
-    let shuffledDeck = [...deck];
-    for (let i = deck.length - 1; i > 0; i--) {
-      const randomIndex = Math.floor(Math.random() * (i + 1));
-
-      const temp = shuffledDeck[i];
-      shuffledDeck[i] = shuffledDeck[randomIndex];
-      shuffledDeck[randomIndex] = temp;
-    }
-    return shuffledDeck;
-  }
-
   function canPlaceOnGameBoard(card, gameBoard, targetIndex) {
     if (["Jr", "A"].includes(card.rank)) {
       return true;
@@ -103,10 +109,11 @@ function GameContextProvider({ children, game }) {
       showErrorAlert(`Nelze odložit kartu s rankem: ${card.rank}`);
       return false;
     }
-
+    const isSameCard = busStop[targetIndex]?.rank === card.rank;
     if (
       busStop[targetIndex] &&
-      Object.keys(busStop[targetIndex]).length !== 0
+      Object.keys(busStop[targetIndex]).length !== 0 &&
+      !isSameCard
     ) {
       showErrorAlert(
         `Ti jebe? Tady je plno! Sem nemůžeš dát kartu s hodnotou: ${card.rank}. Hoď sem stejnou, co tu leží, najdi volné místo, anebo si nastup!`,
@@ -124,7 +131,7 @@ function GameContextProvider({ children, game }) {
   }
 
   function showErrorAlert(message) {
-    //Udělat provider pro error(alert)? a tam dávat metody k němu? a nějak to jakoby zavalit
+    //TODO Udělat provider pro error(alert)? a tam dávat metody k němu? a nějak to jakoby zavalit
     setErrorMessage(message);
     setShowAlert(true);
   }
@@ -175,6 +182,13 @@ function GameContextProvider({ children, game }) {
               card,
               targetIndex,
             );
+
+            updateGameServerState({
+              action: GameActions.MOVE_CARD_TO_BUS_STOP,
+              targetIndex,
+              card,
+              gameCode: game.code,
+            });
 
             return alterMyself(currentPlayers, {
               hand: newHand,
@@ -258,6 +272,7 @@ function GameContextProvider({ children, game }) {
         },
         deck: gameDeck,
         gameBoard,
+        currentPlayer,
         errorMessage,
         setErrorMessage,
         showAlert,

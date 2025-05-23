@@ -55,11 +55,9 @@ describe('GET /game/get', () => {
 
     });
     test('CODE must be string with length 6', async () => {
-        const mockGame = {code: 1};
-
         const response = await request(app)
             .get(Routes.Game.GET)
-            .query({code: mockGame.code})
+            .query({code: 1})
 
         expect(response.status).toBe(400);
         expect(response.body.name).toBe("InvalidDataError");
@@ -68,11 +66,9 @@ describe('GET /game/get', () => {
     });
 
     test('ID must be id', async () => {
-        const mockGame = {id: 1};
-
-        const response = await request(app)
+          const response = await request(app)
             .get(Routes.Game.GET)
-            .query({id: mockGame.id})
+            .query({id: 1})
 
 
         expect(response.status).toBe(400);

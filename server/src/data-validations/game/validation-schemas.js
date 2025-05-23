@@ -25,5 +25,17 @@ const gDelete = Joi.object().keys({
 const playerAdd = Joi.object().keys({gameId: id, gameCode: code, userId: id}).or("gameId", "gameCode");
 const playerRemove = Joi.object().keys({gameId: id, gameCode: code, userId: id}).or("gameId", "gameCode");
 const startGame = Joi.object().keys({gameId: id, gameCode: code}).or("gameId", "gameCode");
+const processAction = Joi.object().keys({
+    gameId: id,
+    gameCode: code,
+    action: Joi.string().required(),
+    hand: Joi.array().optional(),
+    targetIndex: Joi.number().integer().min(0).optional(),
+    card: Joi.object().keys({
+        i: Joi.number().integer().min(0).required(),
+        rank: Joi.string().required(),
+        suit: Joi.string().required()
+    }).optional()
+}).or("gameId", "gameCode");
 
-module.exports = {get, list, create, close, gDelete, playerAdd, playerRemove, startGame};
+module.exports = {get, list, create, close, gDelete, playerAdd, playerRemove, startGame, processAction};

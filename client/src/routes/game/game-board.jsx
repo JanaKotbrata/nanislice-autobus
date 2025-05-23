@@ -74,7 +74,6 @@ function GameBoard({ player }) {
                 />
               );
             }
-            // todo chyba někde
             return <Card key={card.i} card={card} index={index} />;
           })}
         </div>

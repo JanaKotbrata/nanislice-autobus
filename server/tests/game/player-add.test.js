@@ -5,6 +5,7 @@ const connectionDb = require("../../src/models/connection-db");
 const GamePlayerAdd = require('../../src/routes/game/player-add');
 const Routes = require("../../../shared/constants/routes.json");
 const ErrorHandler = require("../../src/middlewares/error-handler");
+const {initialGame, generateRandomCode, generateRandomId, userMock} = require("../helpers/default-mocks");
 let gamesCollection;
 let usersCollection;
 
@@ -24,11 +25,9 @@ describe('POST /game/player-add', () => {
         jest.clearAllMocks();
     });
     it("should add a player to a game", async () => {
-        const mockUser = {name:"name", googleId:"1243423", email:"test@test.com" };
-
-        const user = await usersCollection.insertOne(mockUser);
+        const user = await usersCollection.insertOne(userMock());
         const id = user.insertedId.toString();
-        const mockGame = {code:"123456", state:"initial", playerList:[] };
+        const mockGame = initialGame();
         await gamesCollection.insertOne(mockGame);
 
         const response = await request(app)
@@ -37,21 +36,20 @@ describe('POST /game/player-add', () => {
 
         expect(response.status).toBe(200);
         expect(response.body.playerList).toBeDefined();
-        expect(response.body.playerList[0].userId).toBe(id);
+        expect(response.body.playerList[1].userId).toBe(id);
     });
     test("should return an error if user does not exist", async () => {
-        const mockGame = {code:"123456", state:"initial", playerList:[] };
-        const game = await gamesCollection.insertOne(mockGame);
+        const mockGame = initialGame();
+        await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.PLAYER_ADD)
-            .send({ userId: "123456789112345678911234", gameCode: mockGame.code });
+            .send({ userId: generateRandomId(), gameCode: mockGame.code });
 
         expect(response.status).toBe(404);
         expect(response.body.message).toBe("Requested user does not exist");
     });
     test("should return an error if game does not exist", async () => {
-        const mockUser = {name:"name", googleId:"1243423", email:"test@test.com" };
-        const user = await usersCollection.insertOne(mockUser);
+        const user = await usersCollection.insertOne(userMock());
         const id = user.insertedId.toString();
         const response = await request(app).post(Routes.Game.PLAYER_ADD).send({ userId: id, gameCode: "nonexi" });
 
