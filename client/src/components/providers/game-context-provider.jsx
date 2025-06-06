@@ -32,7 +32,8 @@ function GameContextProvider({ children, game }) {
       actionData,
     );
     // TODO poresit chybu z volani
-    const game = newGameState.data;
+    const game = newGameState.data.newGame;
+    console.log("Game state updated from server:", game);
 
     setPlayers(game.playerList);
     setGameDeck(game.deck);
@@ -198,6 +199,7 @@ function GameContextProvider({ children, game }) {
         },
 
         moveCardToGameBoard: (card, destination) => {
+          // TODO prejmenovat na startNewPack
           setPlayers((currentPlayers) => {
             const myself = getMyself(currentPlayers);
             // Zkontroluje zda je karta v ruce nebo zastávce
@@ -220,12 +222,15 @@ function GameContextProvider({ children, game }) {
 
             placeCardOnGameBoard(gameBoard, card);
 
+            // TODO volat akci na server
+
             return alterMyself(currentPlayers, {
               hand: newHand,
               busStop: newBusStop,
             });
           });
         },
+        // TODO vyrobit addToPack
         reorderHand: (oldIndex, newIndex) => {
           setPlayers((currentPlayers) => {
             const myself = getMyself(currentPlayers);

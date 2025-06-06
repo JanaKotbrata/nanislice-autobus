@@ -2,9 +2,14 @@ import React, { useRef } from "react";
 import { useDrop } from "react-dnd";
 import Card from "./card.jsx";
 
-function Slot({ card, onDropCard, index }) {
+function Slot({
+  card,
+  onDropCard,
+  index,
+  isOverClass = "bg-gray-300",
+  isDropClass = "bg-gray-800",
+}) {
   const slotRef = useRef(null);
-
   const [{ isOver }, drop] = useDrop({
     accept: "CARD",
     drop: (item) => {
@@ -20,8 +25,8 @@ function Slot({ card, onDropCard, index }) {
   return (
     <div
       ref={slotRef}
-      className={`w-8 h-12 sm:w-10 sm:h-16 md:w-12 md:h-20 border rounded flex items-center justify-center text-xs sm:text-sm ${
-        isOver ? "bg-gray-300" : "bg-gray-800"
+      className={`w-8 h-12 sm:w-10 sm:h-16 md:w-12 md:h-20 border rounded flex items-center justify-center text-xs sm:text-sm border-dashed border-gray-500 ${
+        isOver ? isOverClass : isDropClass
       }`}
     >
       {card?.rank ? <Card card={card} /> : ""}

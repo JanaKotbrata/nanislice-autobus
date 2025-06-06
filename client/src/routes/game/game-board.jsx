@@ -5,6 +5,7 @@ import Slot from "./slot.jsx";
 import GameContext from "../../context/game.js";
 import DangerAlert from "../../components/alerts/danger-alert.jsx";
 import { useDrop } from "react-dnd";
+import GameBoardSlot from "./game-board-slot.jsx";
 
 function GameBoard({ player }) {
   const gameContext = useContext(GameContext);
@@ -14,11 +15,11 @@ function GameBoard({ player }) {
   const handleCardDrag = (card) => {
     gameContext.moveCardToGameBoard(card, "gameBoard");
   };
-
+  // TODO smazat useDrop, resi to Slot, takze ted je to duplicitni
   const [{ isOver }, drop] = useDrop({
     accept: "CARD",
     drop: (item) => {
-      handleCardDrag(item.card);
+      handleCardDrag(item.card); // TODO provolat funkci gameContext.startNewPack - pokud chces pretahovat na bilou plochu
     },
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
@@ -28,7 +29,7 @@ function GameBoard({ player }) {
   drop(boardRef);
 
   function handleDropCard(card, targetIndex) {
-    const oldIndex = player.hand.findIndex((c) => c.i === card.i);
+    console.log("Handling drop card:", card, "at index:", targetIndex);
 
     gameContext.reorderHand(oldIndex, targetIndex);
   }
@@ -56,10 +57,14 @@ function GameBoard({ player }) {
             />
           )}
           {gameContext.gameBoard.map((pack, index) => (
-            <div key={index} className="game-slot">
-              <Card card={pack[pack.length - 1]} />
-            </div>
+            <Slot
+              index={index}
+              card={pack[pack.length - 1]}
+              onDropCard={handleDropCard} // TODO volat handleCardDrag, nebo novou funkci, ktera ve vysledku provola gameContext.addToPack
+            />
           ))}
+          <GameBoardSlot onDropCard={handleDropCard} />{" "}
+          {/* TODO volat handleCardDrag, nebo novou funkci, ktera ve vysledku provola gameContext.startNewPack */}
         </div>
       </div>
 
