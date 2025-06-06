@@ -23,7 +23,7 @@ class CloseGame extends PostResponseHandler {
 
         //updates state of the game if exists
         try {
-            const updatedGame = await games.updateGame(game.id, {code: `${game.code}-#closed#`, state: "closed"});
+            const updatedGame = await games.updateGame(game.id, {code: `${game.code}-#closed#`, state: "closed", sys:game.sys});
             return {...updatedGame, success: true};
         } catch (e) {
             console.error("Failed to set state of the game:", e);

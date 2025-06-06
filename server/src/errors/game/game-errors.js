@@ -15,6 +15,13 @@ class GameIsClosed extends CommonError {
         this.params = params;
     }
 }
+class GameIsNotActive extends CommonError {
+    constructor(params) {
+        super('GameIsNotActive', "Game has to be in active state.");
+        this.status = 400;
+        this.params = params;
+    }
+}
 
 class UpdateGameFailed extends CommonError {
     constructor(params) {
@@ -152,8 +159,37 @@ class InvalidBusStopIndex extends CommonError {
         this.params = params;
     }
 }
+class InvalidHandLength extends CommonError {
+    constructor(params) {
+        super('InvalidHandLength', "Invalid hand length");
+        this.status = 400;
+        this.params = params;
+    }
+}
+class UserIsNotCurrentPlayer extends CommonError {
+    constructor(params) {
+        super('UserIsNotCurrentPlayer', "User is not current player");
+        this.status = 400;
+        this.params = params;
+    }
+}
+class NotPossibleToDraw extends CommonError {
+    constructor(params) {
+        super('NotPossibleToDraw', "Not possible to draw card");
+        this.status = 400;
+        this.params = params;
+    }
+}
+class PlayerMustDrawCardFirst extends CommonError {
+    constructor(params) {
+        super('PlayerMustDrawCardFirst', "Player must draw a card first");
+        this.status = 400;
+        this.params = params;
+    }
+}
 module.exports = {
     GameDoesNotExist,
+    GameIsNotActive,
     UpdateGameFailed,
     UserDoesNotExist,
     FailedToCreateGame,
@@ -172,5 +208,9 @@ module.exports = {
     CardDoesNotExist,
     ActionIsNotDefined,
     InvalidHandReorder,
-    InvalidBusStopIndex
+    InvalidBusStopIndex,
+    InvalidHandLength,
+    UserIsNotCurrentPlayer,
+    NotPossibleToDraw,
+    PlayerMustDrawCardFirst
 };

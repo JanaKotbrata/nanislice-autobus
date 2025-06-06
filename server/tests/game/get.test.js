@@ -6,17 +6,22 @@ const GetGame = require('../../src/routes/game/get');
 const Routes = require("../../../shared/constants/routes.json");
 const {generateGameCode} = require("../../src/utils/helpers");
 const ErrorHandler = require("../../src/middlewares/error-handler");
+const {initialGame, userMock, basicUser} = require("../helpers/default-mocks");
+const TestUserMiddleware = require("../services/test-user-middleware");
 let gamesCollection;
-
+let usersCollection;
+let testUserId;
 describe('GET /game/get', () => {
     let app;
 
     beforeAll(async () => {
         const db = await connectionDb();
         gamesCollection = db.collection('games');
+        usersCollection = db.collection('users');
 
         app = express();
         app.use(express.json());
+        app.use(TestUserMiddleware(() => testUserId));
         new GetGame(app);
         app.use(ErrorHandler);
     });
@@ -26,15 +31,15 @@ describe('GET /game/get', () => {
     });
 
     it('should return a game by ID', async () => {
-        const mockGame = {code: generateGameCode(), playerList:[]};
-
+        const user = await usersCollection.insertOne(userMock());
+        testUserId = user.insertedId.toString();
+        const mockGame = initialGame({user: basicUser({...user, userId: testUserId})});
         const game = await gamesCollection.insertOne(mockGame);
         const id = game.insertedId.toString();
 
         const response = await request(app)
             .get(Routes.Game.GET)
             .query({id})
-            .expect(200);
 
         expect(response.body.success).toBe(true);
         expect(response.body.id).toBe(id);

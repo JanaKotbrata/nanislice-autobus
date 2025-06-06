@@ -2,7 +2,7 @@ const {ObjectId} = require('mongodb');
 const Model = require('./model');
 const collectionName = 'users';
 
-class UsersRepository extends Model {
+class UsersRepository extends Model { //TODO add revision
     _getCollectionName() {
         return collectionName;
     }
@@ -44,6 +44,14 @@ class UsersRepository extends Model {
         return this.list(pageInfo, {});
     }
 
+    async addUserXP(userId, amount){
+        const result = await this.collection.findOneAndUpdate(
+            {_id: new ObjectId(userId)},
+            {$inc: {xp: amount}},
+            {returnDocument: 'after'}
+        );
+        return result.xp;
+    }
     async updateUser(id, updateData) {
         return this.update(id, updateData);
     }

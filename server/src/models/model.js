@@ -62,8 +62,10 @@ class Model {
 
     async update(id, updateData) {
         updateData = {...updateData, ...this.getSys(true)};
+        const revision = updateData.sys.rev;
+        delete updateData.sys;
         await this.collection.updateOne(
-            {_id: new ObjectId(id)},
+            {_id: new ObjectId(id), "sys.rev": revision },
             {$set: updateData, $inc: { "sys.rev": 1 }},
         );
         const result = await this.collection.findOne({_id: new ObjectId(id)});

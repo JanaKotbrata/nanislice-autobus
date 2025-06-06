@@ -36,7 +36,7 @@ class RemoveGamePlayer extends PostResponseHandler {
             const newPlayers = this.#removePlayer(game, userId);
             if (newPlayers) {
                 try {
-                    const updatedGame = await games.updateGame(game.id, newPlayers);
+                    const updatedGame = await games.updateGame(game.id, {...newPlayers, sys: game.sys});
                     return {...updatedGame, success: true};
 
                 } catch (error) {

@@ -1,4 +1,4 @@
-const rankCardOrder = [
+const RANK_CARD_ORDER = [
     "A",
     "2",
     "3",
@@ -16,8 +16,14 @@ const rankCardOrder = [
 const suits = ["♥", "♦", "♠", "♣"];
 
 const joker = "Jr"
+const States = {
+    INITIAL: "initial",
+    ACTIVE: "active",
+    CLOSED: "closed",
+}
 module.exports = {
-    rankCardOrder,
+    RANK_CARD_ORDER,
     joker,
-    suits
+    suits,
+    States
 }

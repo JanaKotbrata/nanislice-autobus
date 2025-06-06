@@ -47,16 +47,18 @@ class GamesRepository extends Model {
     }
 
     async findNotClosedGamesByUserId(userId) {
-        return await this.collection.find({ //TODO
+        const result = await this.collection.findOne({
             'playerList': {
                 $elemMatch: {
                     userId: userId
                 }
             },
-            'status': {
-                $nin: ['closed', 'finished']
+            'state': {
+                $nin: ['closed']
             }
-        }).toArray();
+        })
+
+        return this.transformId(result);
     }
 
 }

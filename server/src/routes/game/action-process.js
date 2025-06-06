@@ -7,14 +7,11 @@ const Routes = require("../../../../shared/constants/routes.json");
 const GameActions = require("../../../../shared/constants/game-actions.json");
 const GameErrors = require("../../errors/game/game-errors");
 const GameBoardValidation = require("../../services/gameboard-validation");
-const {rankCardOrder} = require("../../utils/game-constants");
+const {RANK_CARD_ORDER, joker, States} = require("../../utils/game-constants");
 const {shuffleDeck, getCardIndex} = require("../../services/card-service");
 const {transformCurrentPlayerData} = require("../../services/game-service");
-const InvalidDataError = require("../../errors/invalid-data");
 const games = new GamesRepository();
 const users = new UsersRepository();
-
-const maxAttempts = 5;
 
 class ProcessAction extends PostResponseHandler {
     constructor(expressApp) {
@@ -41,12 +38,22 @@ class ProcessAction extends PostResponseHandler {
         if (!game) {
             throw new GameErrors.GameDoesNotExist(gameCode || gameId);
         }
-        const myself = game.playerList.find(player => player.userId === userId);
-        if (!myself) {
-            throw new GameErrors.UserNotInGame({userId, gameId: game.id});
+        if (game.state !== States.ACTIVE) {
+            throw new GameErrors.GameIsNotActive(gameId);
         }
 
-        let updatedGame = this.#prepareGameData(game, userId, validData);
+        const myselfIndex = game.playerList.findIndex((c) => c.userId === userId);
+        if (myselfIndex === -1) {
+            throw new GameErrors.UserNotInGame({userId, gameId: game.id});
+        }
+        //Can play only current player
+        if (game.currentPlayer !== myselfIndex) {
+            if (validData.action !== GameActions.REORDER_HAND) {
+                throw new GameErrors.UserIsNotCurrentPlayer({myselfIndex, currentPlayer: game.currentPlayer});
+            }
+        }
+
+        let [updatedGame, xp] = this.#prepareGameData(game, userId, validData);
 
         //Checks if the deck of the game is lower than 10 -> gets completedCardList shuffle and deck = [...completedCardList, ...deck]
         updatedGame = this.#checkAndUpdateDeck(updatedGame);
@@ -54,7 +61,12 @@ class ProcessAction extends PostResponseHandler {
         try {
             let newGame = await games.updateGame(game.id, updatedGame);
             transformCurrentPlayerData(newGame, userId);
-            return {newGame, success: true};
+            if (xp) {
+                xp = await users.addUserXP(userId, 100);
+                return {xp, newGame, success: true};
+            } else {
+                return {newGame, success: true};
+            }
         } catch (error) {
             throw new GameErrors.FailedToUpdateGame(error);
         }
@@ -73,78 +85,91 @@ class ProcessAction extends PostResponseHandler {
     #prepareGameData(game, userId, params) {
         const newGame = structuredClone(game);
         const {action, card, targetIndex, hand} = params;
+        let xp;
         const myself = newGame.playerList.find(player => player.userId === userId);
+        if (myself.isCardDrawed || action === GameActions.REORDER_HAND || action === GameActions.DRAW_CARD) {
+            const actionHandlers = {
+                [GameActions.MOVE_CARD_TO_BUS]: () => {
+                    this.#removeCardFrom(myself.hand, card);
+                    this.#addCardTo(myself.bus, card);
+                    myself.isCardDrawed = false;
+                    //next round
+                    newGame.currentPlayer = (newGame.currentPlayer + 1) % newGame.playerList.length;
+                },
 
-        const actionHandlers = {
-            [GameActions.MOVE_CARD_TO_BUS]: () => {
-                this.#removeCardFrom(myself.hand, card);
-                this.#addCardTo(myself.bus, card);
-                //next round
-                newGame.currentPlayer = (newGame.currentPlayer + 1) % newGame.playerList.length;
-            },
+                [GameActions.MOVE_CARD_TO_BUS_STOP]: () => {
+                    this.#validationOfBusStop(myself, targetIndex, card);
+                    this.#removeCardFrom(myself.hand, card);
+                    this.#addCardTo(myself.busStop[targetIndex], card);
+                    myself.isCardDrawed = false;
+                    // next round
+                    newGame.currentPlayer = (newGame.currentPlayer + 1) % newGame.playerList.length;
+                },
 
-            [GameActions.MOVE_CARD_TO_BUS_STOP]: () => {
-                this.#validationOfBusStop(myself, targetIndex, card);
-                this.#removeCardFrom(myself.hand, card);
-                this.#addCardTo(myself.busStop[targetIndex], card);
-                // next round
-                newGame.currentPlayer = (newGame.currentPlayer + 1) % newGame.playerList.length;
-            },
+                [GameActions.START_NEW_PACK]: () => {
+                    GameBoardValidation.validationOfNewDestination(card);
+                    newGame.gameBoard.push([card]);
+                    this.#removeCardFrom(myself.hand, card);
+                    this.#setPlayerToDraw(myself);
+                }, [GameActions.START_NEW_PACK_FROM_BUS]: () => {
+                    GameBoardValidation.validationOfNewDestination(card);
+                    newGame.gameBoard.push([card]);
+                    this.#removeCardFrom(myself.bus, card);
+                }, [GameActions.MOVE_CARD_TO_BOARD]: () => {
+                    GameBoardValidation.validationOfGameBoard(newGame, targetIndex, card);
+                    this.#removeCardFrom(myself.hand, card);
+                    this.#setPlayerToDraw(myself);
+                    this.#addCardTo(newGame.gameBoard[targetIndex], card);
 
-            [GameActions.START_NEW_PACK]: () => {
-                GameBoardValidation.validationOfNewDestination(card);
-                newGame.gameBoard.push([card]);
-                this.#removeCardFrom(myself.hand, card);
-            },
-            [GameActions.START_NEW_PACK_FROM_BUS]: () => {
-                GameBoardValidation.validationOfNewDestination(card);
-                newGame.gameBoard.push([card]);
-                this.#removeCardFrom(myself.bus, card);
-            },
-            [GameActions.MOVE_CARD_TO_BOARD]: () => {
-                GameBoardValidation.validationOfGameBoard(newGame, targetIndex, card);
-                this.#removeCardFrom(myself.hand, card);
-                this.#addCardTo(newGame.gameBoard[targetIndex], card);
+                    //if the destination is full, move cards to completedCardList
+                    if (newGame.gameBoard[targetIndex].length === RANK_CARD_ORDER.length) {
+                        newGame.completedCardList = newGame.completedCardList || [];
+                        newGame.completedCardList = [...newGame.completedCardList, ...newGame.gameBoard[params.targetIndex]];
+                        newGame.gameBoard.splice(targetIndex, 1);
+                    }
+                },
 
-                //if the destination is full, move cards to completedCardList
-                if (game.gameBoard[targetIndex].length === rankCardOrder.length) {
-                    game.completedCardList = [...game.completedCardList, ...game.gameBoard[params.targetIndex]];
-                    game.gameBoard.splice(targetIndex, 1);
-                }
-            },
+                [GameActions.MOVE_CARD_TO_BOARD_FROM_BUS_STOP]: () => {
+                    GameBoardValidation.validationOfGameBoard(newGame, targetIndex, card);
+                    this.#removeCardFrom(myself.busStop[targetIndex], card);
+                    this.#addCardTo(newGame.gameBoard[targetIndex], card);
+                },
 
-            [GameActions.MOVE_CARD_TO_BOARD_FROM_BUS_STOP]: () => {
-                GameBoardValidation.validationOfGameBoard(newGame, targetIndex, card);
-                this.#removeCardFrom(myself.busStop, card);
-                this.#addCardTo(newGame.gameBoard[targetIndex], card);
-            },
+                [GameActions.MOVE_CARD_TO_BOARD_FROM_BUS]: () => {
+                    GameBoardValidation.validationOfGameBoard(newGame, targetIndex, card);
+                    this.#removeCardFrom(myself.bus, card);
+                    this.#addCardTo(newGame.gameBoard[targetIndex], card);
+                    if (myself.bus.length === 0) {
+                        newGame.state = States.CLOSED;
+                        newGame.winner = myself.userId;
+                        xp = 100;
+                        //TODO možná uvažovat nad tim ,že to ostatní ještě můžou dohrát - takže vymyslet procentuální expení na základě pořadí výhry
+                    }
+                },
 
-            [GameActions.MOVE_CARD_TO_BOARD_FROM_BUS]: () => {
-                GameBoardValidation.validationOfGameBoard(newGame, targetIndex, card);
-                this.#removeCardFrom(myself.bus, card);
-                this.#addCardTo(newGame.gameBoard[targetIndex], card);
-            },
-
-            [GameActions.DRAW_CARD]: () => {
-                if (myself.hand.length < 5) {
+                [GameActions.DRAW_CARD]: () => {
+                    this.#validateForDraw(myself, newGame.playerList, newGame.currentPlayer);
                     const newCard = newGame.deck.pop();
                     this.#addCardTo(myself.hand, newCard);
-                    this.#removeCardFrom(newGame.deck, newCard);
-                }
-            },
-            [GameActions.REORDER_HAND]: () => {
-                this.#validationReorderHands(myself.hand, hand);
-                myself.hand = hand;
-            },
-        };
+                    if (myself.hand.length === 5) {
+                        myself.isCardDrawed = true;
+                    }
+                }, [GameActions.REORDER_HAND]: () => {
+                    this.#validationReorderHands(myself.hand, hand);
+                    myself.hand = hand;
+                },
+            };
 
-        if (!actionHandlers[action]) {
-            throw new GameErrors.ActionIsNotDefined({action});
+            if (!actionHandlers[action]) {
+                throw new GameErrors.ActionIsNotDefined({action});
+            }
+
+            actionHandlers[action]();
+            return [newGame, xp];
+        } else {
+            throw new GameErrors.PlayerMustDrawCardFirst({isCardDrawed: myself.isCardDrawed});
         }
 
-        actionHandlers[action]();
-
-        return newGame;
     }
 
     #checkAndUpdateDeck(game) {
@@ -168,9 +193,6 @@ class ProcessAction extends PostResponseHandler {
     }
 
     #validationReorderHands(myselfHand, newHand) {
-        if (!newHand) { //TODO přestat to validovat tady,,ale vymyslet to přímo ve validačním schematu - nebo by to mělo být na začátku podle mě no..nevim
-            throw new InvalidDataError("hand parameter is required for reordering hands");
-        }
         if (myselfHand.length === newHand.length) {
             for (let card of myselfHand) {
                 const index = newHand.findIndex(c => c.i === card.i);
@@ -183,12 +205,33 @@ class ProcessAction extends PostResponseHandler {
         }
     }
 
+    #validateForDraw(myself) {
+        if (myself.hand.length >= 5) {
+            throw new GameErrors.InvalidHandLength({hand: myself.hand});
+        }
+        if (myself?.isCardDrawed === true && myself.hand.length > 0) {
+            throw new GameErrors.NotPossibleToDraw({
+                hand: myself.hand, isCardDrawed: myself.isCardDrawed, countCard: myself.hand.length
+            });
+
+        }
+    }
+
     #validationOfBusStop(myself, busStopIndex, card) {
         if (busStopIndex > 3) {
             throw new GameErrors.InvalidBusStopIndex({busStopIndex});
         }
+        if (card.rank === joker || card.rank === RANK_CARD_ORDER[0]) {
+            throw new GameErrors.InvalidCardInBusStop({card});
+        }
         if (myself.busStop?.[busStopIndex].length > 0 && myself.busStop?.[busStopIndex]?.[0].rank !== card.rank) {
             throw new GameErrors.InvalidCardInBusStop({busStopIndex, card});
+        }
+    }
+
+    #setPlayerToDraw(myself) {
+        if (myself.hand.length === 0) {
+            myself.isCardDrawed = false;
         }
     }
 

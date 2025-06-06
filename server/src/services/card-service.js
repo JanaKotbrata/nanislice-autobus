@@ -1,4 +1,4 @@
-const {suits, rankCardOrder:ranks, joker} = require("../utils/game-constants");
+const {suits, RANK_CARD_ORDER:ranks, joker} = require("../utils/game-constants");
 // This service provides functions to create, shuffle, and deal cards in a card game.
 
 /** * Deals a specified number of cards from the deck.
@@ -16,14 +16,14 @@ function dealCards(deck, cardNumber) {
     return [newDeck, pack]
 }
 
-function dealCardPerPlayer(deck, playerList) {
+function dealCardPerPlayer(deck, playerList, handNumber = 5, busNumber = 10) {
     let cacheDeck = [...deck];
     let game = [];
     for (let player of playerList) {
         //deal hand
-        let [newDeck, hand] = dealCards(cacheDeck, 5);
+        let [newDeck, hand] = dealCards(cacheDeck, handNumber);
         //deal bus
-        let [finalDeck, bus] = dealCards(newDeck, 10);
+        let [finalDeck, bus] = dealCards(newDeck, busNumber);
         cacheDeck = finalDeck;
         game.push({...player, hand, bus, busStop: [[], [], [], []],isCardDrawed: true});
     }

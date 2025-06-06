@@ -29,11 +29,10 @@ class CreateGame extends PostResponseHandler {
             throw new GameErrors.UserDoesNotExist(user);
         }
 
-        const activeGamesWithUser = await games.findNotClosedGamesByUserId(userId); //TODO udělat api na tohle, abych mohla použít na klientovi v Router -app.jsx - volat pod session uživatele - když session vyhodnotí,že neni uživatel přihlášený, tak se musí odhlásit na klientovi
+        const activeGameWithUser = await games.findNotClosedGamesByUserId(userId); //TODO udělat api na tohle, abych mohla použít na klientovi v Router -app.jsx - volat pod session uživatele - když session vyhodnotí,že neni uživatel přihlášený, tak se musí odhlásit na klientovi
 
-        if (activeGamesWithUser.length > 0) {
-           // throw new GameErrors.UserAlreadyInGame({userId, gameId: activeGamesWithUser[0]._id.toString()} ); //TODO - id té hry, abyych na GE viděla co vrátit -na FE vyhodit alert, že už je v nějaké hře a jestli chce přesměrovat na existující hru
-        return  activeGamesWithUser[0];
+        if (activeGameWithUser) {
+            return {...activeGameWithUser, success: true};
         }
 
         do {
@@ -43,10 +42,9 @@ class CreateGame extends PostResponseHandler {
             const newGame = {
                 code: gameCode,
                 state: "initial",
-                playerList: [{userId:user.id, picture:user.picture, name: user.name, creator: true}],
-                gameBoard:[],
+                playerList: [{userId: user.id, picture: user.picture, name: user.name, creator: true}],
+                gameBoard: [],
                 completedCardList: [],
-
             };
             try {
                 const game = await games.createGame(newGame);
