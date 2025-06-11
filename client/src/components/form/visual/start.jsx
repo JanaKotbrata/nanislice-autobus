@@ -1,14 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import Routes from "./../../../../../shared/constants/routes.json";
+import { startGame } from "../../../services/game-service.jsx";
 function Start({ gameCode, playerList }) {
   const navigate = useNavigate();
 
   const handleStartClick = async () => {
     if (playerList.length > 1) {
-      const res = await axios.post(Routes.Game.START, { gameCode });
-      navigate(`/game/${res.data.code}`);
+      const res = await startGame(gameCode);
+      navigate(`/game/${res.code}`);
     } else {
       alert("Nedostatek playerů"); //FIXME
     }

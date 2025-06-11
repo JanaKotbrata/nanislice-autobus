@@ -6,8 +6,7 @@ import Player from "./game/player.jsx";
 import GameBoard from "./game/game-board.jsx";
 import GameContextProvider from "../components/providers/game-context-provider.jsx";
 import GameContext from "../context/game.js";
-import axios from "axios";
-import Routes from "../../../shared/constants/routes.json";
+import { getGame } from "../services/game-service.jsx";
 
 function Game() {
   const { code } = useParams();
@@ -20,9 +19,9 @@ function Game() {
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        const res = await getGame(code);
-        setPlayers(res.data.playerList);
-        setGame(res.data); //FIXME - dřív fungoval gameContext a teď hovno - potřebuju to zpět - protože teď se mi sice vykresluje ruka a playeři, ale zbytek ne..
+        const res = await getGame({ code });
+        setPlayers(res.playerList);
+        setGame(res);
       } catch (err) {
         console.error("Nepodařilo se načíst hráče:", err);
       }
@@ -39,21 +38,14 @@ function Game() {
   const handleMouseMove = (e) => {
     if (!dragging) return;
     const newWidth = Math.max(200, leftWidth + e.movementX);
-    setLeftWidth(newWidth); // aktualizace šířky levé sekce
+    setLeftWidth(newWidth);
   };
 
   const handleMouseUp = () => {
     setDragging(false);
-    document.body.style.cursor = "default"; // obnovení výchozího kurzoru
+    document.body.style.cursor = "default";
   };
-  const getGame = async (code) => {
-    //FIXME - mělo by fungovat toto - await axios.get(Routes.Game.GET, {
-    //           params: {
-    //             id: error.response.data.gameId,
-    //           },
-    //         });
-    return await axios.get(Routes.Game.GET + `?code=${code}`);
-  };
+
   const getPlayers = (players) => {
     let newPlayers = [...players];
     let index = newPlayers.findIndex((player) => player?.myself);

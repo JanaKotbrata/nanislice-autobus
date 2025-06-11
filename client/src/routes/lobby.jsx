@@ -5,19 +5,23 @@ import Invite from "../components/form/visual/invite.jsx";
 import Start from "../components/form/visual/start.jsx";
 import nanislice from "../assets/nanislice.svg";
 import Instructions from "../components/instructions.jsx";
+import { useParams } from "react-router-dom";
 
-function Lobby() {
+function Lobby({ user }) {
   const { state } = useLocation();
+  const { code } = useParams();
   const gameData = state?.gameData;
+  const shouldRender = gameData.playerList.find(
+    (player) => player.myself && player.creator,
+  );
+  console.log("kukurukuku", gameData);
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center p-4">
       <div className="w-full max-w-4xl aspect-square bg-gray-950/50 rounded-2xl shadow-2xl p-6">
         {/* První div obsahující informace o lobby */}
         <div className="h-12 flex justify-between items-center border-b border-cyan-400/50 mb-20">
           <div>
-            <div className="text-xl font-bold text-gray-300">
-              Lobby {gameData.code}
-            </div>
+            <div className="text-xl font-bold text-gray-300">Lobby {code}</div>
             <div className="text-sm font-base text-gray-500">
               Waiting for more players...
             </div>
@@ -43,7 +47,12 @@ function Lobby() {
               </Member>
             ))}
             <Invite />
-            <Start gameCode={gameData.code} playerList={gameData.playerList} />
+            {shouldRender && (
+              <Start
+                gameCode={gameData.code}
+                playerList={gameData.playerList}
+              />
+            )}
           </div>
           {/* Right box - How to play */}
           <Instructions />

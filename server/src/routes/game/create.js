@@ -5,8 +5,9 @@ const {create: schema} = require("../../data-validations/game/validation-schemas
 const {PostResponseHandler} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
-
 const {generateGameCode} = require("../../utils/helpers");
+const {States} = require("../../utils/game-constants");
+const {transformCurrentPlayerData} = require("../../services/game-service");
 const games = new GamesRepository();
 const users = new UsersRepository();
 
@@ -29,9 +30,10 @@ class CreateGame extends PostResponseHandler {
             throw new GameErrors.UserDoesNotExist(user);
         }
 
-        const activeGameWithUser = await games.findNotClosedGamesByUserId(userId); //TODO udělat api na tohle, abych mohla použít na klientovi v Router -app.jsx - volat pod session uživatele - když session vyhodnotí,že neni uživatel přihlášený, tak se musí odhlásit na klientovi
+        const activeGameWithUser = await games.findNotClosedGameByUserId(userId);
 
         if (activeGameWithUser) {
+           transformCurrentPlayerData(activeGameWithUser, userId);
             return {...activeGameWithUser, success: true};
         }
 
@@ -41,16 +43,17 @@ class CreateGame extends PostResponseHandler {
             // creates new game
             const newGame = {
                 code: gameCode,
-                state: "initial",
+                state: States.INITIAL,
                 playerList: [{userId: user.id, picture: user.picture, name: user.name, creator: true}],
                 gameBoard: [],
                 completedCardList: [],
             };
             try {
                 const game = await games.createGame(newGame);
+                transformCurrentPlayerData(game, userId);
                 return {...game, success: true};
 
-            } catch (error) {
+            } catch (error) { //TODO errors
                 if (error.code !== 11000) {
                     console.error("Game already exist:", error);
                 } else {

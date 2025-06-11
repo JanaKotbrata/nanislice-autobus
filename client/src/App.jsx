@@ -52,7 +52,7 @@ function App() {
             }
           />
           <Route
-            path="/lobby"
+            path="/lobby/:code"
             element={
               <ProtectedRoute>
                 <Lobby />

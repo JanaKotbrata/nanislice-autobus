@@ -3,9 +3,6 @@ import nanislice from "../assets/nanislice.svg";
 import google from "../assets/google.svg";
 import Button from "../components/form/visual/button.jsx";
 import DiscordLogin from "./welcome/discord-login.jsx";
-import { useAuth } from "../context/auth-context.jsx";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 function Welcome() {
   function handleGoogleLogin(e) {
@@ -23,7 +20,11 @@ function Welcome() {
           href="#"
           className="flex items-center mb-6 text-xl font-semibold text-gray-900 dark:text-white"
         >
-          <img className="w-8 h-8 mr-2 logo react" src={nanislice} alt="logo" />
+          <img
+            className="w-8 h-8 mr-2 logo react"
+            src={nanislice || ""}
+            alt="logo"
+          />
           nanislice-autobus
         </a>
         <div className="dark:bg-gray-800 dark:border-gray-700 rounded-lg w-full">
@@ -39,7 +40,7 @@ function Welcome() {
 
               <div className="flex items-center">
                 <Button onClick={handleGoogleLogin}>
-                  <img className="mr-2" src={google} alt="logo" />
+                  <img className="mr-2" src={google || ""} alt="logo" />
                   <span>Continue with Google</span>
                 </Button>
               </div>

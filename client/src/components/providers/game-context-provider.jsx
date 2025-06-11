@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import GameContext from "../../context/game";
-import card from "../../routes/game/card.jsx";
-import Routes from "../../../../shared/constants/routes.json";
 import GameActions from "../../../../shared/constants/game-actions.json";
-
+import { processAction } from "../../services/game-service";
 const maxHandSize = 5;
 
 function GameContextProvider({ children, game }) {
@@ -27,12 +24,9 @@ function GameContextProvider({ children, game }) {
   }
 
   async function updateGameServerState(actionData) {
-    const newGameState = await axios.post(
-      Routes.Game.ACTION_PROCESS,
-      actionData,
-    );
+    const newGameState = await processAction(actionData);
     // TODO poresit chybu z volani
-    const game = newGameState.data.newGame;
+    const game = newGameState.newGame;
     console.log("Game state updated from server:", game);
 
     setPlayers(game.playerList);
@@ -235,7 +229,7 @@ function GameContextProvider({ children, game }) {
           setPlayers((currentPlayers) => {
             const myself = getMyself(currentPlayers);
             console.log(
-              "Player hand BEFORE reorder:",
+              "🔹 Player hand BEFORE reorder:",
               JSON.stringify(myself.hand),
             );
 
@@ -246,6 +240,7 @@ function GameContextProvider({ children, game }) {
               return currentPlayers;
             }
 
+            // Ochrana před špatnými indexy
             if (
               oldIndex < 0 ||
               newIndex < 0 ||
@@ -253,7 +248,7 @@ function GameContextProvider({ children, game }) {
               newIndex >= myself.hand.length
             ) {
               console.error(
-                "reorderHand: Invalid indexes",
+                "❌ reorderHand: Invalid indexes",
                 oldIndex,
                 newIndex,
               );
@@ -268,7 +263,7 @@ function GameContextProvider({ children, game }) {
             newHand[newIndex] = movedCard;
 
             console.log(
-              "Player hand AFTER reorder:",
+              "🔹 Player hand AFTER reorder:",
               JSON.stringify(newHand),
             );
 

@@ -1,31 +1,27 @@
 import { useNavigate } from "react-router-dom";
 import React from "react";
-import axios from "axios";
-import Routes from "./../../../shared/constants/routes.json";
 import Instructions from "../components/instructions.jsx";
 import { useAuth } from "../context/auth-context.jsx";
+import { createGame, getGame } from "../services/game-service.jsx";
 
 function StartGame() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  async function createGame() {
+  async function startGame() {
     try {
-      const response = await axios.post(Routes.Game.CREATE, {});
-      navigate("/lobby", {
-        state: { gameData: response.data },
+      const response = await createGame();
+      navigate(`/lobby/${response.code}`, {
+        state: { gameData: response },
       });
     } catch (error) {
       if (error.response?.data?.name === "UserAlreadyInGame") {
-        //FIXME - mělo by fungovat toto - await axios.get(Routes.Game.GET, {
-        //           params: {
-        //             id: error.response.data.gameId,
-        //           },
-        //         });
-        const game = await axios.get(
-          Routes.Game.GET + `?id=${error.response.data?.params?.gameId}`,
-        );
-        navigate("/lobby", { state: { gameData: game?.data } });
+        const game = await getGame({
+          id: `?id=${error.response.data?.params?.gameId}`,
+        });
+        navigate(`/lobby/${game?.code}`, {
+          state: { gameData: game },
+        });
       } else {
         alert(error.message);
         console.error("Chyba při vytváření hry:", error);
@@ -48,7 +44,7 @@ function StartGame() {
           </h2>
           <button
             className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-xl shadow hover:bg-blue-700 transition"
-            onClick={() => createGame()}
+            onClick={() => startGame()}
           >
             Start Game
           </button>

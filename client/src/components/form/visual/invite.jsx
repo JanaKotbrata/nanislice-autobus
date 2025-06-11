@@ -12,7 +12,7 @@ function Invite({}) {
 
   const handleCopy = async () => {
     try {
-      const url = `${window.location.origin}/lobby?code=${gameData.code}`;
+      const url = `${window.location.origin}/lobby/${gameData.code}`;
       await navigator.clipboard.writeText(url);
       setCopied(true);
       setShowAlert(true);

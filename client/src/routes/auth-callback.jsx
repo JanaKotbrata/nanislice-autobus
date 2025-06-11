@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/auth-context";
+import { getGameByUser } from "../services/game-service.jsx";
 
 export default function AuthCallback() {
   const [searchParams] = useSearchParams();
@@ -20,7 +21,18 @@ export default function AuthCallback() {
 
         await login(token);
 
-        navigate("/start-game", { replace: true });
+        const activeGame = await getGameByUser();
+        console.log("spadlo to nebo?", activeGame);
+        if (activeGame?.state === "active") {
+          //TODO konstanty
+          navigate(`/game/${activeGame.code}`);
+        } else if (activeGame?.state === "initial") {
+          navigate(`/lobby/${activeGame.code}`, {
+            state: { gameData: activeGame },
+          });
+        } else {
+          navigate("/start-game", { replace: true });
+        }
       } catch (error) {
         console.error("Chyba:", error);
         navigate("/", { replace: true });

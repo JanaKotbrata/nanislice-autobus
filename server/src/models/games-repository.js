@@ -46,7 +46,7 @@ class GamesRepository extends Model {
         return result.deletedCount;
     }
 
-    async findNotClosedGamesByUserId(userId) {
+    async findNotClosedGameByUserId(userId) {
         const result = await this.collection.findOne({
             'playerList': {
                 $elemMatch: {

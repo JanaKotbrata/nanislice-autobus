@@ -1,6 +1,7 @@
 {
     "Game": {
         "GET": "/api/game/get",
+        "GET_BY_USER": "/api/game/getByUser",
         "CLOSE": "/api/game/close",
         "CREATE": "/api/game/create",
         "DELETE": "/api/game/delete",
