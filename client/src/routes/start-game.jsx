@@ -11,9 +11,15 @@ function StartGame() {
   async function startGame() {
     try {
       const response = await createGame();
-      navigate(`/lobby/${response.code}`, {
-        state: { gameData: response },
-      });
+      if (response.state === "active") {
+        navigate(`/game/${response.code}`, {
+          state: { gameData: response },
+        });
+      } else {
+        navigate(`/lobby/${response.code}`, {
+          state: { gameData: response },
+        });
+      }
     } catch (error) {
       if (error.response?.data?.name === "UserAlreadyInGame") {
         const game = await getGame({
@@ -46,7 +52,7 @@ function StartGame() {
             className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-xl shadow hover:bg-blue-700 transition"
             onClick={() => startGame()}
           >
-            Start Game
+            Create Game
           </button>
         </div>
 

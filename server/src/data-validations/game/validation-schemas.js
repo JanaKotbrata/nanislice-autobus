@@ -16,7 +16,7 @@ const list = Joi.object().keys({
     })
 })
 const create = Joi.object().keys({
-    userId: id.required(),
+
 });
 const close = Joi.object().keys({gameCode: code.required()});
 const gDelete = Joi.object().keys({

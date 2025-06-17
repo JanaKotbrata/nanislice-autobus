@@ -14,7 +14,7 @@ export async function getGameByUser() {
 export async function processAction(actionData) {
   try {
     const response = await axios.post(Routes.Game.ACTION_PROCESS, actionData);
-    return response.data;
+    return response.data.newGame;
   } catch (error) {
     console.error("Error processing game action:", error);
     throw error;

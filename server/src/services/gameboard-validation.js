@@ -14,7 +14,6 @@ function validationOfGameBoard(game, gameBoardIndex, card) {
     if (card.rank !== RANK_CARD_ORDER[game.gameBoard[gameBoardIndex].length] && card.rank !== joker) {
         throw new GameErrors.InvalidCardInGameBoard({gameBoardIndex, card});
     }
-
 }
 
 module.exports = {

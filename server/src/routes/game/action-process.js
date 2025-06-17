@@ -15,7 +15,6 @@ const users = new UsersRepository();
 
 class ProcessAction extends PostResponseHandler {
     constructor(expressApp) {
-        console.log("ProcessAction constructor", Routes.Game.ACTION_PROCESS);
         super(expressApp, Routes.Game.ACTION_PROCESS, "processAction");
     }
 
@@ -78,10 +77,44 @@ class ProcessAction extends PostResponseHandler {
         source.splice(index, 1);
     };
 
+    #removeCardFromBusStop(busStop, cardToRemove) {
+        let found = false;
+        for (let i = 0; i < busStop.length; i++) {
+            const originalLength = busStop[i].length;
+            busStop[i] = busStop[i].filter(card =>
+                !(card.i === cardToRemove.i)
+            );
+            if (busStop[i].length < originalLength) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            throw new Error("Karta nebyla nalezena v busStop.");
+        }
+    }
+
+    #removeCardFromHand(hand, card) {
+        const index = getCardIndex(card, hand, GameErrors.CardDoesNotExist);
+        hand[index] = {}; // replace with empty object to keep the same length
+    };
+
     #addCardTo(target, card) {
         target.push(card);
     };
 
+    #drawCard(target, card) {
+        const index = target.findIndex((c) => !c.rank);
+        target[index] = card;
+    };
+#completeCardList(newGame, targetIndex) {
+    if (newGame.gameBoard[targetIndex].length === RANK_CARD_ORDER.length) {
+        newGame.completedCardList = newGame.completedCardList || [];
+        newGame.completedCardList = [...newGame.completedCardList, ...newGame.gameBoard[targetIndex]];
+        newGame.gameBoard.splice(targetIndex, 1);
+    }
+}
     #prepareGameData(game, userId, params) {
         const newGame = structuredClone(game);
         const {action, card, targetIndex, hand} = params;
@@ -90,7 +123,7 @@ class ProcessAction extends PostResponseHandler {
         if (myself.isCardDrawed || action === GameActions.REORDER_HAND || action === GameActions.DRAW_CARD) {
             const actionHandlers = {
                 [GameActions.MOVE_CARD_TO_BUS]: () => {
-                    this.#removeCardFrom(myself.hand, card);
+                    this.#removeCardFromHand(myself.hand, card);
                     this.#addCardTo(myself.bus, card);
                     myself.isCardDrawed = false;
                     //next round
@@ -99,7 +132,7 @@ class ProcessAction extends PostResponseHandler {
 
                 [GameActions.MOVE_CARD_TO_BUS_STOP]: () => {
                     this.#validationOfBusStop(myself, targetIndex, card);
-                    this.#removeCardFrom(myself.hand, card);
+                    this.#removeCardFromHand(myself.hand, card);
                     this.#addCardTo(myself.busStop[targetIndex], card);
                     myself.isCardDrawed = false;
                     // next round
@@ -109,7 +142,7 @@ class ProcessAction extends PostResponseHandler {
                 [GameActions.START_NEW_PACK]: () => {
                     GameBoardValidation.validationOfNewDestination(card);
                     newGame.gameBoard.push([card]);
-                    this.#removeCardFrom(myself.hand, card);
+                    this.#removeCardFromHand(myself.hand, card);
                     this.#setPlayerToDraw(myself);
                 }, [GameActions.START_NEW_PACK_FROM_BUS]: () => {
                     GameBoardValidation.validationOfNewDestination(card);
@@ -117,28 +150,27 @@ class ProcessAction extends PostResponseHandler {
                     this.#removeCardFrom(myself.bus, card);
                 }, [GameActions.MOVE_CARD_TO_BOARD]: () => {
                     GameBoardValidation.validationOfGameBoard(newGame, targetIndex, card);
-                    this.#removeCardFrom(myself.hand, card);
-                    this.#setPlayerToDraw(myself);
+                    this.#removeCardFromHand(myself.hand, card);
                     this.#addCardTo(newGame.gameBoard[targetIndex], card);
-
+                    this.#setPlayerToDraw(myself);
                     //if the destination is full, move cards to completedCardList
-                    if (newGame.gameBoard[targetIndex].length === RANK_CARD_ORDER.length) {
-                        newGame.completedCardList = newGame.completedCardList || [];
-                        newGame.completedCardList = [...newGame.completedCardList, ...newGame.gameBoard[params.targetIndex]];
-                        newGame.gameBoard.splice(targetIndex, 1);
-                    }
+                    this.#completeCardList(newGame, targetIndex);
                 },
 
                 [GameActions.MOVE_CARD_TO_BOARD_FROM_BUS_STOP]: () => {
                     GameBoardValidation.validationOfGameBoard(newGame, targetIndex, card);
-                    this.#removeCardFrom(myself.busStop[targetIndex], card);
+                    this.#removeCardFromBusStop(myself.busStop, card);
                     this.#addCardTo(newGame.gameBoard[targetIndex], card);
+                    //if the destination is full, move cards to completedCardList
+                    this.#completeCardList(newGame, targetIndex);
                 },
 
                 [GameActions.MOVE_CARD_TO_BOARD_FROM_BUS]: () => {
                     GameBoardValidation.validationOfGameBoard(newGame, targetIndex, card);
                     this.#removeCardFrom(myself.bus, card);
                     this.#addCardTo(newGame.gameBoard[targetIndex], card);
+                    //if the destination is full, move cards to completedCardList
+                    this.#completeCardList(newGame, targetIndex);
                     if (myself.bus.length === 0) {
                         newGame.state = States.CLOSED;
                         newGame.winner = myself.userId;
@@ -148,10 +180,11 @@ class ProcessAction extends PostResponseHandler {
                 },
 
                 [GameActions.DRAW_CARD]: () => {
-                    this.#validateForDraw(myself, newGame.playerList, newGame.currentPlayer);
+                    const actualCardsInHand = myself.hand.filter(card => card.rank !== undefined && card.rank !== null);
+                    this.#validateForDraw(myself, actualCardsInHand);
                     const newCard = newGame.deck.pop();
-                    this.#addCardTo(myself.hand, newCard);
-                    if (myself.hand.length === 5) {
+                    this.#drawCard(myself.hand, newCard);
+                    if ((actualCardsInHand.length + 1) === 5) {
                         myself.isCardDrawed = true;
                     }
                 }, [GameActions.REORDER_HAND]: () => {
@@ -175,14 +208,14 @@ class ProcessAction extends PostResponseHandler {
     #checkAndUpdateDeck(game) {
         if (game?.deck?.length < 6) {
             if (game.completedCardList.length === 0) {
-                let unusingCards = [];
+                let unusedCards = [];
                 for (let destination of game.gameBoard) {
                     let cardList = destination.slice(1);
                     destination = [destination[0]];
-                    unusingCards.push(...cardList);
+                    unusedCards.push(...cardList);
                 }
-                unusingCards = shuffleDeck(unusingCards);
-                game.deck = [...unusingCards, ...game.deck]; //FIXME podívej se jak se líže a zamysli se
+                unusedCards = shuffleDeck(unusedCards);
+                game.deck = [...unusedCards, ...game.deck]; //FIXME podívej se jak se líže a zamysli se
             } else {
                 const completedCardList = shuffleDeck(game.completedCardList);
                 game.deck = [...completedCardList, ...game.deck]; //FIXME podívej se jak se líže a zamysli se
@@ -205,11 +238,11 @@ class ProcessAction extends PostResponseHandler {
         }
     }
 
-    #validateForDraw(myself) {
-        if (myself.hand.length >= 5) {
+    #validateForDraw(myself, actualCardsInHand) {
+        if (actualCardsInHand.length >= 5) {
             throw new GameErrors.InvalidHandLength({hand: myself.hand});
         }
-        if (myself?.isCardDrawed === true && myself.hand.length > 0) {
+        if (myself?.isCardDrawed === true && actualCardsInHand.length > 0) {
             throw new GameErrors.NotPossibleToDraw({
                 hand: myself.hand, isCardDrawed: myself.isCardDrawed, countCard: myself.hand.length
             });
@@ -218,6 +251,19 @@ class ProcessAction extends PostResponseHandler {
     }
 
     #validationOfBusStop(myself, busStopIndex, card) {
+        const existingIndexWithSameRank = myself.busStop?.findIndex(
+            (stack) => stack.length > 0 && stack[0].rank === card.rank
+        );
+        if (
+            existingIndexWithSameRank !== -1 &&
+            existingIndexWithSameRank !== busStopIndex
+        ) {
+            throw new GameErrors.InvalidCardInBusStopDifferentIndex({
+                attemptedIndex: busStopIndex,
+                expectedIndex: existingIndexWithSameRank,
+                card,
+            });
+        }
         if (busStopIndex > 3) {
             throw new GameErrors.InvalidBusStopIndex({busStopIndex});
         }
@@ -230,7 +276,8 @@ class ProcessAction extends PostResponseHandler {
     }
 
     #setPlayerToDraw(myself) {
-        if (myself.hand.length === 0) {
+    const hand = myself.hand.filter((card) => Number.isFinite(card?.i));
+        if (hand.length === 0) {
             myself.isCardDrawed = false;
         }
     }

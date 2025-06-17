@@ -1,9 +1,10 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { startGame } from "../../../services/game-service.jsx";
+import { useAuth } from "../../../context/auth-context.jsx";
 function Start({ gameCode, playerList }) {
   const navigate = useNavigate();
-
+  const { user } = useAuth();
   const handleStartClick = async () => {
     if (playerList.length > 1) {
       const res = await startGame(gameCode);

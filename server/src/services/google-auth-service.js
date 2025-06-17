@@ -28,9 +28,11 @@ async function initGoogleAuth(passport, app) {
                             level: 0,
                         });
                     } else {
-                        user = await users.updateUser(user._id, {googleId: profile.id});
+                        if (!user.googleId) {
+                            user = await users.updateUser(user.id, {googleId: profile.id, sys: user.sys});
+                        }
                     }
-                    const newUser = await users.getUserById(user._id);
+                    const newUser = await users.getUserById(user.id);
                     done(null, newUser);
                 } catch (err) {
                     done(err, null);
@@ -48,7 +50,7 @@ async function initGoogleAuth(passport, app) {
         '/auth/google/callback',
         passport.authenticate('google', {failureRedirect: '/'}),
         (req, res) => {
-            const token = jwt.sign({ id: req.user.id }, JWT_SECRET, { expiresIn: '24h' });
+            const token = jwt.sign({id: req.user.id}, JWT_SECRET, {expiresIn: '24h'});
             const userId = req.user.id; // TODO nepotrebujeme uzivatele, staci nam token (pak si uzivatele nacitame)
             res.redirect(`http://localhost:5173/auth-callback?token=${token}&userId=${userId}`);
         }

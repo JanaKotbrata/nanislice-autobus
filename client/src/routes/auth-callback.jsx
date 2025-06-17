@@ -22,7 +22,6 @@ export default function AuthCallback() {
         await login(token);
 
         const activeGame = await getGameByUser();
-        console.log("spadlo to nebo?", activeGame);
         if (activeGame?.state === "active") {
           //TODO konstanty
           navigate(`/game/${activeGame.code}`);

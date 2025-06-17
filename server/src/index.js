@@ -14,8 +14,6 @@ const registerRoutes = require("./utils/register-routes");
 const createIndexes = require("./utils/create-indexes");
 const getPathFromRoot = require("./utils/get-path-from-root");
 
-
-
 async function main() {
 // Init express
     const app = express();
@@ -41,7 +39,8 @@ async function main() {
 
     passport.serializeUser((user, done) => done(null, user.id));
     passport.deserializeUser(async (id, done) => {
-        const user = await users.getUserById(id);
+        const user =
+            await users.getUserById(id);
         done(null, user);
     });
 

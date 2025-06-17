@@ -1,18 +1,4 @@
-const RANK_CARD_ORDER = [
-    "A",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10",
-    "J",
-    "Q",
-    "K",
-];
+const RANK_CARD_ORDER = require("../../../shared/constants/rank-card-order.json");
 const suits = ["♥", "♦", "♠", "♣"];
 
 const joker = "Jr"

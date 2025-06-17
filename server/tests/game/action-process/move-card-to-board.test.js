@@ -46,18 +46,25 @@ describe('POST /game/action/process', () => {
         testUserId = id;
         const mockGame = activeGame({handNumber: 4, preferredRank, user: basicUser({...user, userId: id})});
         await gamesCollection.insertOne(mockGame);
+        const card = mockGame.playerList[1].hand.find((card) => card.rank === preferredRank);
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
             .send({
                 gameCode: mockGame.code,
                 targetIndex,
                 action: GameActions.MOVE_CARD_TO_BOARD,
-                card: mockGame.playerList[1].hand.find((card) => card.rank === preferredRank)
+                card
             });
 
         expect(response.status).toBe(200);
-        expect(response.body.newGame.gameBoard[targetIndex]).toHaveLength(mockGame.gameBoard[targetIndex].length + 1);
-        expect(response.body.newGame.playerList[1].hand).toHaveLength(mockGame.playerList[1].hand.length - 1);
+        expect(response.body.newGame.gameBoard[targetIndex].length).toBe(mockGame.gameBoard[targetIndex].length + 1);
+        expect(response.body.newGame.playerList[1].hand.length).toBe(mockGame.playerList[1].hand.length);
+        expect(
+            response.body.newGame.playerList[1].hand.find(
+                (c) => c.i === card.i
+            )
+        ).toBeUndefined();
+
     })
     it('Move card to board - invalid input', async () => {
         const response = await request(app)

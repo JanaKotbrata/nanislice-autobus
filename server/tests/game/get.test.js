@@ -66,7 +66,7 @@ describe('GET /game/get', () => {
 
         expect(response.status).toBe(400);
         expect(response.body.name).toBe("InvalidDataError");
-        expect(response.body.message).toBe(`"code" length must be 6 characters long`); //TODO
+        expect(response.body.message).toBe(`"code" length must be 6 characters long`);
 
     });
 
@@ -78,7 +78,7 @@ describe('GET /game/get', () => {
 
         expect(response.status).toBe(400);
         expect(response.body.name).toBe("InvalidDataError");
-        expect(response.body.message).toBe(`"id" length must be 24 characters long`);//TODO
+        expect(response.body.message).toBe(`"id" length must be 24 characters long`);
 
     });
 });

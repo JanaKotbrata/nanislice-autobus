@@ -8,11 +8,14 @@ function Slot({
   index,
   isOverClass = "bg-gray-300",
   isDropClass = "bg-gray-800",
+  border = "border-dashed border-gray-500",
+  isBottomCard = false,
 }) {
   const slotRef = useRef(null);
   const [{ isOver }, drop] = useDrop({
     accept: "CARD",
     drop: (item) => {
+      console.log("Drop event on slot!", item.card, index);
       onDropCard?.(item.card, index);
     },
     collect: (monitor) => ({
@@ -21,15 +24,18 @@ function Slot({
   });
 
   drop(slotRef);
-
   return (
     <div
       ref={slotRef}
-      className={`w-8 h-12 sm:w-10 sm:h-16 md:w-12 md:h-20 border rounded flex items-center justify-center text-xs sm:text-sm border-dashed border-gray-500 ${
+      className={`w-8 h-12 sm:w-10 sm:h-16 md:w-12 md:h-20 border rounded flex items-center justify-center text-xs sm:text-sm ${border} ${
         isOver ? isOverClass : isDropClass
       }`}
     >
-      {card?.rank ? <Card card={card} /> : ""}
+      {card?.rank ? (
+        <Card card={card} index={index} isBottomCard={isBottomCard} />
+      ) : (
+        ""
+      )}
     </div>
   );
 }

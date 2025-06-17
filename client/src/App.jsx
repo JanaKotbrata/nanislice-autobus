@@ -12,6 +12,17 @@ import Welcome from "./routes/welcome.jsx";
 import Game from "./routes/game.jsx";
 import AuthCallback from "./routes/auth-callback.jsx";
 import StartGame from "./routes/start-game.jsx";
+import translations from "./i18n/translations.json";
+
+let currentLang = "cs";
+
+export const setLang = (lang) => {
+  if (["cs", "en"].includes(lang)) {
+    currentLang = lang;
+  } else {
+    console.warn(`Language "${lang}" is not supported. Defaulting to 'cs'.`);
+  }
+};
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();

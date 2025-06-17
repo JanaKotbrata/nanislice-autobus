@@ -6,33 +6,26 @@ import GameContext from "../../context/game.js";
 import DangerAlert from "../../components/alerts/danger-alert.jsx";
 import { useDrop } from "react-dnd";
 import GameBoardSlot from "./game-board-slot.jsx";
+import Hand from "./hand.jsx";
 
 function GameBoard({ player }) {
   const gameContext = useContext(GameContext);
 
   const boardRef = useRef(null);
 
-  const handleCardDrag = (card) => {
-    gameContext.moveCardToGameBoard(card, "gameBoard");
-  };
-  // TODO smazat useDrop, resi to Slot, takze ted je to duplicitni
-  const [{ isOver }, drop] = useDrop({
-    accept: "CARD",
-    drop: (item) => {
-      handleCardDrag(item.card); // TODO provolat funkci gameContext.startNewPack - pokud chces pretahovat na bilou plochu
-    },
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
-    }),
-  });
-
-  drop(boardRef);
-
-  function handleDropCard(card, targetIndex) {
-    console.log("Handling drop card:", card, "at index:", targetIndex);
-
-    gameContext.reorderHand(oldIndex, targetIndex);
-  }
+  //přetažení karty na bílou plochu - Neni to tu nutné, protože přetahuji na slot, ale necham to
+  // const [{ isOver }, drop] = useDrop({
+  //   accept: "CARD",
+  //   drop: (item) => {
+  //     console.log("Drop event on board!", item.card);
+  //     gameContext.startNewPack(item.card);
+  //   },
+  //   collect: (monitor) => ({
+  //     isOver: !!monitor.isOver(),
+  //   }),
+  // });
+  //
+  // drop(boardRef);
 
   return (
     <div className="h-full flex flex-col gap-4">
@@ -43,7 +36,7 @@ function GameBoard({ player }) {
         // onDragOver={(e) => e.preventDefault()}
       >
         <h2 className="text-gray-900 text-xl font-bold mb-4">
-          Hrací pole {gameContext.deck.length}
+          Hrací pole {gameContext?.deck?.length}
         </h2>
         <div className="flex justify-center mb-6">
           <CardPack onDrawCard={gameContext.drawCard} />
@@ -56,15 +49,24 @@ function GameBoard({ player }) {
               onClose={() => gameContext.setShowAlert(false)}
             />
           )}
-          {gameContext.gameBoard.map((pack, index) => (
-            <Slot
-              index={index}
-              card={pack[pack.length - 1]}
-              onDropCard={handleDropCard} // TODO volat handleCardDrag, nebo novou funkci, ktera ve vysledku provola gameContext.addToPack
-            />
-          ))}
-          <GameBoardSlot onDropCard={handleDropCard} />{" "}
-          {/* TODO volat handleCardDrag, nebo novou funkci, ktera ve vysledku provola gameContext.startNewPack */}
+          {gameContext.gameBoard.map((pack, index) => {
+            const card = pack[pack.length - 1];
+            const cardBefore = card.rank === "Jr" && pack[pack.length - 2];
+            return (
+              <GameBoardSlot
+                index={index}
+                key={card.i}
+                card={card}
+                onDropCard={gameContext.addToPack}
+                count={pack.length}
+                cardBefore={cardBefore}
+              />
+            );
+          })}
+          <GameBoardSlot
+            index={gameContext.gameBoard.length}
+            onDropCard={gameContext.startNewPack}
+          />
         </div>
       </div>
 
@@ -75,7 +77,7 @@ function GameBoard({ player }) {
               return (
                 <Slot
                   key={index}
-                  onDropCard={(card) => handleDropCard(card, index)}
+                  onDropCard={(card) => gameContext.reorderHand(card, index)}
                 />
               );
             }
@@ -83,6 +85,8 @@ function GameBoard({ player }) {
           })}
         </div>
       </div>
+
+      {/* <Hand player={player} reorderHand={gameContext.reorderHand} />*/}
     </div>
   );
 }

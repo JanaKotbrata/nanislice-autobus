@@ -38,7 +38,7 @@ describe('POST /game/create', () => {
 
         const response = await request(app)
             .post(Routes.Game.CREATE)
-            .send({userId: testUserId});
+            .send();
 
         expect(response.status).toBe(200);
         expect(response.body.success).toBe(true);
@@ -52,7 +52,7 @@ describe('POST /game/create', () => {
         const game = await gamesCollection.insertOne(closedGame({user}));
         const response = await request(app)
             .post(Routes.Game.CREATE)
-            .send({userId: testUserId});
+            .send();
 
         expect(response.status).toBe(200);
         expect(response.body.id).not.toBe(game.insertedId.toString());
@@ -68,7 +68,7 @@ describe('POST /game/create', () => {
         const game = await gamesCollection.insertOne(initialGameData);
         const response = await request(app)
             .post(Routes.Game.CREATE)
-            .send({userId: testUserId});
+            .send();
 
         expect(response.status).toBe(200);
         expect(response.body.id).toBe(game.insertedId.toString());
@@ -80,7 +80,7 @@ describe('POST /game/create', () => {
         testUserId = generateRandomId();
         const response = await request(app)
             .post(Routes.Game.CREATE)
-            .send({userId: testUserId});
+            .send();
 
         expect(response.status).toBe(404);
         expect(response.body.message).toBe("Requested user does not exist");

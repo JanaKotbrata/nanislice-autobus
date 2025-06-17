@@ -19,8 +19,7 @@ class CreateGame extends PostResponseHandler {
     }
 
     async create(req) {
-        //const validData = validateData(req.body, schema);
-        //const {userId} = validData;
+        const validData = validateData(req.body, schema);
         const userId = req.user.id;
         let isDuplicateKey = false;
         let tryCount = 0;

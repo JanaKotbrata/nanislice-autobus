@@ -15,6 +15,7 @@ class GameIsClosed extends CommonError {
         this.params = params;
     }
 }
+
 class GameIsNotActive extends CommonError {
     constructor(params) {
         super('GameIsNotActive', "Game has to be in active state.");
@@ -110,6 +111,7 @@ class FailedToUpdateGame extends CommonError {
         this.params = params;
     }
 }
+
 class InvalidCardInBusStop extends CommonError {
     constructor(params) {
         super('InvalidCardInBusStop', "Invalid card in bus stop");
@@ -117,6 +119,7 @@ class InvalidCardInBusStop extends CommonError {
         this.params = params;
     }
 }
+
 class DestinationDoesNotExist extends CommonError {
     constructor(params) {
         super('DestinationDoesNotExist', "Destination does not exist");
@@ -124,6 +127,7 @@ class DestinationDoesNotExist extends CommonError {
         this.params = params;
     }
 }
+
 class InvalidCardInGameBoard extends CommonError {
     constructor(params) {
         super('InvalidCardInGameBoard', "Invalid card in game board");
@@ -131,6 +135,7 @@ class InvalidCardInGameBoard extends CommonError {
         this.params = params;
     }
 }
+
 class CardDoesNotExist extends CommonError {
     constructor(params) {
         super('CardDoesNotExist', "Card does not exist");
@@ -138,6 +143,7 @@ class CardDoesNotExist extends CommonError {
         this.params = params;
     }
 }
+
 class ActionIsNotDefined extends CommonError {
     constructor(params) {
         super('ActionIsNotDefined', "Action is not defined");
@@ -145,6 +151,7 @@ class ActionIsNotDefined extends CommonError {
         this.params = params;
     }
 }
+
 class InvalidHandReorder extends CommonError {
     constructor(params) {
         super('InvalidHandReorder', "Invalid hand reorder");
@@ -152,6 +159,7 @@ class InvalidHandReorder extends CommonError {
         this.params = params;
     }
 }
+
 class InvalidBusStopIndex extends CommonError {
     constructor(params) {
         super('InvalidBusStopIndex', "Invalid bus stop index");
@@ -159,6 +167,7 @@ class InvalidBusStopIndex extends CommonError {
         this.params = params;
     }
 }
+
 class InvalidHandLength extends CommonError {
     constructor(params) {
         super('InvalidHandLength', "Invalid hand length");
@@ -166,6 +175,7 @@ class InvalidHandLength extends CommonError {
         this.params = params;
     }
 }
+
 class UserIsNotCurrentPlayer extends CommonError {
     constructor(params) {
         super('UserIsNotCurrentPlayer', "User is not current player");
@@ -173,6 +183,7 @@ class UserIsNotCurrentPlayer extends CommonError {
         this.params = params;
     }
 }
+
 class NotPossibleToDraw extends CommonError {
     constructor(params) {
         super('NotPossibleToDraw', "Not possible to draw card");
@@ -180,6 +191,7 @@ class NotPossibleToDraw extends CommonError {
         this.params = params;
     }
 }
+
 class PlayerMustDrawCardFirst extends CommonError {
     constructor(params) {
         super('PlayerMustDrawCardFirst', "Player must draw a card first");
@@ -187,6 +199,23 @@ class PlayerMustDrawCardFirst extends CommonError {
         this.params = params;
     }
 }
+
+class InvalidCardInBusStopDifferentIndex extends CommonError {
+    constructor(params) {
+        super('InvalidCardInBusStopDifferentIndex', "Card in bus stop does not match the index");
+        this.status = 400;
+        this.params = params;
+    }
+}
+
+class UserCanNotStartGame extends CommonError {
+    constructor(params) {
+        super('UserCanNotStartGame', "User is not allowed to start the game");
+        this.status = 403;
+        this.params = params;
+    }
+}
+
 module.exports = {
     GameDoesNotExist,
     GameIsNotActive,
@@ -212,5 +241,8 @@ module.exports = {
     InvalidHandLength,
     UserIsNotCurrentPlayer,
     NotPossibleToDraw,
-    PlayerMustDrawCardFirst
+    PlayerMustDrawCardFirst,
+    InvalidCardInBusStopDifferentIndex,
+    UserCanNotStartGame
+
 };

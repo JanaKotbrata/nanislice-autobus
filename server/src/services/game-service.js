@@ -3,14 +3,34 @@ const GameErrors = require("../errors/game/game-errors");
 const GameWarnings = require("../errors/game/game-warnings");
 const games = new GamesRepository();
 
-function transformCurrentPlayerData(game, userId) { //TODO vrátit deck bez dat :))
+function transformCurrentPlayerData(game, userId) {
     for (let player of game.playerList) {
-        if (player.userId === userId) {
-            player.myself = true;
-        } else {
+        const isCurrentUser = player.userId === userId;
+        player.myself = isCurrentUser;
+
+        if (!isCurrentUser) {
             delete player.hand;
-            player.bus = [player.bus[0]];//TODO vrátit počet karet v autobusu aby ostatní věděli jak na tom jsou - vrátim celé pole s null a první "poslední" kartou
         }
+
+        if (player.bus?.length) {
+            const busLength = player.bus.length;
+            const firstCard = player.bus[0];
+            const lastCard = player.bus[busLength - 1];
+
+            if (isCurrentUser) {
+                player.bus = Array.from({ length: busLength }, (_, i) =>
+                    i === 0 ? firstCard :
+                        i === busLength - 1 ? lastCard :
+                            null
+                );
+            } else {
+                player.bus = [firstCard, ...Array(busLength - 1).fill(null)];
+            }
+        }
+    }
+
+    if (game.deck?.length) {
+        game.deck = Array(game.deck.length).fill(null);
     }
 }
 
@@ -34,4 +54,4 @@ async function getGame(id, code, error, warning) {
     return game;
 }
 
-module.exports = {transformCurrentPlayerData,getGame};
+module.exports = {transformCurrentPlayerData, getGame};

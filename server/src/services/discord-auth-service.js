@@ -28,9 +28,11 @@ async function initDiscordAuth(passport, app) {
                         level: 0,
                     });
                 } else {
-                    user = await users.updateUser(user._id, {discordId: profile.id});
+                    if (!user.discordId) {
+                        user = await users.updateUser(user.id, {discordId: profile.id, sys: user.sys});
+                    }
                 }
-                const newUser = await users.getUserById(user._id);
+                const newUser = await users.getUserById(user.id);
                 done(null, newUser);
             }
         )
@@ -44,7 +46,7 @@ async function initDiscordAuth(passport, app) {
         '/auth/discord/callback',
         passport.authenticate('discord', {failureRedirect: '/'}),
         (req, res) => {
-            const token = jwt.sign({ id: req.user.id }, JWT_SECRET, { expiresIn: '24h' });
+            const token = jwt.sign({id: req.user.id}, JWT_SECRET, {expiresIn: '24h'});
             const userId = req.user.id;
             res.redirect(`http://localhost:5173/auth-callback?token=${token}&userId=${userId}`);
         }

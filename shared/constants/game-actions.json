@@ -1,11 +1,11 @@
 {
-  "MOVE_CARD_TO_BOARD": "moveCardToBoard",
+  "DRAW_CARD": "drawCard",
   "MOVE_CARD_TO_BUS_STOP": "moveCardToBusStop",
   "MOVE_CARD_TO_BUS": "moveCardToBus",
-  "DRAW_CARD": "drawCard",
   "REORDER_HAND": "reorderHand",
   "START_NEW_PACK": "startNewPack",
   "START_NEW_PACK_FROM_BUS": "startNewPackFromBus",
+  "MOVE_CARD_TO_BOARD": "moveCardToBoard",
   "MOVE_CARD_TO_BOARD_FROM_BUS_STOP": "moveCardToBoardFromBusStop",
   "MOVE_CARD_TO_BOARD_FROM_BUS": "moveCardToBoardFromBus"
 }

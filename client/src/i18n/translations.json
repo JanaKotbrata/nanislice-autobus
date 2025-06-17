@@ -1,0 +1,38 @@
+{
+  "busTitle": {
+    "cs": "Autobusácí",
+    "en": "Bus Drivers"
+  },
+  "drawCard": {
+    "cs": "Lízní kartu"
+  },
+  "gameBoard": {
+    "cs": "Hrací pole"
+  },
+  "lackOfPlayers": {
+    "cs": "Není dostatek hráčů pro spuštění hry.",
+    "en": "Not enough players to start the game."
+  },
+  "wtf": {
+    "cs": "WTF ale?",
+    "en": "WTF?"
+  },
+  "placeError": {
+    "cs": "O co se teď snažíš jako? To fakt ne..."
+  },
+  "placeInHandError": {
+    "cs": "Tak co chceš, cheatovat nebo co? No nemůžeš si tu kartu dát zpátky, že jo..."
+  },
+  "firstPlaceError": {
+    "cs": "Tak hele, sem můžeš dát pouze eso nebo žolíka!"
+  },
+  "somethingWentWrong": {
+    "cs": "Ehm, něco se pokazilo."
+  },
+  "placeRankError": {
+    "cs": "Ti jebe? Sem nemůžeš dát kartu s hodnotou: "
+  },
+  "busStopError": {
+    "cs": "Nelze odložit kartu s rankem: "
+  }
+}

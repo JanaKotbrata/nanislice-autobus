@@ -5,8 +5,11 @@ const connectionDb = require("../../src/models/connection-db");
 const StartGame = require('../../src/routes/game/start');
 const Routes = require("../../../shared/constants/routes.json");
 const ErrorHandler = require("../../src/middlewares/error-handler");
-const {initialGame, generateRandomCode} = require("../helpers/default-mocks");
+const {initialGame, generateRandomCode, userMock} = require("../helpers/default-mocks");
+const TestUserMiddleware = require("../services/test-user-middleware");
 let gamesCollection;
+let usersCollection;
+let testUserId;
 
 describe('POST /game/start', () => {
     let app;
@@ -14,9 +17,11 @@ describe('POST /game/start', () => {
     beforeAll(async () => {
         const db = await connectionDb();
         gamesCollection = db.collection('games');
+        usersCollection = db.collection('users');
 
         app = express();
         app.use(express.json());
+        app.use(TestUserMiddleware(() => testUserId));
         new StartGame(app);
         app.use(ErrorHandler);
     });
@@ -26,6 +31,8 @@ describe('POST /game/start', () => {
     });
 
     it('should start a game', async () => {
+        const user = await usersCollection.insertOne(userMock({}, {creator: true}));
+        testUserId = user.insertedId.toString();
         const mockGame = initialGame();
         await gamesCollection.insertOne(mockGame);
 

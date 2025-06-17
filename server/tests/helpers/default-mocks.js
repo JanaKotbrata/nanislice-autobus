@@ -64,7 +64,7 @@ function getPlayerListAndDeck(playersNumber = 1, user, win = false, params) {
     }
 
     const [cacheDeck, players] = dealCardPerPlayer(deck, playerList, params.handNumber, params.busNumber);
-    if(user?.isCardDrawed === false){ //TODO weird - params
+    if(user?.isCardDrawed === false){
         players[players.length - 1].isCardDrawed = false;
     }
     if (params.preferredRank) {
