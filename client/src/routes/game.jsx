@@ -1,34 +1,17 @@
-import React, { useState, useRef, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useRef, useContext } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { useGameCode } from "../hooks/use-game-code.js";
 import Player from "./game/player.jsx";
 import GameBoard from "./game/game-board.jsx";
-import GameContextProvider from "../components/providers/game-context-provider.jsx";
 import GameContext from "../context/game.js";
-import { getGame } from "../services/game-service.jsx";
 
 function Game() {
-  const { code } = useParams();
-  const [players, setPlayers] = useState([]);
-  const [game, setGame] = useState(null);
   const [leftWidth, setLeftWidth] = useState(350);
   const [dragging, setDragging] = useState(false);
   const dragRef = useRef(null);
-
-  useEffect(() => {
-    const fetchPlayers = async () => {
-      try {
-        const res = await getGame({ code });
-        setPlayers(res.playerList);
-        setGame(res);
-      } catch (err) {
-        console.error("Nepodařilo se načíst hráče:", err);
-      }
-    };
-
-    fetchPlayers();
-  }, [code]);
+  useGameCode();
+  const gameContext = useContext(GameContext);
 
   const handleMouseDown = () => {
     setDragging(true);
@@ -52,74 +35,67 @@ function Game() {
     let myself = newPlayers.splice(index, 1)[0];
     return [myself, newPlayers];
   };
-  if (!players)
+  if (!gameContext?.players)
     return (
       <div className="flex items-center justify-center h-full w-full">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
       </div>
     );
 
-  return (
-    <GameContextProvider game={game}>
-      <DndProvider backend={HTML5Backend}>
-        <GameContext.Consumer>
-          {(gameContext) => {
-            const [myself, players] = getPlayers(gameContext?.players);
-            return (
-              <div
-                className="flex flex-col sm:flex-row w-full h-full p-1 bg-gray-800"
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-              >
-                {/* Levá sekce - Hráči */}
-                <div
-                  className="bg-gray-800 text-white p-4 flex flex-col"
-                  style={{ width: leftWidth }}
-                >
-                  <h2 className="text-xl font-bold mb-4">Autobusácí</h2>
-                  <div className="flex-grow">
-                    {players.map((player, index) => (
-                      <Player
-                        key={index}
-                        player={player}
-                        isActivePlayer={
-                          gameContext.players?.[gameContext.currentPlayer]
-                            ?.userId === player?.userId
-                        }
-                      />
-                    ))}
-                  </div>
-                  {myself && (
-                    <Player
-                      key={gameContext.players.length - 1}
-                      player={myself}
-                      isActivePlayer={
-                        gameContext.players?.[gameContext.currentPlayer]
-                          ?.userId === myself?.userId
-                      }
-                    />
-                  )}
-                </div>
-                {/* Resize lišta */}
-                <div
-                  ref={dragRef}
-                  className="w-2 cursor-ew-resize bg-gray-500"
-                  onMouseDown={handleMouseDown}
-                />
+  const [myself, players] = getPlayers(gameContext.players);
 
-                {/* Pravá sekce - Hrací pole */}
-                <div className="flex-grow bg-gray-200 p-6">
-                  <GameBoard
-                    player={gameContext.players.find((p) => p.myself)}
-                    cardPack={gameContext.deck}
-                  />
-                </div>
-              </div>
-            );
-          }}
-        </GameContext.Consumer>
-      </DndProvider>
-    </GameContextProvider>
+  return (
+    <DndProvider backend={HTML5Backend}>
+      <div
+        className="flex flex-col sm:flex-row w-full h-full p-1 bg-gray-800"
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+      >
+        {/* Levá sekce - Hráči */}
+        <div
+          className="bg-gray-800 text-white p-4 flex flex-col"
+          style={{ width: leftWidth }}
+        >
+          <h2 className="text-xl font-bold mb-4">Autobusácí</h2>
+          <div className="flex-grow">
+            {players.map((player, index) => (
+              <Player
+                key={index}
+                player={player}
+                isActivePlayer={
+                  gameContext.players?.[gameContext.currentPlayer]?.userId ===
+                  player?.userId
+                }
+              />
+            ))}
+          </div>
+          {myself && (
+            <Player
+              key={gameContext.players.length - 1}
+              player={myself}
+              isActivePlayer={
+                gameContext.players?.[gameContext.currentPlayer]?.userId ===
+                myself?.userId
+              }
+            />
+          )}
+        </div>
+        {/* Resize lišta */}
+        <div
+          ref={dragRef}
+          className="w-2 cursor-ew-resize bg-gray-500"
+          onMouseDown={handleMouseDown}
+        />
+
+        {/* Pravá sekce - Hrací pole */}
+        <div className="flex-grow bg-gray-200 p-6">
+          <GameBoard
+            player={gameContext.players.find((p) => p.myself)}
+            cardPack={gameContext.deck}
+          />
+        </div>
+      </div>
+    </DndProvider>
   );
 }
 

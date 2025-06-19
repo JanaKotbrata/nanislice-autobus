@@ -1,33 +1,31 @@
 import { useNavigate } from "react-router-dom";
-import React from "react";
+import React, { useContext } from "react";
 import Instructions from "../components/instructions.jsx";
 import { useAuth } from "../context/auth-context.jsx";
 import { createGame, getGame } from "../services/game-service.jsx";
+import GameContext from "../context/game.js";
 
 function StartGame() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const gameContext = useContext(GameContext);
 
   async function startGame() {
     try {
       const response = await createGame();
+      gameContext.setContextGame(response);
       if (response.state === "active") {
-        navigate(`/game/${response.code}`, {
-          state: { gameData: response },
-        });
+        navigate(`/game/${response.code}`);
       } else {
-        navigate(`/lobby/${response.code}`, {
-          state: { gameData: response },
-        });
+        navigate(`/lobby/${response.code}`);
       }
     } catch (error) {
       if (error.response?.data?.name === "UserAlreadyInGame") {
         const game = await getGame({
           id: `?id=${error.response.data?.params?.gameId}`,
         });
-        navigate(`/lobby/${game?.code}`, {
-          state: { gameData: game },
-        });
+        gameContext.setContextGame(game);
+        navigate(`/lobby/${game?.code}`);
       } else {
         alert(error.message);
         console.error("Chyba při vytváření hry:", error);

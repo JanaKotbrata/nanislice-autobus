@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import React, { useContext, useState } from "react";
 import DangerAlert from "../../alerts/danger-alert.jsx";
 import SuccessAlert from "../../alerts/danger-alert.jsx";
 import GameContext from "../../../context/game.js";
@@ -7,12 +6,11 @@ import GameContext from "../../../context/game.js";
 function Invite({}) {
   const [copied, setCopied] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
-  const { state } = useLocation();
-  const gameData = state?.gameData;
+  const gameContext = useContext(GameContext);
 
   const handleCopy = async () => {
     try {
-      const url = `${window.location.origin}/lobby/${gameData.code}`;
+      const url = `${window.location.origin}/lobby/${gameContext.gameCode}`;
       await navigator.clipboard.writeText(url);
       setCopied(true);
       setShowAlert(true);

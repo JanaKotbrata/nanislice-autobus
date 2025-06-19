@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import GameContext from "../../context/game";
 import GameActions from "../../../../shared/constants/game-actions.json";
-import { processAction } from "../../services/game-service";
+import { getGame, processAction } from "../../services/game-service";
 import {
   canPlaceInBusStop,
   canPlaceOnGameBoard,
@@ -11,7 +11,9 @@ import {
 
 const maxHandSize = 5;
 
-function GameContextProvider({ children, game }) {
+function GameContextProvider({ children }) {
+  const [gameCode, setGameCode] = useState(null);
+  const code = useRef(null);
   const [gamePlayers, setPlayers] = useState([]);
   const [currentPlayer, setCurrentPlayer] = useState(null);
   const [gameDeck, setGameDeck] = useState([]);
@@ -20,12 +22,27 @@ function GameContextProvider({ children, game }) {
   const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
-    if (!game) return;
-    setPlayers(game.playerList);
+    const fetchPlayers = async () => {
+      try {
+        const game = await getGame({ code: gameCode });
+        setContextGame(game);
+      } catch (err) {
+        console.error("Nepodařilo se načíst hráče:", err);
+      }
+    };
+    if (gameCode && gameCode !== code.current) {
+      fetchPlayers();
+    }
+  }, [gameCode]);
+
+  function setContextGame(game) {
+    setPlayers(game.playerList); //TODO stačí setGame a používat jen tu game
     setGameDeck(game.deck);
     setCurrentPlayer(game.currentPlayer);
     setGameBoard(game.gameBoard);
-  }, [game]);
+    code.current = game.code;
+    setGameCode(game.code);
+  }
 
   function getMyself(isCurrentPlayerAction = true) {
     if (isCurrentPlayerAction) {
@@ -221,7 +238,7 @@ function GameContextProvider({ children, game }) {
       );
 
       placeCardOnGameBoard(gameBoard, card);
-      updateGameServerState({ card, gameCode: game.code }, action);
+      updateGameServerState({ card, gameCode }, action);
 
       setPlayers(
         alterMyself(gamePlayers, {
@@ -253,7 +270,7 @@ function GameContextProvider({ children, game }) {
       gameBoard[targetIndex].push(card);
       setGameBoard(gameBoard);
 
-      updateGameServerState({ card, targetIndex, gameCode: game.code }, action);
+      updateGameServerState({ card, targetIndex, gameCode }, action);
 
       setPlayers(
         alterMyself(gamePlayers, {
@@ -295,7 +312,7 @@ function GameContextProvider({ children, game }) {
 
       updateGameServerState(
         {
-          gameCode: game.code,
+          gameCode,
           hand: newHand,
         },
         GameActions.REORDER_HAND,
@@ -317,7 +334,7 @@ function GameContextProvider({ children, game }) {
         addCardToHand(newCard);
         setGameDeck(gameDeck);
 
-        updateGameServerState({ gameCode: game.code }, GameActions.DRAW_CARD);
+        updateGameServerState({ gameCode }, GameActions.DRAW_CARD);
       } else {
         showErrorAlert("Teď si nemůžeš líznout kartu.");
       }
@@ -350,7 +367,7 @@ function GameContextProvider({ children, game }) {
           {
             targetIndex,
             card,
-            gameCode: game.code,
+            gameCode,
           },
           GameActions.MOVE_CARD_TO_BUS_STOP,
         );
@@ -360,7 +377,7 @@ function GameContextProvider({ children, game }) {
         updateGameServerState(
           {
             card,
-            gameCode: game.code,
+            gameCode,
           },
           GameActions.MOVE_CARD_TO_BUS,
         );
@@ -378,6 +395,9 @@ function GameContextProvider({ children, game }) {
   return (
     <GameContext.Provider
       value={{
+        setGameCode,
+        gameCode,
+        setContextGame,
         players: gamePlayers,
         moveCardToSlot,
         drawCard,

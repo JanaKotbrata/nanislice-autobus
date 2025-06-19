@@ -1,17 +1,22 @@
-import { useLocation } from "react-router-dom";
-import React from "react";
+import React, { useContext } from "react";
 import Member from "../components/form/visual/member.jsx";
 import Invite from "../components/form/visual/invite.jsx";
 import Start from "../components/form/visual/start.jsx";
 import nanislice from "../assets/nanislice.svg";
 import Instructions from "../components/instructions.jsx";
-import { useParams } from "react-router-dom";
+import GameContext from "../context/game.js";
+import { useGameCode } from "../hooks/use-game-code.js";
 
-function Lobby({ user }) {
-  const { state } = useLocation();
-  const { code } = useParams();
-  const gameData = state?.gameData;
-  const shouldRender = gameData.playerList.find(
+function Lobby() {
+  const code = useGameCode();
+  const gameContext = useContext(GameContext);
+  if (!gameContext?.players)
+    return (
+      <div className="flex items-center justify-center h-full w-full">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+      </div>
+    );
+  const shouldRender = gameContext.players.find(
     (player) => player.myself && player.creator,
   );
   return (
@@ -36,7 +41,7 @@ function Lobby({ user }) {
         <div className="grid grid-cols-2 gap-5">
           {/* Left box - Player info */}
           <div className="flex flex-col items-center justify border-r-2 border-cyan-400/50 pr-4">
-            {gameData.playerList.map((player) => (
+            {gameContext.players.map((player) => (
               <Member
                 key={player.userId}
                 level={player.creator ? "Zakladatel" : "Pleb"}
@@ -47,10 +52,7 @@ function Lobby({ user }) {
             ))}
             <Invite />
             {shouldRender && (
-              <Start
-                gameCode={gameData.code}
-                playerList={gameData.playerList}
-              />
+              <Start gameCode={code} playerList={gameContext.players} />
             )}
           </div>
           {/* Right box - How to play */}

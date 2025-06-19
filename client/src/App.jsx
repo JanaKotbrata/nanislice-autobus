@@ -7,6 +7,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import GameContextProvider from "./components/providers/game-context-provider.jsx";
 import Lobby from "./routes/lobby.jsx";
 import Welcome from "./routes/welcome.jsx";
 import Game from "./routes/game.jsx";
@@ -44,41 +45,43 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <NotAuthenticatedRoute>
-                <Welcome />
-              </NotAuthenticatedRoute>
-            }
-          />
-          <Route path="/auth-callback" element={<AuthCallback />} />
-          <Route
-            path="/start-game"
-            element={
-              <ProtectedRoute>
-                <StartGame />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/lobby/:code"
-            element={
-              <ProtectedRoute>
-                <Lobby />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/game/:code"
-            element={
-              <ProtectedRoute>
-                <Game />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+        <GameContextProvider>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <NotAuthenticatedRoute>
+                  <Welcome />
+                </NotAuthenticatedRoute>
+              }
+            />
+            <Route path="/auth-callback" element={<AuthCallback />} />
+            <Route
+              path="/start-game"
+              element={
+                <ProtectedRoute>
+                  <StartGame />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/lobby/:code"
+              element={
+                <ProtectedRoute>
+                  <Lobby />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/game/:code"
+              element={
+                <ProtectedRoute>
+                  <Game />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </GameContextProvider>
       </AuthProvider>
     </Router>
   );

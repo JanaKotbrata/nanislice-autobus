@@ -1,12 +1,14 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/auth-context";
 import { getGameByUser } from "../services/game-service.jsx";
+import GameContext from "../context/game.js";
 
 export default function AuthCallback() {
   const [searchParams] = useSearchParams();
   const { login } = useAuth();
   const navigate = useNavigate();
+  const gameContext = useContext(GameContext);
 
   useEffect(() => {
     const initAuth = async () => {
@@ -23,12 +25,12 @@ export default function AuthCallback() {
 
         const activeGame = await getGameByUser();
         if (activeGame?.state === "active") {
+          gameContext.setContextGame(activeGame);
           //TODO konstanty
           navigate(`/game/${activeGame.code}`);
         } else if (activeGame?.state === "initial") {
-          navigate(`/lobby/${activeGame.code}`, {
-            state: { gameData: activeGame },
-          });
+          gameContext.setContextGame(activeGame);
+          navigate(`/lobby/${activeGame.code}`);
         } else {
           navigate("/start-game", { replace: true });
         }
