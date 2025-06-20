@@ -10,7 +10,7 @@ function Invite({}) {
 
   const handleCopy = async () => {
     try {
-      const url = `${window.location.origin}/lobby/${gameContext.gameCode}`;
+      const url = `Pojď hrát game: ${window.location.origin} join to game by gameCode: ${gameContext.gameCode}`;
       await navigator.clipboard.writeText(url);
       setCopied(true);
       setShowAlert(true);
@@ -40,20 +40,19 @@ function Invite({}) {
           </svg>
         </div>
         <div className="ml-1 text-gray-500 font-medium" onClick={handleCopy}>
-          Copy - invite a friend
-          {copied ? "Zkopírováno!" : "Pozvat hráče"}
-          {/*showAlert &&
-            (copied ? (
+          {copied ? "Zkopírováno!" : "Copy - invite a friend"}
+          {/* showAlert && (
               <SuccessAlert
                 message="Odkaz byl zkopírován do schránky."
                 onClose={() => setShowAlert(false)}
               />
-            ) : (
-              <DangerAlert
-                message="Nepodařilo se zkopírovat odkaz."
-                onClose={() => setShowAlert(false)}
-              />
-            ))*/}
+            )*/
+          /*: (
+            <DangerAlert
+              message="Nepodařilo se zkopírovat odkaz."
+              onClose={() => setShowAlert(false)}
+            />
+          )*/}
         </div>
       </div>
     </div>

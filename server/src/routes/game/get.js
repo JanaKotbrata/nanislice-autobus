@@ -15,12 +15,10 @@ class GetGame extends GetResponseHandler {
         const validData = validateData(req.query, schema);
         const {id, code} = validData;
 
-        const game = await getGame(id, code, false,true)
+        const game = await getGame(id, code, false, true)
 
-        //important is only the current players data - so only other players bus stop and 1 card from autobus
-        if (game.state === States.ACTIVE) {
-            transformCurrentPlayerData(game, req.user.id);
-        }
+        transformCurrentPlayerData(game, req.user.id);
+
         return {...game, success: true};
     }
 }

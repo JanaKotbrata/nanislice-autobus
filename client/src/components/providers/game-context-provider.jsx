@@ -14,7 +14,9 @@ const maxHandSize = 5;
 function GameContextProvider({ children }) {
   const [gameCode, setGameCode] = useState(null);
   const code = useRef(null);
+  const [game, setGame] = useState(null);
   const [gamePlayers, setPlayers] = useState([]);
+  const [gameState, setGameState] = useState(null);
   const [currentPlayer, setCurrentPlayer] = useState(null);
   const [gameDeck, setGameDeck] = useState([]);
   const [gameBoard, setGameBoard] = useState([]);
@@ -38,6 +40,7 @@ function GameContextProvider({ children }) {
   function setContextGame(game) {
     setPlayers(game.playerList); //TODO stačí setGame a používat jen tu game
     setGameDeck(game.deck);
+    setGameState(game.state);
     setCurrentPlayer(game.currentPlayer);
     setGameBoard(game.gameBoard);
     code.current = game.code;
@@ -213,7 +216,6 @@ function GameContextProvider({ children }) {
     if (myself) {
       let isInBus;
       let isInHand;
-      console.log("Tak co?", card);
       if (myself.bus[0]?.i === card.i) {
         isInBus = true;
         console.log("Card is in bus:", card);
@@ -398,15 +400,19 @@ function GameContextProvider({ children }) {
         setGameCode,
         gameCode,
         setContextGame,
-        players: gamePlayers,
+        setPlayers,
         moveCardToSlot,
         drawCard,
         startNewPack,
         addToPack,
         reorderHand,
+        setGame,
+        game,
+        players: gamePlayers,
         deck: gameDeck,
         gameBoard,
         currentPlayer,
+        gameState,
         errorMessage,
         setErrorMessage,
         showAlert,

@@ -1,11 +1,13 @@
 import "./App.css";
 import { AuthProvider, useAuth } from "./context/auth-context.jsx";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
+  useNavigate,
+  useLocation,
 } from "react-router-dom";
 import GameContextProvider from "./components/providers/game-context-provider.jsx";
 import Lobby from "./routes/lobby.jsx";
@@ -27,13 +29,30 @@ export const setLang = (lang) => {
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
-  return user ? children : <Navigate to="/" />;
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/", {
+        state: location.pathname,
+      });
+    }
+  }, [user]);
+
+  if (!user) {
+    return null;
+  } else {
+    return children;
+  }
 }
 
 function NotAuthenticatedRoute({ children }) {
   const { user, loading } = useAuth();
+  const { state } = useLocation();
+  const navigateTo = state || "/start-game";
   if (user) {
-    return <Navigate to="/start-game" />;
+    return <Navigate to={navigateTo} />;
   }
   if (loading) {
     return <div>Loading...</div>; // FIXME - komponenta pro loading

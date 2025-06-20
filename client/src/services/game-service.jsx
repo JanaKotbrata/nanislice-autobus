@@ -1,5 +1,6 @@
 import axios from "axios";
 import Routes from "../../../shared/constants/routes.json";
+
 //TODO errors
 export async function getGameByUser() {
   try {
@@ -7,6 +8,38 @@ export async function getGameByUser() {
     return response.data;
   } catch (error) {
     console.error("Error fetching game by user:", error);
+    throw error;
+  }
+}
+
+export async function addPlayer({ userId, gameCode, gameId }) {
+  const params = { userId };
+  if (gameId) {
+    params.gameId = gameId;
+  } else {
+    params.gameCode = gameCode;
+  }
+  try {
+    const response = await axios.post(Routes.Game.PLAYER_ADD, params);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding player:", error);
+    throw error;
+  }
+}
+
+export async function removePlayer({ userId, gameCode, gameId }) {
+  const params = { userId };
+  if (gameId) {
+    params.gameId = gameId;
+  } else {
+    params.gameCode = gameCode;
+  }
+  try {
+    const response = await axios.post(Routes.Game.PLAYER_REMOVE, params);
+    return response.data;
+  } catch (error) {
+    console.error("Error removing player:", error);
     throw error;
   }
 }
@@ -30,6 +63,7 @@ export async function startGame(gameCode) {
     throw error;
   }
 }
+
 export async function getGame({ id, code }) {
   //FIXME - mělo by fungovat toto - await axios.get(Routes.Game.GET, {
   //           params: {

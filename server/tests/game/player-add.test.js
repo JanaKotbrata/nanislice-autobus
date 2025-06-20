@@ -6,6 +6,7 @@ const GamePlayerAdd = require('../../src/routes/game/player-add');
 const Routes = require("../../../shared/constants/routes.json");
 const ErrorHandler = require("../../src/middlewares/error-handler");
 const {initialGame, generateRandomCode, generateRandomId, userMock} = require("../helpers/default-mocks");
+const IO = require("../helpers/io-mock");
 let gamesCollection;
 let usersCollection;
 
@@ -18,7 +19,8 @@ describe('POST /game/player-add', () => {
 
         app = express();
         app.use(express.json());
-        new GamePlayerAdd(app);
+
+        new GamePlayerAdd(app, IO);
         app.use(ErrorHandler);
     });
     afterAll(async () => {
@@ -32,7 +34,7 @@ describe('POST /game/player-add', () => {
 
         const response = await request(app)
             .post(Routes.Game.PLAYER_ADD)
-            .send({ userId: id, gameCode: mockGame.code });
+            .send({userId: id, gameCode: mockGame.code});
 
         expect(response.status).toBe(200);
         expect(response.body.playerList).toBeDefined();
@@ -43,7 +45,7 @@ describe('POST /game/player-add', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.PLAYER_ADD)
-            .send({ userId: generateRandomId(), gameCode: mockGame.code });
+            .send({userId: generateRandomId(), gameCode: mockGame.code});
 
         expect(response.status).toBe(404);
         expect(response.body.message).toBe("Requested user does not exist");
@@ -51,7 +53,7 @@ describe('POST /game/player-add', () => {
     test("should return an error if game does not exist", async () => {
         const user = await usersCollection.insertOne(userMock());
         const id = user.insertedId.toString();
-        const response = await request(app).post(Routes.Game.PLAYER_ADD).send({ userId: id, gameCode: "nonexi" });
+        const response = await request(app).post(Routes.Game.PLAYER_ADD).send({userId: id, gameCode: "nonexi"});
 
         expect(response.status).toBe(404);
         expect(response.body.message).toBe("Requested game does not exist");

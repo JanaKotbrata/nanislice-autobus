@@ -4,15 +4,15 @@ import CardPack from "./card-pack.jsx";
 import Slot from "./slot.jsx";
 import GameContext from "../../context/game.js";
 import DangerAlert from "../../components/alerts/danger-alert.jsx";
-import { useDrop } from "react-dnd";
 import GameBoardSlot from "./game-board-slot.jsx";
-import Hand from "./hand.jsx";
 
 function GameBoard({ player }) {
   const gameContext = useContext(GameContext);
-
   const boardRef = useRef(null);
-
+  const isCurrentPlayer =
+    gameContext.players?.[gameContext.currentPlayer]?.myself;
+  const drawCardText =
+    isCurrentPlayer && !player.isCardDrawed ? "Lízní kartu!" : "🚌";
   //přetažení karty na bílou plochu - Neni to tu nutné, protože přetahuji na slot, ale necham to
   // const [{ isOver }, drop] = useDrop({
   //   accept: "CARD",
@@ -39,7 +39,10 @@ function GameBoard({ player }) {
           Hrací pole {gameContext?.deck?.length}
         </h2>
         <div className="flex justify-center mb-6">
-          <CardPack onDrawCard={gameContext.drawCard} />
+          <CardPack
+            text={drawCardText}
+            onDrawCard={isCurrentPlayer && gameContext.drawCard}
+          />
         </div>
 
         <div className="game-board flex flex-row md:gap-10 gap-5">

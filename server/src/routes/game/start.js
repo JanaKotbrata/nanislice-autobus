@@ -6,13 +6,15 @@ const {PostResponseHandler} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
 const {initDeck, dealCardPerPlayer} = require("../../services/card-service");
+const {transformCurrentPlayerData} = require("../../services/game-service");
 
 const games = new GamesRepository();
 const users = new UsersRepository();
 
 class StartGame extends PostResponseHandler {
-    constructor(expressApp) {
+    constructor(expressApp, io) {
         super(expressApp, Routes.Game.START, "start");
+        this.io = io;
     }
 
     async start(req) {
@@ -40,7 +42,7 @@ class StartGame extends PostResponseHandler {
             throw new GameErrors.GameIsClosed(validData);
         }
         const player = game.playerList.find(player => player.userId === userId);
-        if(!player.creator){
+        if(!player?.creator){
             throw new GameErrors.UserCanNotStartGame({...validData, userId});
         }
         const fullDeck = initDeck(game.playerList);
@@ -48,6 +50,17 @@ class StartGame extends PostResponseHandler {
         let newGame = {...game, state: "active", deck, playerList, currentPlayer: 0} //TODO maybe random number between 0 and playerList.length
         try {
             const startedGame = await games.updateGame(game.id, newGame);
+            console.log(startedGame);
+            startedGame.playerList.forEach(player => {
+                const playerId = player.userId;
+                const playerGame = structuredClone(startedGame);
+                transformCurrentPlayerData(playerGame, playerId);
+                console.log(`Emitting gameStarted event to ${gameCode}_${playerId}`);
+                this.io.to(`${gameCode}_${playerId}`).emit("gameStarted", {
+                  ...playerGame
+                });
+            })
+            transformCurrentPlayerData(startedGame, userId);
             return {...startedGame, success: true};
         } catch (e) {
             throw new GameErrors.UpdateGameFailed(validData);

@@ -143,5 +143,6 @@ module.exports = {
     basicUser,
     userMock,
     generateRandomId,
-    generateRandomCode
+    generateRandomCode,
+    getPlayerList
 }

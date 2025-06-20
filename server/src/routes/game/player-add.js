@@ -5,12 +5,14 @@ const {playerAdd:schema} = require("../../data-validations/game/validation-schem
 const { PostResponseHandler} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
+const {transformCurrentPlayerData} = require("../../services/game-service");
 const games = new GamesRepository();
 const users = new UsersRepository();
 
 class AddGamePlayer extends PostResponseHandler {
-    constructor(expressApp) {
+    constructor(expressApp, io) {
         super(expressApp, Routes.Game.PLAYER_ADD, "add");
+        this.io = io;
     }
 
     async add(req) {
@@ -47,8 +49,17 @@ class AddGamePlayer extends PostResponseHandler {
         };
         try {
             const updatedGame = await games.updateGame(game.id, {...newPlayers, sys: game.sys});
+            updatedGame.playerList.forEach(player => {
+                const playerId = player.userId;
+                const playerGame = structuredClone(updatedGame);
+                transformCurrentPlayerData(playerGame, playerId);
+                console.log(`Emitting playerAdded event to ${gameCode}_${playerId}`);
+                this.io.to(`${gameCode}_${playerId}`).emit("playerAdded", {
+                    gameCode,
+                    playerList: playerGame.playerList,
+                });
+            })
             return {...updatedGame, success: true};
-
         } catch (error) {
             console.error("Failed to add player:", error);
             throw new GameErrors.FailedToAddPlayer(error);

@@ -1,17 +1,26 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useGameCode } from "../hooks/use-game-code.js";
 import Player from "./game/player.jsx";
 import GameBoard from "./game/game-board.jsx";
 import GameContext from "../context/game.js";
+import { useNavigate } from "react-router-dom";
 
 function Game() {
+  const navigate = useNavigate();
+  const gameContext = useContext(GameContext);
   const [leftWidth, setLeftWidth] = useState(350);
   const [dragging, setDragging] = useState(false);
   const dragRef = useRef(null);
   useGameCode();
-  const gameContext = useContext(GameContext);
+  useEffect(() => {
+    if (gameContext?.gameState === "initial") {
+      navigate(`/lobby/${gameContext?.gameCode}`);
+    } else if (gameContext?.gameState !== "active") {
+      navigate(`/`);
+    }
+  }, [gameContext?.gameState]);
 
   const handleMouseDown = () => {
     setDragging(true);
@@ -60,7 +69,7 @@ function Game() {
           <div className="flex-grow">
             {players.map((player, index) => (
               <Player
-                key={index}
+                key={"player_" + index}
                 player={player}
                 isActivePlayer={
                   gameContext.players?.[gameContext.currentPlayer]?.userId ===
@@ -71,7 +80,7 @@ function Game() {
           </div>
           {myself && (
             <Player
-              key={gameContext.players.length - 1}
+              key={"myself_" + (gameContext.players.length - 1)}
               player={myself}
               isActivePlayer={
                 gameContext.players?.[gameContext.currentPlayer]?.userId ===

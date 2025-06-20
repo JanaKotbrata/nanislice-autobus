@@ -6,6 +6,7 @@ const GamePlayerRemove = require('../../src/routes/game/player-remove');
 const Routes = require("../../../shared/constants/routes");
 const ErrorHandler = require("../../src/middlewares/error-handler");
 const {userMock, initialGame, generateRandomId, basicUser} = require("../helpers/default-mocks");
+const IO = require("../helpers/io-mock");
 let gamesCollection;
 let usersCollection;
 
@@ -18,7 +19,7 @@ describe('POST /game/player/remove', () => {
 
         app = express();
         app.use(express.json());
-        new GamePlayerRemove(app);
+        new GamePlayerRemove(app, IO);
         app.use(ErrorHandler);
     });
     afterAll(async () => {

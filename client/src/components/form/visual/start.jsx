@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { startGame } from "../../../services/game-service.jsx";
 import { useAuth } from "../../../context/auth-context.jsx";
+import GameContext from "../../../context/game.js";
 function Start({ gameCode, playerList }) {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const gameContext = useContext(GameContext);
   const handleStartClick = async () => {
     if (playerList.length > 1) {
       const res = await startGame(gameCode);
+      gameContext.setContextGame(res);
       navigate(`/game/${res.code}`);
     } else {
       alert("Nedostatek playerů"); //FIXME

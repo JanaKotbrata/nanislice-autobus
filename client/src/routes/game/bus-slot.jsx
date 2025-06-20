@@ -7,12 +7,12 @@ function BusSlot({ card, onDropCard, index, count, bottomCard }) {
   const handleDoubleClick = () => {
     setShowBottomCard((prev) => !prev);
   };
-
+  const doubleClick = {};
+  if (bottomCard) {
+    doubleClick.onDoubleClick = handleDoubleClick;
+  }
   return (
-    <div
-      className="relative group"
-      onDoubleClick={bottomCard && handleDoubleClick}
-    >
+    <div className="relative group" {...doubleClick}>
       {count && (
         <div className="absolute top-1 left-1 text-xs bg-red-500 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200">
           <div>{count}</div>

@@ -2,6 +2,8 @@ const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
 const cors = require('cors');
+const http = require('http');
+const { Server } = require('socket.io');
 const connectToDb = require('./models/connection-db');
 const usersRepository = require('./models/users-repository');
 const users = new usersRepository();
@@ -14,9 +16,18 @@ const registerRoutes = require("./utils/register-routes");
 const createIndexes = require("./utils/create-indexes");
 const getPathFromRoot = require("./utils/get-path-from-root");
 
+const AddGamePlayer = require("./routes/game/player-add");
+
 async function main() {
 // Init express
     const app = express();
+    const server = http.createServer(app);
+    const io = new Server(server, {
+        cors: {
+            origin: 'http://localhost:5173',
+            credentials: true
+        }
+    });
 
     app.use(cors({
         origin: 'http://localhost:5173',
@@ -51,8 +62,25 @@ async function main() {
     // for parse JSON requests
     app.use(express.json());
 
+    // Socket.io event handling
+    io.on('connection', (socket) => {
+        console.log('Uživatel připojen:', socket.id);
+
+        socket.on("joinLobby", (gameCode, userId) => {
+            socket.join(`${gameCode}_${userId}`);
+            console.log(`Socket ${socket.id} joined lobby: ${gameCode}_${userId}`);
+        });
+        socket.on("startGame", (gameCode, userId) => {
+            io.to(`${gameCode}_${userId}`).emit("gameStarted", { gameCode });
+        });
+
+        socket.on("disconnect", () => {
+            console.log("Uživatel odpojen:", socket.id);
+        });
+    });
+
     // Adding routers
-    registerRoutes(getPathFromRoot("./routes"), app);
+    registerRoutes(getPathFromRoot("./routes"), app, io);
 
 
     app.use(ErrorHandler);
@@ -62,8 +90,8 @@ async function main() {
         .then(async () => {
             //for creating indexes in db
             await createIndexes(getPathFromRoot("./models"));
-            //for server startup
-            app.listen(config.port, () => console.log(`Server run: ${config.port}`))
+            // for server startup
+            server.listen(config.port, () => console.log(`Server run: ${config.port}`));
         })
         .catch((err) => console.error(err));
 

@@ -4,11 +4,13 @@ const {playerRemove: schema} = require("../../data-validations/game/validation-s
 const {PostResponseHandler} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
+const {transformCurrentPlayerData} = require("../../services/game-service");
 const games = new GamesRepository();
 
 class RemoveGamePlayer extends PostResponseHandler {
-    constructor(expressApp) {
+    constructor(expressApp, io) {
         super(expressApp, Routes.Game.PLAYER_REMOVE, "remove");
+        this.io = io;
     }
 
     async remove(req) {
@@ -37,16 +39,20 @@ class RemoveGamePlayer extends PostResponseHandler {
             if (newPlayers) {
                 try {
                     const updatedGame = await games.updateGame(game.id, {...newPlayers, sys: game.sys});
+                    transformCurrentPlayerData(updatedGame, userId);
+                    this.io.to(gameCode).emit("playerRemoved", {
+                        gameCode,
+                        playerList: updatedGame.playerList,
+                    });
                     return {...updatedGame, success: true};
-
                 } catch (error) {
                     console.error("Failed to remove player:", error);
                     throw new GameErrors.FailedToRemovePlayer(error);
                 }
             }
         } else {
+            const newGame = await games.updateGame(game.id, {code: `${game.code}-#closed#`, state: "closed", sys: game.sys});
             //await game.deleteGame(game.id); //TODO na základě ještě nějaké podmínky
-            const newGame = await games.updateGame(game.id, {code: `${game.code}-#closed#`, state: "closed"});
             return {...newGame, success: true};
         }
 
