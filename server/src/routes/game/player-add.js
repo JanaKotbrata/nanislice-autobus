@@ -6,6 +6,7 @@ const { PostResponseHandler} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
 const {transformCurrentPlayerData} = require("../../services/game-service");
+const {States} = require("../../utils/game-constants");
 const games = new GamesRepository();
 const users = new UsersRepository();
 
@@ -29,6 +30,10 @@ class AddGamePlayer extends PostResponseHandler {
 
         if (!game) {
             throw new GameErrors.GameDoesNotExist(validData);
+        }
+
+        if(game.state === States.ACTIVE){
+            throw new GameErrors.GameAlreadyActive(validData);
         }
 
         const user = await users.getUserById(userId);

@@ -4,7 +4,9 @@ const {playerRemove: schema} = require("../../data-validations/game/validation-s
 const {PostResponseHandler} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
-const {transformCurrentPlayerData} = require("../../services/game-service");
+const {transformCurrentPlayerData, closeGame} = require("../../services/game-service");
+const {States} = require("../../utils/game-constants");
+const {shuffleDeck} = require("../../services/card-service");
 const games = new GamesRepository();
 
 class RemoveGamePlayer extends PostResponseHandler {
@@ -32,13 +34,18 @@ class RemoveGamePlayer extends PostResponseHandler {
         if (!isPlayerInGame) {
             throw new GameErrors.PlayerNotInGame(validData);
         }
+
         //validation of playerList
         const isPossibleToRemove = !!(game.playerList.length > 1);
         if (isPossibleToRemove) {
-            const newPlayers = this.#removePlayer(game, userId);
+            const {newPlayers, newDeck} = this.#removePlayer(game, userId);
             if (newPlayers) {
+                let updateData = {...newPlayers, sys: game.sys};
+                if (game.state === States.ACTIVE) {
+                    updateData = {...updateData, ...newDeck};
+                }
                 try {
-                    const updatedGame = await games.updateGame(game.id, {...newPlayers, sys: game.sys});
+                    const updatedGame = await games.updateGame(game.id, updateData);
                     transformCurrentPlayerData(updatedGame, userId);
                     this.io.to(gameCode).emit("playerRemoved", {
                         gameCode,
@@ -51,19 +58,30 @@ class RemoveGamePlayer extends PostResponseHandler {
                 }
             }
         } else {
-            const newGame = await games.updateGame(game.id, {code: `${game.code}-#closed#`, state: "closed", sys: game.sys});
-            //await game.deleteGame(game.id); //TODO na základě ještě nějaké podmínky
-            return {...newGame, success: true};
+            if (game.state === States.ACTIVE) {
+                const newGame = await closeGame(game);
+                return {...newGame, success: true};
+            } else if (game.state === States.INITIAL) {
+                await games.deleteGame(game.id);
+                return {success: true};
+            }
+
+
         }
 
     }
 
     #removePlayer(game, userId) {
         let newPlayers;
+        let newDeck;
         const copiedGame = JSON.parse(JSON.stringify(game));
         const userToRemove = copiedGame.playerList.findIndex(player => player.userId === userId);
         if (userToRemove !== -1) {
-            const isPlayerCreator = copiedGame.playerList[userToRemove].creator;
+            const player = copiedGame.playerList[userToRemove];
+            const isPlayerCreator = player.creator;
+            if (game.state === States.ACTIVE) {
+                newDeck = {deck: shuffleDeck([...game.deck, ...player?.hand, ...player?.busStop?.[0], ...player?.busStop?.[1], ...player?.busStop?.[2], ...player?.busStop?.[3], ...player?.bus])};
+            }
             copiedGame.playerList.splice(userToRemove, 1);
             newPlayers = {
                 playerList: [...copiedGame.playerList],
@@ -72,7 +90,7 @@ class RemoveGamePlayer extends PostResponseHandler {
                 newPlayers.playerList[0].creator = true;
             }
         }
-        return newPlayers;
+        return {newPlayers, newDeck};
     }
 }
 

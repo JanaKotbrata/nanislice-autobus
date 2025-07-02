@@ -18,7 +18,7 @@ function transformCurrentPlayerData(game, userId) {
             const lastCard = player.bus[busLength - 1];
 
             if (isCurrentUser) {
-                player.bus = Array.from({ length: busLength }, (_, i) =>
+                player.bus = Array.from({length: busLength}, (_, i) =>
                     i === 0 ? firstCard :
                         i === busLength - 1 ? lastCard :
                             null
@@ -54,4 +54,13 @@ async function getGame(id, code, error, warning) {
     return game;
 }
 
-module.exports = {transformCurrentPlayerData, getGame};
+async function closeGame(game) {
+    try {
+        return await games.updateGame(game.id, {code: `${game.code}-#closed#`, state: "closed", sys: game.sys});
+    } catch (e) {
+        console.error("Failed to close game:", e);
+        throw new GameErrors.UpdateGameFailed(game);
+    }
+}
+
+module.exports = {transformCurrentPlayerData, getGame, closeGame};

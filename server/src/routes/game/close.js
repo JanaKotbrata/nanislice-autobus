@@ -4,8 +4,10 @@ const Routes = require("../../../../shared/constants/routes.json");
 const {close: schema} = require("../../data-validations/game/validation-schemas");
 const validateData = require("../../services/validation-service");
 const GameErrors = require("../../errors/game/game-errors");
+const {closeGame} = require("../../services/game-service");
 
 const games = new GamesRepository();
+
 class CloseGame extends PostResponseHandler {
     constructor(expressApp) {
         super(expressApp, Routes.Game.CLOSE, "close");
@@ -22,13 +24,9 @@ class CloseGame extends PostResponseHandler {
         }
 
         //updates state of the game if exists
-        try {
-            const updatedGame = await games.updateGame(game.id, {code: `${game.code}-#closed#`, state: "closed", sys:game.sys});
-            return {...updatedGame, success: true};
-        } catch (e) {
-            console.error("Failed to set state of the game:", e);
-            throw new GameErrors.UpdateGameFailed(validData);
-        }
+        const closedGame = await closeGame(game);
+        return {...closedGame, success: true}
     }
 }
+
 module.exports = CloseGame;

@@ -5,7 +5,7 @@ const connectionDb = require("../../src/models/connection-db");
 const GamePlayerAdd = require('../../src/routes/game/player-add');
 const Routes = require("../../../shared/constants/routes.json");
 const ErrorHandler = require("../../src/middlewares/error-handler");
-const {initialGame, generateRandomCode, generateRandomId, userMock} = require("../helpers/default-mocks");
+const {activeGame, initialGame, generateRandomId, userMock} = require("../helpers/default-mocks");
 const IO = require("../helpers/io-mock");
 let gamesCollection;
 let usersCollection;
@@ -39,6 +39,19 @@ describe('POST /game/player-add', () => {
         expect(response.status).toBe(200);
         expect(response.body.playerList).toBeDefined();
         expect(response.body.playerList[1].userId).toBe(id);
+    });
+    it("should not add a player into active game", async () => {
+        const user = await usersCollection.insertOne(userMock());
+        const id = user.insertedId.toString();
+        const mockGame = activeGame();
+        await gamesCollection.insertOne(mockGame);
+
+        const response = await request(app)
+            .post(Routes.Game.PLAYER_ADD)
+            .send({userId: id, gameCode: mockGame.code});
+
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBe("Game is already active is not possible to add player.");
     });
     test("should return an error if user does not exist", async () => {
         const mockGame = initialGame();

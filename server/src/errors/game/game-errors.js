@@ -215,6 +215,13 @@ class UserCanNotStartGame extends CommonError {
         this.params = params;
     }
 }
+class GameAlreadyActive extends CommonError {
+    constructor(params) {
+        super('GameAlreadyActive', "Game is already active is not possible to add player.");
+        this.status = 400;
+        this.params = params;
+    }
+}
 
 module.exports = {
     GameDoesNotExist,
@@ -243,6 +250,7 @@ module.exports = {
     NotPossibleToDraw,
     PlayerMustDrawCardFirst,
     InvalidCardInBusStopDifferentIndex,
-    UserCanNotStartGame
+    UserCanNotStartGame,
+    GameAlreadyActive
 
 };
