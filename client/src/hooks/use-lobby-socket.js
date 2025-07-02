@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { io } from "socket.io-client";
-
-const socket = io("http://localhost:1234");
+import Config from "../../../shared/config/config.json";
+const socket = io(Config.SERVER_URI);
 
 export function useLobbySocket(userId, gameCode, setPlayers, setContextGame) {
   useEffect(() => {
     if (gameCode && userId) {
-      socket.emit("joinLobby", gameCode, userId);
+      socket.emit("listenToGame", gameCode, userId);
 
       socket.on("playerAdded", (data) => {
         if (data.gameCode === gameCode) {

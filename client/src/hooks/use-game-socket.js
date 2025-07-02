@@ -1,15 +1,22 @@
 import { useEffect } from "react";
 import { io } from "socket.io-client";
+import Config from "../../../shared/config/config.json";
 
-const socket = io("http://localhost:1234");
+const socket = io(Config.SERVER_URI);
 
-export function useLobbySocket(userId, gameCode, setPlayers) {
+export function useGameSocket(userId, gameCode, setPlayers, setContextGame) {
   useEffect(() => {
     if (gameCode && userId) {
+      console.log("chystáme se na socketování?");
+      console.log("gameCode", gameCode);
+      console.log("userId", userId);
+      socket.emit("listenToGame", gameCode, userId);
+
       socket.on("processAction", (data) => {
-        if (data.gameCode === gameCode) {
-          console.log("data", data);
-          setPlayers(data.playerList);
+        console.log("podmínkujeme?");
+        if (data.newGame.code === gameCode) {
+          console.log("socketujeme", data);
+          setContextGame(data.newGame);
         }
       });
     }
@@ -17,7 +24,7 @@ export function useLobbySocket(userId, gameCode, setPlayers) {
     return () => {
       socket.off("processAction");
     };
-  }, [userId, gameCode, setPlayers]);
+  }, [userId, gameCode, setPlayers, setContextGame]);
 
   return socket;
 }

@@ -3,6 +3,7 @@ const config = require('../../config/config.json');
 const UsersRepository = require('../models/users-repository');
 const users = new UsersRepository();
 const jwt = require('jsonwebtoken');
+const Config = require("../../../shared/config/config.json");
 const JWT_SECRET = config.secret;
 
 async function initDiscordAuth(passport, app) {
@@ -11,7 +12,7 @@ async function initDiscordAuth(passport, app) {
             {
                 clientID: config.discord.client_id,
                 clientSecret: config.discord.client_secret,
-                callbackURL: `http://localhost:${config.port}/auth/discord/callback`,  //FIXME for the cloud
+                callbackURL: `${Config.SERVER_URI}/auth/discord/callback`,
                 scope: ['identify', 'email'],
             },
             async (accessToken, refreshToken, profile, done) => {
@@ -48,7 +49,7 @@ async function initDiscordAuth(passport, app) {
         (req, res) => {
             const token = jwt.sign({id: req.user.id}, JWT_SECRET, {expiresIn: '24h'});
             const userId = req.user.id;
-            res.redirect(`http://localhost:5173/auth-callback?token=${token}&userId=${userId}`);
+            res.redirect(`${Config.CLIENT_URI}/auth-callback?token=${token}&userId=${userId}`);
         }
     );
 }

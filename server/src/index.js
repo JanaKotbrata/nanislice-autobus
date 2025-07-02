@@ -15,8 +15,7 @@ const config = require("../config/config.json");
 const registerRoutes = require("./utils/register-routes");
 const createIndexes = require("./utils/create-indexes");
 const getPathFromRoot = require("./utils/get-path-from-root");
-
-const AddGamePlayer = require("./routes/game/player-add");
+const Config = require("../../shared/config/config.json")
 
 async function main() {
 // Init express
@@ -24,13 +23,13 @@ async function main() {
     const server = http.createServer(app);
     const io = new Server(server, {
         cors: {
-            origin: 'http://localhost:5173',
+            origin: Config.CLIENT_URI,
             credentials: true
         }
     });
 
     app.use(cors({
-        origin: 'http://localhost:5173',
+        origin: Config.CLIENT_URI,
         credentials: true
     }));
 
@@ -66,7 +65,7 @@ async function main() {
     io.on('connection', (socket) => {
         console.log('Uživatel připojen:', socket.id);
 
-        socket.on("joinLobby", (gameCode, userId) => {
+        socket.on("listenToGame", (gameCode, userId) => {
             socket.join(`${gameCode}_${userId}`);
             console.log(`Socket ${socket.id} joined lobby: ${gameCode}_${userId}`);
         });

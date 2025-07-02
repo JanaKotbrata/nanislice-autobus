@@ -1,9 +1,9 @@
 import React from "react";
 import Button from "../../components/form/visual/button.jsx";
 import discord from "../../assets/discord.svg";
-
+import Config from "../../../../shared/config/config.json";
 const DiscordLogin = () => {
-  const discordAuthUrl = `http://localhost:1234/auth/discord`; //FIXME in cloud
+  const discordAuthUrl = `${Config.SERVER_URI}/auth/discord`;
 
   const handleDiscordLogin = () => {
     // ciste v onClick nefungovalo presmerovani, mozna nejaky even handling v prohlizeci

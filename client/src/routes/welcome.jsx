@@ -3,14 +3,14 @@ import nanislice from "../assets/nanislice.svg";
 import google from "../assets/google.svg";
 import Button from "../components/form/visual/button.jsx";
 import DiscordLogin from "./welcome/discord-login.jsx";
-
+import Config from "../../../shared/config/config.json";
 function Welcome() {
   function handleGoogleLogin(e) {
     e.preventDefault();
     const redirectUrl = encodeURIComponent(
-      "http://localhost:5173/auth-callback",
+      `${Config.CLIENT_URI}/auth-callback`,
     );
-    window.location.href = `http://localhost:1234/auth/google?redirect_uri=${redirectUrl}`;
+    window.location.href = `${Config.SERVER_URI}/auth/google?redirect_uri=${redirectUrl}`;
   }
 
   return (

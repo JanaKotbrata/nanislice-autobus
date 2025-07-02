@@ -60,16 +60,20 @@ class ProcessAction extends PostResponseHandler {
 
         try {
             let newGame = await games.updateGame(game.id, updatedGame);
+            if (xp) {
+                xp = await users.addUserXP(userId, 100);
+            }
             newGame.playerList.forEach(player => {
                 const playerId = player.userId;
                 const playerGame = structuredClone(newGame);
                 transformCurrentPlayerData(playerGame, playerId);
                 console.log(`Emitting processAction event to ${gameCode}_${playerId}`);
                 this.io.to(`${gameCode}_${playerId}`).emit("processAction", {
-                    ...playerGame
+                    userId, newGame:playerGame, xp
                 });
             })
-            return await this.#returnProcessActionData(userId, newGame, xp);
+            transformCurrentPlayerData(newGame, userId);
+            return {xp, newGame, success: true};
         } catch (error) {
             throw new GameErrors.FailedToUpdateGame(error);
         }
@@ -78,12 +82,7 @@ class ProcessAction extends PostResponseHandler {
 
     async #returnProcessActionData(userId, newGame, xp) {
         transformCurrentPlayerData(newGame, userId);
-        if (xp) {
-            xp = await users.addUserXP(userId, 100);
-            return {xp, newGame, success: true};
-        } else {
-            return {newGame, success: true};
-        }
+
     }
 
     #removeCardFrom(source, card) {

@@ -6,6 +6,8 @@ import Player from "./game/player.jsx";
 import GameBoard from "./game/game-board.jsx";
 import GameContext from "../context/game.js";
 import { useNavigate } from "react-router-dom";
+import { useGameSocket } from "../hooks/use-game-socket.js";
+import { useAuth } from "../context/auth-context.jsx";
 
 function Game() {
   const navigate = useNavigate();
@@ -13,6 +15,7 @@ function Game() {
   const [leftWidth, setLeftWidth] = useState(350);
   const [dragging, setDragging] = useState(false);
   const dragRef = useRef(null);
+  const { user } = useAuth();
   useGameCode();
   useEffect(() => {
     if (gameContext?.gameState === "initial") {
@@ -25,7 +28,12 @@ function Game() {
       navigate(`/`);
     }
   }, [gameContext?.gameState]);
-
+  useGameSocket(
+    user.id,
+    gameContext.gameCode,
+    gameContext.setPlayers,
+    gameContext.setContextGame,
+  );
   const handleMouseDown = () => {
     setDragging(true);
     document.body.style.cursor = "ew-resize";

@@ -2,6 +2,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const config = require('../../config/config.json');
 const UsersRepository = require('../models/users-repository');
 const jwt = require("jsonwebtoken");
+const Config = require("../../../shared/config/config.json");
 const users = new UsersRepository();
 const JWT_SECRET = config.secret;
 
@@ -11,7 +12,7 @@ async function initGoogleAuth(passport, app) {
             {
                 clientID: config.google.client_id,
                 clientSecret: config.google.client_secret,
-                callbackURL: `http://localhost:${config.port}/auth/google/callback`, //FIXME for the cloud
+                callbackURL: `${Config.SERVER_URI}/auth/google/callback`,
             },
             async (accessToken, refreshToken, profile, done) => {
                 try {
@@ -52,7 +53,7 @@ async function initGoogleAuth(passport, app) {
         (req, res) => {
             const token = jwt.sign({id: req.user.id}, JWT_SECRET, {expiresIn: '24h'});
             const userId = req.user.id; // TODO nepotrebujeme uzivatele, staci nam token (pak si uzivatele nacitame)
-            res.redirect(`http://localhost:5173/auth-callback?token=${token}&userId=${userId}`);
+            res.redirect(`${Config.CLIENT_URI}/auth-callback?token=${token}&userId=${userId}`);
         }
     );
 }
