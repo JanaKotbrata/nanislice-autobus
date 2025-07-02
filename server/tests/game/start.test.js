@@ -7,6 +7,7 @@ const Routes = require("../../../shared/constants/routes.json");
 const ErrorHandler = require("../../src/middlewares/error-handler");
 const {initialGame, generateRandomCode, userMock, getPlayerList} = require("../helpers/default-mocks");
 const TestUserMiddleware = require("../services/test-user-middleware");
+const IO = require("../helpers/io-mock");
 let gamesCollection;
 let usersCollection;
 let testUserId;
@@ -22,7 +23,7 @@ describe('POST /game/start', () => {
         app = express();
         app.use(express.json());
         app.use(TestUserMiddleware(() => testUserId));
-        new StartGame(app);
+        new StartGame(app, IO);
         app.use(ErrorHandler);
     });
 

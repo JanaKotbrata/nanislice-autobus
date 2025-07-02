@@ -7,6 +7,8 @@ const Routes = require("../../../../shared/constants/routes.json");
 const TestUserMiddleware = require("../../services/test-user-middleware");
 const ErrorHandler = require("../../../src/middlewares/error-handler");
 const GameActions = require("../../../../shared/constants/game-actions.json");
+const IO = require("../../helpers/io-mock");
+
 const {
     userMock,
     activeGame,
@@ -29,7 +31,7 @@ describe('POST /game/action/process', () => {
         app = express();
         app.use(express.json());
         app.use(TestUserMiddleware(() => testUserId));
-        new ProcessAction(app);
+        new ProcessAction(app, IO);
         app.use(ErrorHandler);
     });
 

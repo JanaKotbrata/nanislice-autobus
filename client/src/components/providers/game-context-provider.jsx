@@ -47,11 +47,12 @@ function GameContextProvider({ children }) {
     setGameCode(game.code);
   }
 
-  function getMyself(isCurrentPlayerAction = true) {
+  function getMyself(isCurrentPlayerAction = true, action = null) {
     if (isCurrentPlayerAction) {
       const myselfIndex = getPlayerIndexAndValid(
         gamePlayers,
         currentPlayer,
+        action,
         showErrorAlert,
       );
       if (myselfIndex !== false) {
@@ -84,8 +85,8 @@ function GameContextProvider({ children }) {
     });
   }
 
-  function alterMyself(currentPlayers, changes) {
-    const myself = getMyself();
+  function alterMyself(currentPlayers, changes, action) {
+    const myself = getMyself(true, action);
 
     const newSelf = {
       ...myself,
@@ -285,7 +286,7 @@ function GameContextProvider({ children }) {
   }
 
   function reorderHand(card, newIndex) {
-    const myself = getMyself();
+    const myself = getMyself(true, GameActions.REORDER_HAND);
     if (myself) {
       const oldIndex = myself.hand.findIndex((c) => c.i === card.i);
       if (oldIndex === -1) {
@@ -320,7 +321,7 @@ function GameContextProvider({ children }) {
         GameActions.REORDER_HAND,
       );
 
-      alterMyself(gamePlayers, { hand: newHand });
+      alterMyself(gamePlayers, { hand: newHand }, GameActions.REORDER_HAND);
       setPlayers(gamePlayers);
     }
   }

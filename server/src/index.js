@@ -70,9 +70,6 @@ async function main() {
             socket.join(`${gameCode}_${userId}`);
             console.log(`Socket ${socket.id} joined lobby: ${gameCode}_${userId}`);
         });
-        socket.on("startGame", (gameCode, userId) => {
-            io.to(`${gameCode}_${userId}`).emit("gameStarted", { gameCode });
-        });
 
         socket.on("disconnect", () => {
             console.log("Uživatel odpojen:", socket.id);

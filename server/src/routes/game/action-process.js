@@ -14,8 +14,9 @@ const games = new GamesRepository();
 const users = new UsersRepository();
 
 class ProcessAction extends PostResponseHandler {
-    constructor(expressApp) {
+    constructor(expressApp, io) {
         super(expressApp, Routes.Game.ACTION_PROCESS, "processAction");
+        this.io = io;
     }
 
     async processAction(req) {
@@ -59,17 +60,30 @@ class ProcessAction extends PostResponseHandler {
 
         try {
             let newGame = await games.updateGame(game.id, updatedGame);
-            transformCurrentPlayerData(newGame, userId);
-            if (xp) {
-                xp = await users.addUserXP(userId, 100);
-                return {xp, newGame, success: true};
-            } else {
-                return {newGame, success: true};
-            }
+            newGame.playerList.forEach(player => {
+                const playerId = player.userId;
+                const playerGame = structuredClone(newGame);
+                transformCurrentPlayerData(playerGame, playerId);
+                console.log(`Emitting processAction event to ${gameCode}_${playerId}`);
+                this.io.to(`${gameCode}_${playerId}`).emit("processAction", {
+                    ...playerGame
+                });
+            })
+            return await this.#returnProcessActionData(userId, newGame, xp);
         } catch (error) {
             throw new GameErrors.FailedToUpdateGame(error);
         }
 
+    }
+
+    async #returnProcessActionData(userId, newGame, xp) {
+        transformCurrentPlayerData(newGame, userId);
+        if (xp) {
+            xp = await users.addUserXP(userId, 100);
+            return {xp, newGame, success: true};
+        } else {
+            return {newGame, success: true};
+        }
     }
 
     #removeCardFrom(source, card) {
@@ -108,13 +122,15 @@ class ProcessAction extends PostResponseHandler {
         const index = target.findIndex((c) => !c.rank);
         target[index] = card;
     };
-#completeCardList(newGame, targetIndex) {
-    if (newGame.gameBoard[targetIndex].length === RANK_CARD_ORDER.length) {
-        newGame.completedCardList = newGame.completedCardList || [];
-        newGame.completedCardList = [...newGame.completedCardList, ...newGame.gameBoard[targetIndex]];
-        newGame.gameBoard.splice(targetIndex, 1);
+
+    #completeCardList(newGame, targetIndex) {
+        if (newGame.gameBoard[targetIndex].length === RANK_CARD_ORDER.length) {
+            newGame.completedCardList = newGame.completedCardList || [];
+            newGame.completedCardList = [...newGame.completedCardList, ...newGame.gameBoard[targetIndex]];
+            newGame.gameBoard.splice(targetIndex, 1);
+        }
     }
-}
+
     #prepareGameData(game, userId, params) {
         const newGame = structuredClone(game);
         const {action, card, targetIndex, hand} = params;
@@ -276,7 +292,7 @@ class ProcessAction extends PostResponseHandler {
     }
 
     #setPlayerToDraw(myself) {
-    const hand = myself.hand.filter((card) => Number.isFinite(card?.i));
+        const hand = myself.hand.filter((card) => Number.isFinite(card?.i));
         if (hand.length === 0) {
             myself.isCardDrawed = false;
         }

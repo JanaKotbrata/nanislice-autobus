@@ -6,8 +6,6 @@ const socket = io("http://localhost:1234");
 export function useLobbySocket(userId, gameCode, setPlayers) {
   useEffect(() => {
     if (gameCode && userId) {
-      socket.emit("gameAction", gameCode, userId);
-
       socket.on("processAction", (data) => {
         if (data.gameCode === gameCode) {
           console.log("data", data);

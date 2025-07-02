@@ -84,7 +84,14 @@ function GameBoard({ player }) {
                 />
               );
             }
-            return <Card key={card.i} card={card} index={index} />;
+            return (
+              <Slot
+                key={card.i}
+                card={card}
+                index={index}
+                onDropCard={(card) => gameContext.reorderHand(card, index)}
+              />
+            );
           })}
         </div>
       </div>

@@ -17,6 +17,7 @@ const {
 } = require("../helpers/default-mocks");
 const {generateGameCode} = require("../../src/utils/helpers");
 const {RANK_CARD_ORDER} = require("../../src/utils/game-constants");
+const IO = require("../helpers/io-mock");
 
 let gamesCollection;
 let usersCollection;
@@ -34,7 +35,7 @@ describe('POST /game/action/process', () => {
         app = express();
         app.use(express.json());
         app.use(TestUserMiddleware(() => testUserId));
-        new ProcessAction(app);
+        new ProcessAction(app, IO);
         app.use(ErrorHandler);
     });
 

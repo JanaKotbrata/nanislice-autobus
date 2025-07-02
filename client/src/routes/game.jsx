@@ -17,7 +17,11 @@ function Game() {
   useEffect(() => {
     if (gameContext?.gameState === "initial") {
       navigate(`/lobby/${gameContext?.gameCode}`);
-    } else if (gameContext?.gameState !== "active") {
+    } else if (
+      gameContext &&
+      gameContext.gameState &&
+      gameContext.gameState !== "active"
+    ) {
       navigate(`/`);
     }
   }, [gameContext?.gameState]);
