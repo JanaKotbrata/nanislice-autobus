@@ -2,11 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 
 const howToPlaySteps = [
   "Cílem hry, je zbavit se všech karet v autobusu. Hráč, který jako první vyloží všechny karty z autobusu, vyhrává.",
-  "1. Každý hráč dostane 5 karet do ruky a 10 karet v autobuse. Také má k dispozici 4 místa v zastávce pro odložení karet.",
-  "2. Hráči se střídají ve hře. Na začátku každého kola si hráč lízne kartu, pokud nemá v ruce 5 karet.",
-  "3. Pokud má hráč v ruce, v zastávce nebo na vrchu autobusu nějakou kartu, která se hodí na hrací pole, může ji zahrát.",
-  "4. Pokud již hráč nemá žádnou kartu, co by mohl zahrát, tak odkládá kartu do zastávky (Do zastávky se mohou odkládat jakékoliv karty kromě Joker a Esa. Pokud již v zastávce není místo, hráč může odložit stejný rank karty, co je v zastávce. Pokud nemá stejný rank, musí kartu odložit dospod autobusu.), pokud mu došly karty v ruce, doplňuje 5 karet do ruky a pokračuje dále.",
-  "5. Do hracího pole se mohou jako první karty dávaj Esa nebo Joker(ten může nahradit jakoukoliv kartu). Na tyto karty se pokračuje v pořadí 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K. Když sloupec končí Králem, tak se uzavírá a míchá se zpět do balíčku karet, ze kterého se líže.",
+  "1. Každý hráč dostane 5 karet do ruky a 10 karet do autobusu. Ještě má k dispozici 4 místa v zastávce pro odložení karet.",
+  "2. Hráči se střídají a na začátku každého kola si hráč lízne kartu, dokud nemá v ruce 5 karet.",
+  "3. Do hracího pole se může jako první karta dát Eso nebo Joker (ten může nahradit jakoukoliv kartu). Na tyto karty se pokračuje v pořadí 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K. Když sloupec končí Králem, tak se uzavírá a míchá se zpět do balíčku karet, ze kterého se líže.",
+  "4. Pokud má hráč v ruce, v zastávce nebo na vrchu autobusu nějakou kartu, která se hodí na hrací pole, může ji zahrát.",
+  "5. Pokud již hráč nemá žádnou kartu, co by mohl zahrát, tak odkládá kartu do zastávky (Do zastávky se mohou odkládat jakékoliv karty kromě Joker a Esa. Pokud již v zastávce není místo, hráč může odložit stejný rank karty, co je v zastávce. Pokud nemá stejný rank, musí kartu odložit dospod autobusu.), pokud mu došly karty v ruce, doplňuje 5 karet do ruky a pokračuje dále.",
 ];
 
 function Instructions() {

@@ -214,7 +214,7 @@ function GameContextProvider({ children }) {
   //game logic
   function startNewPack(card) {
     const myself = getMyself();
-    if (myself) {
+    if (myself && myself.isCardDrawed) {
       let isInBus;
       let isInHand;
       if (myself.bus[0]?.i === card.i) {
@@ -249,6 +249,10 @@ function GameContextProvider({ children }) {
           bus: newBus,
         }),
       );
+    } else {
+      if (!myself.isCardDrawed) {
+        showErrorAlert("Lízni si laskavě než začneš něco dělat, dík!");
+      }
     }
   }
 
@@ -257,6 +261,7 @@ function GameContextProvider({ children }) {
     console.log("Adding card to pack:", card, "at index:", targetIndex);
     if (
       myself &&
+      myself.isCardDrawed &&
       canPlaceOnGBPack(card, gameBoard, targetIndex, showErrorAlert)
     ) {
       const { newHand, newBus, newBusStop, action } = getTargetAndAction(
@@ -282,6 +287,10 @@ function GameContextProvider({ children }) {
           busStop: newBusStop,
         }),
       );
+    } else {
+      if (!myself.isCardDrawed) {
+        showErrorAlert("Lízni si laskavě než začneš něco dělat, dík!");
+      }
     }
   }
 
