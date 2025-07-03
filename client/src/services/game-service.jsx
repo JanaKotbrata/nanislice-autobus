@@ -94,3 +94,12 @@ export async function createGame(data = {}) {
     throw error;
   }
 }
+export async function closeGame(data = {}) {
+  try {
+    const response = await axios.post(Routes.Game.CLOSE, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error closing game:", error);
+    throw error;
+  }
+}

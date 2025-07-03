@@ -5,6 +5,7 @@ import Card from "./card.jsx";
 function Slot({
   card,
   onDropCard,
+  packLength,
   index,
   isOverClass = "bg-gray-300",
   isDropClass = "bg-gray-800",
@@ -15,7 +16,6 @@ function Slot({
   const [{ isOver }, drop] = useDrop({
     accept: "CARD",
     drop: (item) => {
-      console.log("Drop event on slot!", item.card, index);
       onDropCard?.(item.card, index);
     },
     collect: (monitor) => ({
@@ -32,7 +32,12 @@ function Slot({
       }`}
     >
       {card?.rank ? (
-        <Card card={card} index={index} isBottomCard={isBottomCard} />
+        <Card
+          card={card}
+          index={index}
+          isBottomCard={isBottomCard}
+          packLength={packLength}
+        />
       ) : (
         ""
       )}

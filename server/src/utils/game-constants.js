@@ -5,6 +5,7 @@ const joker = "Jr"
 const States = {
     INITIAL: "initial",
     ACTIVE: "active",
+    FINISHED: "finished",
     CLOSED: "closed",
 }
 module.exports = {

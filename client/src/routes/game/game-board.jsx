@@ -35,9 +35,7 @@ function GameBoard({ player }) {
         // onDrop={(e) => handleCardDrag(e.card, index)}
         // onDragOver={(e) => e.preventDefault()}
       >
-        <h2 className="text-gray-900 text-xl font-bold mb-4">
-          Hrací pole {gameContext?.deck?.length}
-        </h2>
+        <h2 className="text-gray-900 text-xl font-bold mb-4">Hrací pole</h2>
         <div className="flex justify-center mb-6">
           <CardPack
             text={drawCardText}
@@ -53,20 +51,20 @@ function GameBoard({ player }) {
             />
           )}
           {gameContext.gameBoard.map((pack, index) => {
-            const card = pack[pack.length - 1];
-            const cardBefore = card.rank === "Jr" && pack[pack.length - 2];
+            const card = pack[pack.length - 1]; //TODO packLength je stejná jako count
             return (
               <GameBoardSlot
                 index={index}
-                key={card.i}
+                key={`gb_card_${card.i}`}
                 card={card}
                 onDropCard={gameContext.addToPack}
                 count={pack.length}
-                cardBefore={cardBefore}
+                packLength={pack.length - 1}
               />
             );
           })}
           <GameBoardSlot
+            key={`gb_nocard_${gameContext.gameBoard.length}`}
             index={gameContext.gameBoard.length}
             onDropCard={gameContext.startNewPack}
           />
@@ -74,19 +72,20 @@ function GameBoard({ player }) {
       </div>
 
       <div className="flex flex-row items-center justify-center">
+        {"🖐🏻"}
         <div className="flex gap-4 p-4 border-2 border-dashed border-gray-500 rounded-md justify-center">
           {player?.hand?.map((card, index) => {
             if (!card.rank) {
               return (
                 <Slot
-                  key={index}
+                  key={`gb_slot_nocard_${index}`}
                   onDropCard={(card) => gameContext.reorderHand(card, index)}
                 />
               );
             }
             return (
               <Slot
-                key={card.i}
+                key={`gb_slot_card_${card.i}`}
                 card={card}
                 index={index}
                 onDropCard={(card) => gameContext.reorderHand(card, index)}

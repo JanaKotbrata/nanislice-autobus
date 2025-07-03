@@ -65,7 +65,6 @@ export function canPlaceInBusStop(card, busStop, targetIndex, showErrorAlert) {
     return false;
   }
   const isSameCard = busStop[targetIndex]?.[0]?.rank === card.rank;
-  console.log("mm?", isSameCard);
   if (
     busStop[targetIndex] &&
     Object.keys(busStop[targetIndex]).length !== 0 &&
@@ -76,8 +75,7 @@ export function canPlaceInBusStop(card, busStop, targetIndex, showErrorAlert) {
     );
     return false;
   }
-
-  return true;
+  return busStop[targetIndex]?.[busStop[targetIndex].length - 1]?.i !== card.i;
 }
 
 export function canDraw() {}

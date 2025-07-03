@@ -1,16 +1,19 @@
 import React from "react";
 import { useDrag } from "react-dnd";
-
-function Card({ card, index, isBottomCard }) {
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: "CARD",
-    item: { card, index },
-    collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(),
+import RANK_CARD_ORDER from "../../../../shared/constants/rank-card-order.json";
+function Card({ card, index, isBottomCard, packLength }) {
+  const [{ isDragging }, drag] = useDrag(
+    () => ({
+      type: "CARD",
+      item: { card, index },
+      collect: (monitor) => ({
+        isDragging: !!monitor.isDragging(),
+      }),
     }),
-  }));
+    [card.i, index],
+  );
 
-  const backgroundColor = isBottomCard ? "bg-red-50 opacity-15" : "bg-white";
+  const backgroundColor = isBottomCard ? "bg-red-100 opacity-70" : "bg-white";
 
   // Barva podle suitu
   const isRedSuit = card.suit === "♥" || card.suit === "♦";
@@ -39,20 +42,33 @@ function Card({ card, index, isBottomCard }) {
         isDragging ? "opacity-50" : ""
       }`}
     >
-      {/* Pravý horní roh */}
+      {/* Pravý horní roh */
+      /*TODO method*/}
       <div
         className={`absolute top-1 right-1 text-xs leading-tight text-right ${textColor}`}
       >
-        <div className="font-bold">{card.rank}</div>
-        <div>{card.suit}</div>
+        {card.rank !== "Jr" ? (
+          <>
+            <div className="font-bold">{card.rank}</div>
+            <div>{card.suit}</div>
+          </>
+        ) : (
+          <div>{packLength ? RANK_CARD_ORDER[packLength] : "🃏"} </div>
+        )}
       </div>
 
       {/* Levý dolní roh (otočený celý blok) */}
       <div
         className={`absolute bottom-1 left-1 text-xs leading-tight transform rotate-180 text-left ${textColor}`}
       >
-        <div className="font-bold">{card.rank}</div>
-        <div>{card.suit}</div>
+        {card.rank !== "Jr" ? (
+          <>
+            <div className="font-bold">{card.rank}</div>
+            <div>{card.suit}</div>
+          </>
+        ) : (
+          <div>{packLength ? RANK_CARD_ORDER[packLength] : "🃏"}</div>
+        )}
       </div>
 
       {/* Emoji ve středu podle ranku */}

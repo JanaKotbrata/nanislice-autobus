@@ -73,15 +73,14 @@ function GameContextProvider({ children }) {
 
   //helpers
   function updateGameServerState(actionData, action) {
-    console.log("Do " + JSON.stringify(actionData) + " ac:" + action);
     processAction({ ...actionData, action }).then((newGameData) => {
-      console.log("Game state updated from server:", newGameData);
+      console.log("Game state updated from server");
       setPlayers(newGameData.playerList);
-      console.log("Players updated:", newGameData.playerList);
+      console.log("Players updated");
       setGameDeck(newGameData.deck);
-      console.log("Deck updated:", newGameData.deck);
+      console.log("Deck updated");
       setCurrentPlayer(newGameData.currentPlayer);
-      console.log("Current player updated:", newGameData.currentPlayer);
+      console.log("Current player updated");
     });
   }
 
@@ -202,13 +201,25 @@ function GameContextProvider({ children }) {
         };
       }
     }
-
-    return {
-      newHand: player.hand,
-      newBus: player.bus,
-      newBusStop: player.busStop,
-      action: null,
-    };
+    console.warn(
+      "Tady se dějou nějký divný věci..." +
+        JSON.stringify({
+          newHand: player.hand,
+          newBus: player.bus,
+          newBusStop: player.busStop,
+          action: null,
+        }),
+    );
+    showErrorAlert(
+      "Tady se dějou nějký divný věci..." +
+        JSON.stringify({
+          newHand: player.hand,
+          newBus: player.bus,
+          newBusStop: player.busStop,
+          action: null,
+        }),
+    );
+    return {};
   }
 
   //game logic
@@ -219,7 +230,6 @@ function GameContextProvider({ children }) {
       let isInHand;
       if (myself.bus[0]?.i === card.i) {
         isInBus = true;
-        console.log("Card is in bus:", card);
       }
       if (!isInBus) {
         isInHand = myself.hand.some((c) => c?.i === card.i);
@@ -239,16 +249,17 @@ function GameContextProvider({ children }) {
         card,
         true,
       );
+      if (action) {
+        placeCardOnGameBoard(gameBoard, card);
+        updateGameServerState({ card, gameCode }, action);
 
-      placeCardOnGameBoard(gameBoard, card);
-      updateGameServerState({ card, gameCode }, action);
-
-      setPlayers(
-        alterMyself(gamePlayers, {
-          hand: newHand,
-          bus: newBus,
-        }),
-      );
+        setPlayers(
+          alterMyself(gamePlayers, {
+            hand: newHand,
+            bus: newBus,
+          }),
+        );
+      }
     } else {
       if (!myself.isCardDrawed) {
         showErrorAlert("Lízni si laskavě než začneš něco dělat, dík!");
@@ -258,7 +269,6 @@ function GameContextProvider({ children }) {
 
   function addToPack(card, targetIndex) {
     const myself = getMyself();
-    console.log("Adding card to pack:", card, "at index:", targetIndex);
     if (
       myself &&
       myself.isCardDrawed &&
@@ -268,25 +278,20 @@ function GameContextProvider({ children }) {
         myself,
         card,
       );
-      console.log("Target and action:", {
-        newHand,
-        newBus,
-        newBusStop,
-        action,
-      });
+      if (action) {
+        gameBoard[targetIndex].push(card);
+        setGameBoard(gameBoard);
 
-      gameBoard[targetIndex].push(card);
-      setGameBoard(gameBoard);
+        updateGameServerState({ card, targetIndex, gameCode }, action);
 
-      updateGameServerState({ card, targetIndex, gameCode }, action);
-
-      setPlayers(
-        alterMyself(gamePlayers, {
-          hand: newHand,
-          bus: newBus,
-          busStop: newBusStop,
-        }),
-      );
+        setPlayers(
+          alterMyself(gamePlayers, {
+            hand: newHand,
+            bus: newBus,
+            busStop: newBusStop,
+          }),
+        );
+      }
     } else {
       if (!myself.isCardDrawed) {
         showErrorAlert("Lízni si laskavě než začneš něco dělat, dík!");
@@ -305,13 +310,14 @@ function GameContextProvider({ children }) {
         return;
       }
 
+      // Ochrana před špatnými indexy
       if (
         oldIndex < 0 ||
         newIndex < 0 ||
         oldIndex >= myself.hand.length ||
         newIndex >= myself.hand.length
       ) {
-        console.error("reorderHand: Invalid indexes", oldIndex, newIndex);
+        console.error("❌ reorderHand: Invalid indexes", oldIndex, newIndex);
         return;
       }
 
@@ -365,6 +371,7 @@ function GameContextProvider({ children }) {
         );
         return;
       }
+
       [newHand] = removeCardInTarget(myself.hand, card);
       if (destination === "busStop") {
         if (

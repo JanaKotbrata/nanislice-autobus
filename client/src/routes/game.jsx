@@ -8,12 +8,15 @@ import GameContext from "../context/game.js";
 import { useNavigate } from "react-router-dom";
 import { useGameSocket } from "../hooks/use-game-socket.js";
 import { useAuth } from "../context/auth-context.jsx";
+import SuccessAlert from "../components/alerts/success-alert.jsx";
+import { closeGame } from "../services/game-service";
 
 function Game() {
   const navigate = useNavigate();
   const gameContext = useContext(GameContext);
-  const [leftWidth, setLeftWidth] = useState(350);
+  const [leftWidth, setLeftWidth] = useState(400);
   const [dragging, setDragging] = useState(false);
+  const [showEndGame, setShowEndGame] = useState(false);
   const dragRef = useRef(null);
   const { user } = useAuth();
   useGameCode();
@@ -23,9 +26,19 @@ function Game() {
     } else if (
       gameContext &&
       gameContext.gameState &&
-      gameContext.gameState !== "active"
+      gameContext.gameState === "closed"
     ) {
       navigate(`/`);
+    } else if (
+      gameContext &&
+      gameContext.gameState &&
+      gameContext.gameState === "finished"
+    ) {
+      setTimeout(() => {
+        closeGame({ gameCode: gameContext.gameCode });
+        navigate(`/`);
+      }, 10000);
+      setShowEndGame(true);
     }
   }, [gameContext?.gameState]);
   useGameSocket(
@@ -34,30 +47,36 @@ function Game() {
     gameContext.setPlayers,
     gameContext.setContextGame,
   );
-  const handleMouseDown = () => {
+
+  function handleMouseDown() {
     setDragging(true);
     document.body.style.cursor = "ew-resize";
-  };
+  }
 
-  const handleMouseMove = (e) => {
+  function handleMouseMove(e) {
     if (!dragging) return;
     const newWidth = Math.max(200, leftWidth + e.movementX);
     setLeftWidth(newWidth);
-  };
+  }
 
-  const handleMouseUp = () => {
+  function handleMouseUp() {
     setDragging(false);
     document.body.style.cursor = "default";
-  };
+  }
 
-  const getPlayers = (players) => {
-    let newPlayers = [...players];
+  function getPlayers(players) {
+    let newPlayers = players.map((player, index) => ({
+      ...player,
+      position: index + 1,
+    }));
     let index = newPlayers.findIndex((player) => player?.myself);
     let myself = newPlayers.splice(index, 1)[0];
     return [myself, newPlayers];
-  };
+  }
+
   if (!gameContext?.players)
     return (
+      //TODO loading
       <div className="flex items-center justify-center h-full w-full">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
       </div>
@@ -82,6 +101,7 @@ function Game() {
             {players.map((player, index) => (
               <Player
                 key={"player_" + index}
+                position={player.position}
                 player={player}
                 isActivePlayer={
                   gameContext.players?.[gameContext.currentPlayer]?.userId ===
@@ -94,6 +114,7 @@ function Game() {
             <Player
               key={"myself_" + (gameContext.players.length - 1)}
               player={myself}
+              position={myself.position}
               isActivePlayer={
                 gameContext.players?.[gameContext.currentPlayer]?.userId ===
                 myself?.userId
@@ -116,6 +137,14 @@ function Game() {
           />
         </div>
       </div>
+      {showEndGame && (
+        <SuccessAlert
+          message={
+            "No to je dost, že si vyhrál: " +
+            gameContext.players.find((player) => !player.bus.length)?.name
+          }
+        />
+      )}
     </DndProvider>
   );
 }

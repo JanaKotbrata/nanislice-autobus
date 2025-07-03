@@ -187,7 +187,7 @@ class ProcessAction extends PostResponseHandler {
                     //if the destination is full, move cards to completedCardList
                     this.#completeCardList(newGame, targetIndex);
                     if (myself.bus.length === 0) {
-                        newGame.state = States.CLOSED;
+                        newGame.state = States.FINISHED;
                         newGame.winner = myself.userId;
                         xp = 100;
                         //TODO možná uvažovat nad tim ,že to ostatní ještě můžou dohrát - takže vymyslet procentuální expení na základě pořadí výhry

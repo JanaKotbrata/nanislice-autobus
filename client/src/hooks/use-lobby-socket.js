@@ -10,7 +10,6 @@ export function useLobbySocket(userId, gameCode, setPlayers, setContextGame) {
 
       socket.on("playerAdded", (data) => {
         if (data.gameCode === gameCode) {
-          console.log("data", data);
           setPlayers(data.playerList); //TODO mělo by se volat setContextGame
         }
       });
@@ -22,7 +21,6 @@ export function useLobbySocket(userId, gameCode, setPlayers, setContextGame) {
       });
 
       socket.on("gameStarted", (data) => {
-        console.log("Hra spuštěna:", data);
         if (data.code === gameCode) {
           if (setContextGame) {
             setContextGame(data);

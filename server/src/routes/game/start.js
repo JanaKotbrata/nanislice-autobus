@@ -50,12 +50,10 @@ class StartGame extends PostResponseHandler {
         let newGame = {...game, state: "active", deck, playerList, currentPlayer: 0} //TODO maybe random number between 0 and playerList.length
         try {
             const startedGame = await games.updateGame(game.id, newGame);
-            console.log(startedGame);
             startedGame.playerList.forEach(player => {
                 const playerId = player.userId;
                 const playerGame = structuredClone(startedGame);
                 transformCurrentPlayerData(playerGame, playerId);
-                console.log(`Emitting gameStarted event to ${gameCode}_${playerId}`);
                 this.io.to(`${gameCode}_${playerId}`).emit("gameStarted", {
                   ...playerGame
                 });

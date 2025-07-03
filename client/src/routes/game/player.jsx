@@ -1,21 +1,12 @@
-import React, { useContext, useState } from "react";
-import Card from "./card.jsx";
-import Slot from "./slot.jsx";
+import React, { useContext } from "react";
 import GameContext from "../../context/game.js";
+import Slot from "./slot.jsx";
 import BusSlot from "./bus-slot.jsx";
 
-/*
-* {discardPile.length > 0 ? (
-          discardPile.map((card, index) => <Card key={index} card={card} />)
-        ) : (
-          <Slot />
-        )}
-* */
-function Player({ player, isActivePlayer = false }) {
+function Player({ player, position, isActivePlayer = false }) {
   const gameContext = useContext(GameContext);
 
   function handleDropCard(card, dropIndex) {
-    console.log("Drop event!", card, dropIndex);
     gameContext.moveCardToSlot(card, dropIndex, "busStop");
   }
 
@@ -36,7 +27,9 @@ function Player({ player, isActivePlayer = false }) {
         isActivePlayer ? "bg-gray-900" : ""
       }`}
     >
-      <h2 className="text-lg font-semibold text-white">{player.name}</h2>
+      <h2 className="text-lg font-semibold text-white">
+        {position} {player.name}
+      </h2>
       <div className="flex gap-2 mt-2">
         <BusSlot
           index={0}
@@ -48,20 +41,21 @@ function Player({ player, isActivePlayer = false }) {
           bottomCard={bottomCard}
         />{" "}
         <div className="flex gap-2">
+          {"🚏"}
           {player?.busStop?.map((slot, index) => (
-            <div className="relative group" key={index}>
-              <div className="absolute top-1 left-1 text-xs bg-red-500 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200">
+            <div className="relative group" key={`player_slot_${index}`}>
+              <div className="absolute top-1 left-1 text-xs bg-red-500 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200 z-10">
                 <div>{slot.length}</div>
               </div>
 
               <Slot
-                key={index}
                 card={slot[slot.length - 1]}
                 index={index}
                 {...extraProps}
               />
             </div>
           ))}
+          {"🖐🏻 🃏 " + player?.handLength}
         </div>
       </div>
     </div>

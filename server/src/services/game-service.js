@@ -7,7 +7,12 @@ function transformCurrentPlayerData(game, userId) {
     for (let player of game.playerList) {
         const isCurrentUser = player.userId === userId;
         player.myself = isCurrentUser;
-
+        player.handLength = player.hand?.filter(
+            (card) =>
+                card &&
+                typeof card === "object" &&
+                "i" in card
+        ).length;
         if (!isCurrentUser) {
             delete player.hand;
         }
