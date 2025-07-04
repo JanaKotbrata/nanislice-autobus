@@ -13,7 +13,6 @@ function BusSlot({ card, onDropCard, index, count, bottomCard }) {
   }
   return (
     <div className="relative group" {...doubleClick}>
-      {"🚌"}
       {count && (
         <div className="absolute top-1 left-1 text-xs bg-red-500 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200 z-10">
           <div>{count}</div>

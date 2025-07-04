@@ -5,6 +5,7 @@ import { useAuth } from "../context/auth-context.jsx";
 import { addPlayer, createGame, getGame } from "../services/game-service.jsx";
 import GameContext from "../context/game.js";
 import { FaSignInAlt } from "react-icons/fa";
+import BusPattern from "../components/bus-pattern.jsx";
 
 function StartGame() {
   const { user } = useAuth();
@@ -48,43 +49,52 @@ function StartGame() {
       console.error("Chyba při připojování do hry:", error);
     }
   }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl aspect-square bg-gray-950/50  rounded-2xl shadow-2xl p-6 grid grid-cols-2 gap-4">
+    <section className="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center px-4">
+      <BusPattern />
+      <div className="w-full max-w-5xl dark:bg-gray-950/50 dark:border-black rounded-2xl shadow-2xl p-4 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-6 z-10">
         {/* Left box - Player info */}
-        <div className="flex flex-col items-center justify-center border-r-2 border-cyan-400/50 pr-4 ">
+        <div className="flex flex-col items-center justify-center border-b-2 md:border-b-0 md:border-r-2 border-cyan-400/50 pb-6 md:pb-0 md:pr-4">
           <img
-            src={user.picture}
+            src={
+              user.picture ||
+              "https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/pig-face.png"
+            }
             alt="avatar"
-            className="w-24 h-24 rounded-full shadow-md mb-4"
+            className="w-20 h-20 sm:w-24 sm:h-24 rounded-full shadow-md mb-4"
           />
-          <h2 className="text-xl font-semibold text-gray-700 mb-2">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2 text-center break-words max-w-full">
             {user.name}
           </h2>
           <button
-            className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-xl shadow hover:bg-blue-700 transition"
-            onClick={() => startGame()}
+            className="mt-4 px-4 py-2 sm:px-6 sm:py-2 bg-blue-600 text-white rounded-xl shadow hover:bg-blue-700 transition text-sm sm:text-base"
+            onClick={startGame}
           >
-            Create Game
+            Vytvoř novou partičku
           </button>
-          <input
-            type="text"
-            placeholder="Enter game code"
-            value={gameCode}
-            onChange={(e) => setGameCode(e.target.value)}
-            className="mt-4 px-6 py-2 border rounded-md mb-2"
-          />
-          <FaSignInAlt
-            className="text-gray-500 hover:text-green-500"
-            onClick={() => joinGame()}
-            title="Join Game"
-            size={16}
-          />
+
+          <div className="flex items-center justify-center gap-x-3 sm:gap-x-4 flex-wrap mt-4 w-full">
+            <input
+              type="text"
+              placeholder="Enter game code"
+              value={gameCode}
+              onChange={(e) => setGameCode(e.target.value)}
+              className="px-4 py-2 border rounded-md text-sm w-full sm:w-48 max-w-[70%] sm:max-w-[200px]"
+            />
+            <FaSignInAlt
+              className="text-gray-500 hover:text-green-500 cursor-pointer"
+              onClick={joinGame}
+              title="Join Game"
+              size={28}
+            />
+          </div>
         </div>
+
         {/* Right box - How to play */}
         <Instructions />
       </div>
-    </div>
+    </section>
   );
 }
 

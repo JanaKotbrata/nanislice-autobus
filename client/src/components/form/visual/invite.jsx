@@ -1,11 +1,8 @@
 import React, { useContext, useState } from "react";
-import DangerAlert from "../../alerts/danger-alert.jsx";
-import SuccessAlert from "../../alerts/danger-alert.jsx";
 import GameContext from "../../../context/game.js";
 
-function Invite({}) {
+function Invite() {
   const [copied, setCopied] = useState(null);
-  const [showAlert, setShowAlert] = useState(false);
   const gameContext = useContext(GameContext);
 
   const handleCopy = async () => {
@@ -13,7 +10,6 @@ function Invite({}) {
       const url = `Pojď hrát game: ${window.location.origin} join to game by gameCode: ${gameContext.gameCode}`;
       await navigator.clipboard.writeText(url);
       setCopied(true);
-      setShowAlert(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Nepodařilo se zkopírovat URL:", err);
@@ -21,40 +17,15 @@ function Invite({}) {
   };
 
   return (
-    <div className="flex bg-gray-200 justify-center items-center h-16 p-4 my-6  rounded-lg  shadow-inner">
-      <div className="flex items-center border border-green-700 p-2 border-dashed rounded cursor-pointer">
-        <div>
-          <svg
-            className="text-gray-500 w-6 h-6"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-            />
-          </svg>
+    <div className="flex justify-center items-center p-4 my-6 h-auto rounded-lg shadow-inner border border-cyan-700 border-dashed cursor-pointer hover:bg-cyan-300">
+      <button
+        onClick={handleCopy}
+        className="flex items-center gap-2 sm:gap-3 px-3 py-2 rounded  transition w-full sm:w-auto"
+      >
+        <div className="text-gray-500 font-medium text-sm sm:text-base break-words text-left">
+          {copied ? "Zkopírováno!" : "Pozvi kamaráda – klikni sem"}
         </div>
-        <div className="ml-1 text-gray-500 font-medium" onClick={handleCopy}>
-          {copied ? "Zkopírováno!" : "Copy - invite a friend"}
-          {/* showAlert && (
-              <SuccessAlert
-                message="Odkaz byl zkopírován do schránky."
-                onClose={() => setShowAlert(false)}
-              />
-            )*/
-          /*: (
-            <DangerAlert
-              message="Nepodařilo se zkopírovat odkaz."
-              onClose={() => setShowAlert(false)}
-            />
-          )*/}
-        </div>
-      </div>
+      </button>
     </div>
   );
 }

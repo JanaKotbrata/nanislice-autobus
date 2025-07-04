@@ -16,7 +16,7 @@ const SeznamLogin = () => {
   return (
     <Button onClick={(e) => handleSeznamLogin(e)}>
       <img className="mr-2" src={seznam} alt="logo" />
-      <span>Přihlásit se přes Seznam.cz</span>
+      <span>Continue with Seznam.cz</span>
     </Button>
   );
 };

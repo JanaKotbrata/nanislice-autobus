@@ -11,6 +11,7 @@ import { useLobbySocket } from "../hooks/use-lobby-socket.js";
 import { addPlayer, removePlayer } from "../services/game-service.jsx";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth-context.jsx";
+import BusPattern from "../components/bus-pattern.jsx";
 
 function Lobby() {
   const navigate = useNavigate();
@@ -35,7 +36,6 @@ function Lobby() {
     }
   }, [gameContext.gameState]);
 
-  //add player
   useEffect(() => {
     async function joinGame() {
       const isPlayerInGame = gameContext.players.some(
@@ -76,65 +76,72 @@ function Lobby() {
       </div>
     );
   }
+
   const shouldRender = !!myself?.creator;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl aspect-square bg-gray-950/50 rounded-2xl shadow-2xl p-6">
-        {/* První div obsahující informace o lobby */}
-        <div className="h-12 flex justify-between items-center border-b border-cyan-400/50 mb-20">
+    <section className="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center px-4">
+      <BusPattern />
+      <div className="w-full max-w-4xl dark:bg-gray-950/50 dark:border-black rounded-2xl shadow-2xl p-6 z-10">
+        {/* Header */}
+        <div className="h-12 flex justify-between items-center border-b border-cyan-400/50 mb-10">
           <div>
             <div className="text-xl font-bold text-gray-300">Lobby {code}</div>
             <div className="text-sm font-base text-gray-500">
               Waiting for more players...
             </div>
           </div>
-          <div>
-            <div className="flex items-center justify-center w-full shadow-md rounded-full">
-              <img className="h-12 w-12" src={nanislice} alt="logo" />
-            </div>
+          <div className="flex items-center justify-center w-full shadow-md rounded-full max-w-[3rem]">
+            <img className="h-12 w-12" src={nanislice} alt="logo" />
           </div>
         </div>
 
-        {/* Grid layout pro zbytek obsahu */}
-        <div className="grid grid-cols-2 gap-5">
-          {/* Left box - Player info */}
-          <div className="flex flex-col items-center border-r-2 border-cyan-400/50 px-4">
+        {/* Responsive grid layout */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {/* Left box - Players */}
+          <div className="flex flex-col items-center border-b sm:border-b-0 sm:border-r-2 border-cyan-400/50 sm:pr-4 gap-4 w-full">
             {gameContext.players.map((player) => (
               <div
                 key={player.userId}
-                className="flex items-center justify-center w-full gap-2"
+                className="flex items-center justify-between w-full max-w-[280px] gap-2"
               >
-                <Member
-                  level={player.creator ? "Zakladatel" : "Pleb"}
-                  picture={player.picture}
-                >
-                  {player.name}
-                </Member>
-                {player.myself ? (
-                  <FaSignOutAlt
-                    className="text-gray-500 hover:text-red-500"
-                    onClick={async () =>
-                      await handleRemovePlayer(player.userId)
-                    }
-                    title="Leave"
-                    size={16}
-                  />
-                ) : (
-                  <FaSignOutAlt className="opacity-0" size={16} />
-                )}
+                <div className="flex items-center gap-2 min-w-0">
+                  <Member
+                    level={player.creator ? "Zakladatel" : "Pleb"}
+                    picture={player.picture}
+                  >
+                    <span className="truncate">{player.name}</span>
+                  </Member>
+                </div>
+                <div className="shrink-0">
+                  {player.myself ? (
+                    <FaSignOutAlt
+                      className="text-gray-500 hover:text-red-500 cursor-pointer"
+                      onClick={async () =>
+                        await handleRemovePlayer(player.userId)
+                      }
+                      title="Leave"
+                      size={16}
+                    />
+                  ) : (
+                    <FaSignOutAlt className="invisible" size={16} />
+                  )}
+                </div>
               </div>
             ))}
 
             <Invite />
+
             {shouldRender && (
               <Start gameCode={code} playerList={gameContext.players} />
             )}
           </div>
-          {/* Right box - How to play */}
+
+          {/* Right box - Instructions */}
           <Instructions />
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
