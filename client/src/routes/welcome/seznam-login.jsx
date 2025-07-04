@@ -1,0 +1,24 @@
+import React from "react";
+import Button from "../../components/form/visual/button.jsx";
+import seznam from "../../assets/seznam-cz.png";
+import Config from "../../../../shared/config/config.json";
+
+const SeznamLogin = () => {
+  function handleSeznamLogin(e) {
+    e.preventDefault();
+    const redirectUrl = encodeURIComponent(
+      `${Config.CLIENT_URI}/auth-callback`,
+    );
+    console.log("redirectUrl", redirectUrl);
+    window.location.href = `${Config.SERVER_URI}/auth/seznam`;
+  }
+
+  return (
+    <Button onClick={(e) => handleSeznamLogin(e)}>
+      <img className="mr-2" src={seznam} alt="logo" />
+      <span>Přihlásit se přes Seznam.cz</span>
+    </Button>
+  );
+};
+
+export default SeznamLogin;

@@ -11,6 +11,7 @@ const users = new usersRepository();
 const ErrorHandler = require("./middlewares/error-handler");
 const initGoogleAuth = require("./services/google-auth-service");
 const initDiscordAuth = require("./services/discord-auth-service");
+const initSeznamAuth = require("./services/seznam-auth-service");
 const config = require("../config/config.json");
 const registerRoutes = require("./utils/register-routes");
 const createIndexes = require("./utils/create-indexes");
@@ -57,6 +58,7 @@ async function main() {
     //Init AUTH
     await initGoogleAuth(passport, app);
     await initDiscordAuth(passport, app);
+    await initSeznamAuth(passport, app);
 
     // for parse JSON requests
     app.use(express.json());

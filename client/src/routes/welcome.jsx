@@ -2,6 +2,7 @@ import React from "react";
 import nanislice from "../assets/nanislice.svg";
 import DiscordLogin from "./welcome/discord-login.jsx";
 import GoogleLogin from "./welcome/google-login.jsx";
+import SeznamLogin from "./welcome/seznam-login.jsx";
 
 function Welcome() {
   return (
@@ -34,6 +35,9 @@ function Welcome() {
               </div>
               <div className="flex items-center justify-between">
                 <DiscordLogin />
+              </div>
+              <div className="flex items-center justify-between">
+                <SeznamLogin />
               </div>
             </form>
           </div>

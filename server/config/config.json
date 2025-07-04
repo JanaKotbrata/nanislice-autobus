@@ -11,5 +11,9 @@
   "discord": {
     "client_id": "<id>",
     "client_secret": "<secret>"
+  },
+  "seznam": {
+    "client_id": "<id>",
+    "client_secret": "<secret>"
   }
 }
