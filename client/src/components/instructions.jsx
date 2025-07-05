@@ -25,12 +25,13 @@ function Instructions() {
     }, 10000);
     return () => clearInterval(interval);
   }, []);
+
   return (
     <div className="flex flex-col justify-center items-center text-center px-2 sm:px-4">
-      <h3 className="text-base sm:text-lg font-bold text-gray-400 mb-4">
-        How to Play
+      <h3 className="text-base sm:text-lg font-bold text-white mb-4">
+        Jak valit hru
       </h3>
-      <div className="bg-blue-950/50 p-4 sm:p-6 rounded-xl w-full h-64 sm:h-140 flex items-center justify-center text-sm sm:text-lg font-medium transition-all duration-300 shadow-lg">
+      <div className="bg-blue-950/50 p-4 sm:p-6 rounded-xl w-full h-64 sm:h-140 flex items-center justify-center text-sm sm:text-lg font-medium transition-all duration-300 shadow-lg text-white">
         {howToPlaySteps[currentSlide]}
       </div>
       <div className="flex gap-2 sm:gap-3 mt-6 flex-wrap justify-center">
@@ -40,8 +41,8 @@ function Instructions() {
             onClick={() => setCurrentSlide(index)}
             className={`w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full transition-all duration-300 ${
               currentSlide === index
-                ? "bg-gradient-to-r from-blue-900 to-gray-700 shadow-md scale-110"
-                : "bg-gray-700"
+                ? "bg-gradient-to-r from-gray-400 to-cyan-400 shadow-md scale-110"
+                : "!bg-gray-700"
             }`}
           />
         ))}
@@ -49,4 +50,5 @@ function Instructions() {
     </div>
   );
 }
+
 export default Instructions;

@@ -61,14 +61,6 @@ function Lobby() {
     }
   }
 
-  async function handleAddPlayer(userId) {
-    try {
-      await addPlayer({ gameCode: gameContext.gameCode, userId });
-    } catch (e) {
-      console.error("Juj", JSON.stringify(e));
-    }
-  }
-
   if (!gameContext?.players) {
     return (
       <div className="flex items-center justify-center h-full w-full">
@@ -80,15 +72,15 @@ function Lobby() {
   const shouldRender = !!myself?.creator;
 
   return (
-    <section className="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center px-4">
+    <section className="!bg-gray-900 min-h-screen flex items-center justify-center px-4">
       <BusPattern />
-      <div className="w-full max-w-4xl dark:bg-gray-950/50 dark:border-black rounded-2xl shadow-2xl p-6 z-10">
+      <div className="w-full max-w-4xl !bg-gray-950/80 !border-black rounded-2xl shadow-2xl p-6 z-10">
         {/* Header */}
         <div className="h-12 flex justify-between items-center border-b border-cyan-400/50 mb-10">
           <div>
             <div className="text-xl font-bold text-gray-300">Lobby {code}</div>
             <div className="text-sm font-base text-gray-500">
-              Waiting for more players...
+              Čekání na další autobusáky...
             </div>
           </div>
           <div className="flex items-center justify-center w-full shadow-md rounded-full max-w-[3rem]">
@@ -120,8 +112,8 @@ function Lobby() {
                       onClick={async () =>
                         await handleRemovePlayer(player.userId)
                       }
-                      title="Leave"
-                      size={16}
+                      title="Vystup ze hry"
+                      size={18}
                     />
                   ) : (
                     <FaSignOutAlt className="invisible" size={16} />

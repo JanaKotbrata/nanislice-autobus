@@ -1,9 +1,9 @@
 import React from "react";
 import { Rnd } from "react-rnd";
 
-function SuccessAlert({ message, onClose }) {
+function SuccessAlert({ message }) {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-700/50 z-40">
+    <div className="fixed inset-0 flex items-center justify-center !bg-gray-700/50 z-40">
       <Rnd
         default={{
           x: 300,
@@ -15,7 +15,7 @@ function SuccessAlert({ message, onClose }) {
       >
         <div
           id="alert-additional-content-2"
-          className="relative p-4 mb-4  text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400 border border-green-300   dark:border-green-800"
+          className="relative p-4 mb-4  rounded-lg  !bg-gray-800 !text-green-400 border  !border-green-800"
           role="alert"
         >
           <div className="flex items-center">

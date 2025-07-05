@@ -5,7 +5,7 @@ function DangerAlert({ message, onClose }) {
   const [showRules, setShowRules] = useState(false);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-700/50 z-40">
+    <div className="fixed inset-0 flex items-center justify-center !bg-gray-700/50 z-40">
       <Rnd
         default={{
           x: 100,
@@ -17,7 +17,7 @@ function DangerAlert({ message, onClose }) {
       >
         <div
           id="alert-additional-content-2"
-          className="relative p-4 mb-4 text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800"
+          className="relative p-4 mb-4 rounded-lg !bg-gray-800 text-red-400 !border-red-800"
           role="alert"
         >
           <div className="flex items-center">
@@ -37,7 +37,7 @@ function DangerAlert({ message, onClose }) {
             <button
               type="button"
               onClick={() => setShowRules(true)}
-              className="text-white bg-red-800 hover:bg-red-900 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 me-2 inline-flex items-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+              className="text-white font-medium rounded-lg text-xs px-3 py-1.5 me-2 inline-flex items-center !bg-red-600 !hover:bg-red-700 !focus:ring-red-800"
             >
               <svg
                 className="me-2 h-3 w-3"
@@ -53,7 +53,7 @@ function DangerAlert({ message, onClose }) {
             <button
               type="button"
               onClick={onClose}
-              className="text-red-800 bg-transparent border border-red-800 hover:bg-red-900 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 dark:hover:bg-red-600 dark:border-red-600 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800"
+              className="bg-transparent border focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 !hover:bg-red-600 !border-red-600 !text-red-500 !hover:text-white !focus:ring-red-800"
             >
               No jo furt
             </button>
@@ -61,8 +61,8 @@ function DangerAlert({ message, onClose }) {
 
           {/* Modal s pravidly */}
           {showRules && (
-            <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 rounded-lg">
-              <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-lg max-w-xs text-sm text-gray-800 dark:text-gray-100">
+            <div className="absolute inset-0 z-50 flex items-center justify-center !bg-black/60 rounded-lg">
+              <div className="!bg-gray-700 p-4 rounded-lg shadow-lg max-w-xs text-sm  !text-gray-100">
                 <h3 className="font-semibold mb-2">Pravidla</h3>
                 <h4>
                   Cílem hry, je zbavit se všech karet v autobusu. Hráč, který
@@ -98,7 +98,7 @@ function DangerAlert({ message, onClose }) {
                 </ol>
                 <button
                   onClick={() => setShowRules(false)}
-                  className="mt-4 text-xs px-3 py-1.5 rounded bg-red-600 hover:bg-red-700 text-white"
+                  className="mt-4 text-xs px-3 py-1.5 rounded !bg-red-600 !hover:bg-red-700 !text-white"
                 >
                   Zavřít
                 </button>

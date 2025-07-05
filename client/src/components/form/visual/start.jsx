@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { startGame } from "../../../services/game-service.jsx";
 import { useAuth } from "../../../context/auth-context.jsx";
 import GameContext from "../../../context/game.js";
+import Button from "./button.jsx";
 function Start({ gameCode, playerList }) {
   const navigate = useNavigate();
   const gameContext = useContext(GameContext);
@@ -12,18 +13,13 @@ function Start({ gameCode, playerList }) {
       gameContext.setContextGame(res);
       navigate(`/game/${res.code}`);
     } else {
-      alert("Nedostatek playerů"); //FIXME
+      alert("Nedostatek autobusáků. Pozvi někoho."); //FIXME
     }
   };
 
   return (
     <div className="p-6 ">
-      <button
-        onClick={() => handleStartClick()}
-        className="p-4 bg-amber-300 hover:bg-green-500 w-full rounded-lg shadow text-xl font-medium uppercase text-white"
-      >
-        Start the game
-      </button>
+      <Button onClick={() => handleStartClick()}>Start the game</Button>
     </div>
   );
 }

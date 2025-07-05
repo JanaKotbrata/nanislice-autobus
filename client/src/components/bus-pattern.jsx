@@ -12,7 +12,7 @@ function BusPattern() {
   const logoWidth = 44.831985;
   const logoHeight = 41.93;
   const scale = (cardWidth * 0.6) / logoWidth;
-  const translateX = cardWidth / 2 - (80 + logoWidth / 2) * scale;
+  const translateX = cardWidth / 2 - (76 + logoWidth / 2) * scale;
   const translateY = cardHeight / 2 - (98 + logoHeight / 2) * scale;
 
   const [windowSize, setWindowSize] = useState({
@@ -45,51 +45,51 @@ function BusPattern() {
               cx="15.7778"
               cy="28.4965"
               r="4.1111"
-              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.1 }}
+              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.6 }}
             />
             <circle
               cx="32.2222"
               cy="28.4965"
               r="4.1111"
-              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.1 }}
+              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.6 }}
             />
             <circle
               cx="15.7778"
               cy="28.4965"
               r="1.5417"
-              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.1 }}
+              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.6 }}
             />
             <circle
               cx="32.2222"
               cy="28.4965"
               r="1.5417"
-              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.1 }}
+              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.6 }}
             />
           </g>
           <g transform="matrix(4.4097222,0,0,4.4097222,-6.2364483,99.09314)">
             <path
               d="m 19.8889,28.4965 h 8.2222"
-              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.1 }}
+              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.6 }}
             />
             <path
               d="M 11.6667,28.4965 H 7.5556 C 6.5278,28.4965 5.5,27.4687 5.5,26.4409 V 9.9965 C 5.5,8.9687 6.5278,7.9409 7.5556,7.9409 h 32.8889 c 1.0278,0 2.0556,1.0278 2.0556,2.0556 v 16.4444 c 0,1.0278 -1.0278,2.0556 -2.0556,2.0556 h -4.1111"
-              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.1 }}
+              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.6 }}
             />
             <path
               d="m 5.5,20.2743 8.2222,-2.5694 H 38.3889 V 11.0243 H 5.5"
-              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.1 }}
+              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.6 }}
             />
             <path
               d="m 13.7222,11.0243 v 6.6806"
-              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.1 }}
+              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.6 }}
             />
             <path
               d="M 22.9722,17.7049 V 11.0243"
-              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.1 }}
+              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.6 }}
             />
             <path
               d="M 32.2222,17.7049 V 11.0243"
-              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.1 }}
+              style={{ fill: "none", stroke: "gray", strokeOpacity: 0.6 }}
             />
           </g>
         </g>
@@ -108,7 +108,7 @@ function BusPattern() {
           rx="5"
           ry="5"
           stroke="gray"
-          strokeOpacity="0.1"
+          strokeOpacity="0.6"
           strokeWidth="1"
           fill="none"
         />
@@ -146,19 +146,19 @@ function BusPattern() {
 
   return (
     <svg
-      className="absolute inset-0"
+      className="absolute inset-0 overflow-hidden"
       xmlns="http://www.w3.org/2000/svg"
       preserveAspectRatio="xMinYMin meet"
       fill="none"
       stroke="gray"
       strokeOpacity="0.1"
       strokeWidth={1}
-      viewBox={`0 0 ${cellWidth * cols} ${cellHeight * rows}`}
+      viewBox={`0 0 ${windowSize.width} ${windowSize.height}`}
     >
       {buses.map(({ x, y }, i) => {
         if (Math.random() < 0.75) return null;
 
-        return Math.random() > 0.125 ? renderBus(x, y, i) : renderCard(x, y, i);
+        return Math.random() > 0.3 ? renderBus(x, y, i) : renderCard(x, y, i);
       })}
     </svg>
   );
