@@ -80,7 +80,7 @@ describe('POST /game/action/process', () => {
             });
 
         expect(response.status).toBe(200);
-        expect(response.body.newGame.state).toBe(States.CLOSED);
+        expect(response.body.newGame.state).toBe(States.FINISHED);
 
 
     })

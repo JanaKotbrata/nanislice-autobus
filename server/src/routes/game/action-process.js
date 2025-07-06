@@ -80,10 +80,6 @@ class ProcessAction extends PostResponseHandler {
 
     }
 
-    async #returnProcessActionData(userId, newGame, xp) {
-        transformCurrentPlayerData(newGame, userId);
-
-    }
 
     #removeCardFrom(source, card) {
         const index = getCardIndex(card, source, GameErrors.CardDoesNotExist);
@@ -163,6 +159,12 @@ class ProcessAction extends PostResponseHandler {
                     GameBoardValidation.validationOfNewDestination(card);
                     newGame.gameBoard.push([card]);
                     this.#removeCardFrom(myself.bus, card);
+                    if (myself.bus.length === 0) {
+                        newGame.state = States.FINISHED;
+                        newGame.winner = myself.userId;
+                        xp = 100;
+                        //TODO možná uvažovat nad tim ,že to ostatní ještě můžou dohrát - takže vymyslet procentuální expení na základě pořadí výhry
+                    }
                 }, [GameActions.MOVE_CARD_TO_BOARD]: () => {
                     GameBoardValidation.validationOfGameBoard(newGame, targetIndex, card);
                     this.#removeCardFromHand(myself.hand, card);

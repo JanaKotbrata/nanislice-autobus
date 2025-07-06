@@ -10,8 +10,8 @@ function GameBoardSlot({ card, onDropCard, index, packLength }) {
         packLength={packLength}
         onDropCard={onDropCard}
         index={index}
-        isOverClass={"bg-gray-300"}
-        isDropClass={"bg-white"}
+        isOverClass={"bg-gray-300/30"}
+        isDropClass={"bg-white/60"}
         isDraggable={false}
       ></Slot>
     </div>

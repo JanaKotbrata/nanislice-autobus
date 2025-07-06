@@ -131,7 +131,7 @@ function Game() {
         />
 
         {/* Pravá sekce - Hrací pole */}
-        <div className="flex-grow bg-gray-200 p-6">
+        <div className="flex-grow bg-gray-900 p-6">
           <GameBoard
             player={gameContext.players.find((p) => p.myself)}
             cardPack={gameContext.deck}

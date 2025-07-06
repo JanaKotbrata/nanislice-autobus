@@ -18,3 +18,15 @@
   will-change: filter;
   transition: filter 300ms;
 }
+.board {
+  background-color: #3d5336;
+  background-image: repeating-linear-gradient(
+          55deg,
+          rgba(255, 255, 255, 0.015) 0px,
+          rgba(255, 255, 255, 0.015) 1px,
+          transparent 2px,
+          transparent 6px
+  );
+  background-blend-mode: overlay;
+  color: white;
+}
