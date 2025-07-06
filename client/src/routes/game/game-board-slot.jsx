@@ -12,6 +12,7 @@ function GameBoardSlot({ card, onDropCard, index, packLength }) {
         index={index}
         isOverClass={"bg-gray-300"}
         isDropClass={"bg-white"}
+        isDraggable={false}
       ></Slot>
     </div>
   );

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Slot from "./slot.jsx";
 
-function BusSlot({ card, onDropCard, index, count, bottomCard }) {
+function BusSlot({ card, onDropCard, index, count, bottomCard, isDraggable }) {
   const [showBottomCard, setShowBottomCard] = useState(false);
 
   const handleDoubleClick = () => {
@@ -27,6 +27,7 @@ function BusSlot({ card, onDropCard, index, count, bottomCard }) {
         isDropClass={"bg-white"}
         border={""}
         isBottomCard={!!showBottomCard}
+        isDraggable={isDraggable}
       />
     </div>
   );

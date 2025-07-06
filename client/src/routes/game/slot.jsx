@@ -11,6 +11,7 @@ function Slot({
   isDropClass = "bg-gray-800",
   border = "border-dashed border-gray-500",
   isBottomCard = false,
+  isDraggable = true,
 }) {
   const slotRef = useRef(null);
   const [{ isOver }, drop] = useDrop({
@@ -37,6 +38,7 @@ function Slot({
           index={index}
           isBottomCard={isBottomCard}
           packLength={packLength}
+          isDraggable={isDraggable}
         />
       ) : (
         ""

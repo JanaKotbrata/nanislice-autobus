@@ -1,22 +1,18 @@
 import RANK_CARD_ORDER from "../../../shared/constants/rank-card-order.json";
 import GameActions from "../../../shared/constants/game-actions.json";
 
-export function getPlayerIndexAndValid(
+export function getPlayerAndValid(
   gamePlayers,
   currentPlayer,
-  action,
   showErrorAlert,
+  isReorderHand = false,
 ) {
   const playerIndex = gamePlayers.findIndex((player) => player.myself);
-  if (
-    playerIndex !== currentPlayer &&
-    action &&
-    action !== GameActions.REORDER_HAND
-  ) {
+  if (playerIndex !== currentPlayer && !isReorderHand) {
     showErrorAlert(`Kam pospícháš?! Nejsi na tahu!`);
     return false;
   }
-  return playerIndex;
+  return gamePlayers[playerIndex];
 }
 
 export function canPlaceOnGameBoard(card, showErrorAlert) {

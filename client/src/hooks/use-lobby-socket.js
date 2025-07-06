@@ -3,20 +3,20 @@ import { io } from "socket.io-client";
 import Config from "../../../shared/config/config.json";
 const socket = io(Config.SERVER_URI);
 
-export function useLobbySocket(userId, gameCode, setPlayers, setContextGame) {
+export function useLobbySocket(userId, gameCode, setContextGame) {
   useEffect(() => {
     if (gameCode && userId) {
       socket.emit("listenToGame", gameCode, userId);
 
       socket.on("playerAdded", (data) => {
         if (data.gameCode === gameCode) {
-          setPlayers(data.playerList); //TODO mělo by se volat setContextGame
+          setContextGame(data);
         }
       });
 
       socket.on("playerRemoved", (data) => {
         if (data.gameCode === gameCode) {
-          setPlayers(data.playerList); //TODO mělo by se volat setContextGame - PLUS NĚJAK DODĚLAT TEN CONTEXT
+          setContextGame(data);
         }
       });
 
@@ -34,7 +34,7 @@ export function useLobbySocket(userId, gameCode, setPlayers, setContextGame) {
       socket.off("playerRemoved");
       socket.off("gameStarted");
     };
-  }, [userId, gameCode, setPlayers, setContextGame]);
+  }, [userId, gameCode, setContextGame]);
 
   return socket;
 }

@@ -4,7 +4,7 @@ import Config from "../../../shared/config/config.json";
 
 const socket = io(Config.SERVER_URI);
 
-export function useGameSocket(userId, gameCode, setPlayers, setContextGame) {
+export function useGameSocket(userId, gameCode, setContextGame) {
   useEffect(() => {
     if (gameCode && userId) {
       socket.emit("listenToGame", gameCode, userId);
@@ -18,7 +18,7 @@ export function useGameSocket(userId, gameCode, setPlayers, setContextGame) {
     return () => {
       socket.off("processAction");
     };
-  }, [userId, gameCode, setPlayers, setContextGame]);
+  }, [userId, gameCode, setContextGame]);
 
   return socket;
 }

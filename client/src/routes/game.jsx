@@ -41,12 +41,7 @@ function Game() {
       setShowEndGame(true);
     }
   }, [gameContext?.gameState]);
-  useGameSocket(
-    user.id,
-    gameContext.gameCode,
-    gameContext.setPlayers,
-    gameContext.setContextGame,
-  );
+  useGameSocket(user.id, gameContext.gameCode, gameContext.setContextGame);
 
   function handleMouseDown() {
     setDragging(true);
@@ -83,7 +78,7 @@ function Game() {
     );
 
   const [myself, players] = getPlayers(gameContext.players);
-
+  const isTooManyPlayers = players.length > 3;
   return (
     <DndProvider backend={HTML5Backend}>
       <div
@@ -107,6 +102,8 @@ function Game() {
                   gameContext.players?.[gameContext.currentPlayer]?.userId ===
                   player?.userId
                 }
+                isDraggable={false}
+                expandable={isTooManyPlayers}
               />
             ))}
           </div>
@@ -116,6 +113,10 @@ function Game() {
               player={myself}
               position={myself.position}
               isActivePlayer={
+                gameContext.players?.[gameContext.currentPlayer]?.userId ===
+                myself?.userId
+              }
+              isDraggable={
                 gameContext.players?.[gameContext.currentPlayer]?.userId ===
                 myself?.userId
               }

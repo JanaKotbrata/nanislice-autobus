@@ -6,142 +6,75 @@ import {
   canPlaceInBusStop,
   canPlaceOnGameBoard,
   canPlaceOnGBPack,
-  getPlayerIndexAndValid,
+  getPlayerAndValid,
 } from "../../services/game-validation";
 
 const maxHandSize = 5;
 
 function GameContextProvider({ children }) {
   const [gameCode, setGameCode] = useState(null);
-  const code = useRef(null);
   const [game, setGame] = useState(null);
-  const [gamePlayers, setPlayers] = useState([]);
-  const [gameState, setGameState] = useState(null);
-  const [currentPlayer, setCurrentPlayer] = useState(null);
-  const [gameDeck, setGameDeck] = useState([]);
-  const [gameBoard, setGameBoard] = useState([]);
-  const [errorMessage, setErrorMessage] = React.useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
+  const code = useRef(null);
+
+  const players = game?.playerList || [];
+  const gameDeck = game?.deck || [];
+  const currentPlayer = game?.currentPlayer;
+  const gameBoard = game?.gameBoard || [];
+  const gameState = game?.state;
 
   useEffect(() => {
-    const fetchPlayers = async () => {
+    const fetchGame = async () => {
       try {
-        const game = await getGame({ code: gameCode });
-        setContextGame(game);
+        const fetchedGame = await getGame({ code: gameCode });
+        setContextGame(fetchedGame);
       } catch (err) {
-        console.error("Nepodařilo se načíst hráče:", err);
+        console.error("Nepodařilo se načíst hru:", err);
       }
     };
     if (gameCode && gameCode !== code.current) {
-      fetchPlayers();
+      fetchGame().catch((err) => console.error("Chyba při fetchGame:", err));
     }
   }, [gameCode]);
 
   function setContextGame(game) {
-    setPlayers(game.playerList); //TODO stačí setGame a používat jen tu game
-    setGameDeck(game.deck);
-    setGameState(game.state);
-    setCurrentPlayer(game.currentPlayer);
-    setGameBoard(game.gameBoard);
+    setGame(game);
     code.current = game.code;
     setGameCode(game.code);
   }
 
-  function getMyself(isCurrentPlayerAction = true, action = null) {
-    if (isCurrentPlayerAction) {
-      const myselfIndex = getPlayerIndexAndValid(
-        gamePlayers,
-        currentPlayer,
-        action,
-        showErrorAlert,
-      );
-      if (myselfIndex !== false) {
-        return gamePlayers[myselfIndex];
-      } else {
-        return false;
-      }
-    } else {
-      return gamePlayers.find((player) => player.myself);
-    }
-  }
-
   function showErrorAlert(message) {
-    //TODO Udělat provider pro error(alert)? a tam dávat metody k němu? a nějak to jakoby zavalit
     setErrorMessage(message);
     setShowAlert(true);
   }
 
-  //helpers
   function updateGameServerState(actionData, action) {
-    processAction({ ...actionData, action }).then((newGameData) => {
-      console.log("Game state updated from server");
-      setPlayers(newGameData.playerList);
-      console.log("Players updated");
-      setGameDeck(newGameData.deck);
-      console.log("Deck updated");
-      setCurrentPlayer(newGameData.currentPlayer);
-      console.log("Current player updated");
-    });
-  }
-
-  function alterMyself(currentPlayers, changes, action) {
-    const myself = getMyself(true, action);
-
-    const newSelf = {
-      ...myself,
-      ...changes,
-    };
-
-    return currentPlayers.map((player) => {
-      if (player.myself) return newSelf;
-      return { ...player };
-    });
-  }
-
-  function placeCardInBusStop(busStop, card, targetIndex) {
-    const newBusStop = [...busStop];
-    newBusStop[targetIndex] = card;
-    return newBusStop;
-  }
-
-  function placeCardOnGameBoard(gameBoard, card) {
-    setGameBoard([...gameBoard, [card]]);
-  }
-
-  function addCardToHand(newCard) {
-    setPlayers((currentPlayers) => {
-      const myself = getMyself();
-      const noCardIndex = myself.hand.findIndex((c) => !c.rank);
-      const newHand = [...myself.hand];
-      if (noCardIndex !== -1) {
-        newHand[noCardIndex] = newCard;
-      }
-      return alterMyself(currentPlayers, {
-        hand: newHand,
+    processAction({ ...actionData, action })
+      .then(setGame)
+      .catch((err) => {
+        console.error("Chyba při updateGameServerState:", err);
       });
-    });
   }
 
-  function removeCardInTarget(target, targetCard, isHand = false) {
+  function alterMyself(changes) {
+    setGame((prevGame) => ({
+      ...prevGame,
+      playerList: prevGame.playerList.map((player) =>
+        player.myself ? { ...player, ...changes } : player,
+      ),
+    }));
+  }
+
+  function removeCardInTarget(target, targetCard) {
     let removed = false;
-    let newTarget;
-    if (isHand) {
-      newTarget = target.map((c) => {
-        if (!removed && c.i === targetCard.i) {
-          removed = true;
-          return {};
-        }
-        return c;
-      });
-    } else {
-      newTarget = target.filter((c) => {
-        if (!removed && c?.i === targetCard.i) {
-          removed = true;
-          return false;
-        }
-        return true;
-      });
-    }
+    const newTarget = target.map((c) => {
+      if (!removed && c?.i === targetCard.i) {
+        removed = true;
+        return {};
+      }
+      return c;
+    });
     return [newTarget, removed];
   }
 
@@ -163,7 +96,7 @@ function GameContextProvider({ children }) {
   }
 
   function getTargetAndAction(player, card, isStart = false) {
-    let [newHand, removed] = removeCardInTarget(player.hand, card, true);
+    let [newHand, removed] = removeCardInTarget(player.hand, card);
     if (removed) {
       return {
         newHand,
@@ -201,15 +134,7 @@ function GameContextProvider({ children }) {
         };
       }
     }
-    console.warn(
-      "Tady se dějou nějký divný věci..." +
-        JSON.stringify({
-          newHand: player.hand,
-          newBus: player.bus,
-          newBusStop: player.busStop,
-          action: null,
-        }),
-    );
+
     showErrorAlert(
       "Tady se dějou nějký divný věci..." +
         JSON.stringify({
@@ -222,193 +147,132 @@ function GameContextProvider({ children }) {
     return {};
   }
 
-  //game logic
+  function drawCard() {
+    const myself = getPlayerAndValid(players, currentPlayer, showErrorAlert);
+    if (!myself) return;
+    if (myself.isCardDrawed) {
+      return showErrorAlert("Teď si nemůžeš líznout kartu.");
+    }
+    const handLength = myself.hand.filter((c) => c.rank).length;
+    if (handLength >= maxHandSize) return;
+
+    const newCard = { i: -1, rank: "počkej", suit: "na mě" };
+    const newHand = [...myself.hand];
+    const index = newHand.findIndex((c) => !c.rank);
+    if (index !== -1) newHand[index] = newCard;
+    else newHand.push(newCard);
+
+    alterMyself({ hand: newHand });
+    updateGameServerState({ gameCode }, GameActions.DRAW_CARD);
+  }
+
   function startNewPack(card) {
-    const myself = getMyself();
-    if (myself && myself.isCardDrawed) {
-      let isInBus;
-      let isInHand;
-      if (myself.bus[0]?.i === card.i) {
-        isInBus = true;
-      }
-      if (!isInBus) {
-        isInHand = myself.hand.some((c) => c?.i === card.i);
-      }
+    const myself = getPlayerAndValid(players, currentPlayer, showErrorAlert);
+    if (!myself) return;
+    if (!myself.isCardDrawed) {
+      showErrorAlert("Lízni si laskavě než začneš něco dělat, dík!");
+      return;
+    }
+    if (!canPlaceOnGameBoard(card, showErrorAlert)) return;
 
-      if (!isInHand && !isInBus) {
-        showErrorAlert("O co se teď snažíš jako? To fakt ne...");
-        return;
-      }
-
-      if (!canPlaceOnGameBoard(card, showErrorAlert)) {
-        return;
-      }
-
-      const { newHand, newBus, action } = getTargetAndAction(
-        myself,
-        card,
-        true,
-      );
-      if (action) {
-        placeCardOnGameBoard(gameBoard, card);
-        updateGameServerState({ card, gameCode }, action);
-
-        setPlayers(
-          alterMyself(gamePlayers, {
-            hand: newHand,
-            bus: newBus,
-          }),
-        );
-      }
-    } else {
-      if (!myself.isCardDrawed) {
-        showErrorAlert("Lízni si laskavě než začneš něco dělat, dík!");
-      }
+    const { newHand, newBus, action } = getTargetAndAction(myself, card, true);
+    if (action) {
+      setGame((prev) => ({
+        ...prev,
+        gameBoard: [...prev.gameBoard, [card]],
+      }));
+      alterMyself({ hand: newHand, bus: newBus });
+      updateGameServerState({ card, gameCode }, action);
     }
   }
 
   function addToPack(card, targetIndex) {
-    const myself = getMyself();
-    if (
-      myself &&
-      myself.isCardDrawed &&
-      canPlaceOnGBPack(card, gameBoard, targetIndex, showErrorAlert)
-    ) {
-      const { newHand, newBus, newBusStop, action } = getTargetAndAction(
-        myself,
-        card,
-      );
-      if (action) {
-        gameBoard[targetIndex].push(card);
-        setGameBoard(gameBoard);
+    const myself = getPlayerAndValid(players, currentPlayer, showErrorAlert);
+    if (!myself) return;
+    if (!myself.isCardDrawed) {
+      showErrorAlert("Lízni si laskavě než začneš něco dělat, dík!");
+      return;
+    }
+    if (!canPlaceOnGBPack(card, gameBoard, targetIndex, showErrorAlert)) return;
 
-        updateGameServerState({ card, targetIndex, gameCode }, action);
-
-        setPlayers(
-          alterMyself(gamePlayers, {
-            hand: newHand,
-            bus: newBus,
-            busStop: newBusStop,
-          }),
-        );
-      }
-    } else {
-      if (!myself.isCardDrawed) {
-        showErrorAlert("Lízni si laskavě než začneš něco dělat, dík!");
-      }
+    const { newHand, newBus, newBusStop, action } = getTargetAndAction(
+      myself,
+      card,
+    );
+    if (action) {
+      const newBoard = [...gameBoard];
+      newBoard[targetIndex].push(card);
+      setGame((prev) => ({ ...prev, gameBoard: newBoard }));
+      alterMyself({ hand: newHand, bus: newBus, busStop: newBusStop });
+      updateGameServerState({ card, targetIndex, gameCode }, action);
     }
   }
 
   function reorderHand(card, newIndex) {
-    const myself = getMyself(true, GameActions.REORDER_HAND);
-    if (myself) {
-      const oldIndex = myself.hand.findIndex((c) => c.i === card.i);
-      if (oldIndex === -1) {
-        showErrorAlert(
-          `Tak co chceš, cheatovat nebo co? No nemůžeš si tu kartu dát zpátky, že jo...`,
-        );
-        return;
-      }
+    const myself = getPlayerAndValid(
+      players,
+      currentPlayer,
+      showErrorAlert,
+      true,
+    );
+    if (!myself) return;
 
-      // Ochrana před špatnými indexy
-      if (
-        oldIndex < 0 ||
-        newIndex < 0 ||
-        oldIndex >= myself.hand.length ||
-        newIndex >= myself.hand.length
-      ) {
-        console.error("❌ reorderHand: Invalid indexes", oldIndex, newIndex);
-        return;
-      }
-
-      const newHand = [...myself.hand];
-      const movedCard = newHand[oldIndex];
-
-      // SWAP dvou karet
-      newHand[oldIndex] = newHand[newIndex];
-      newHand[newIndex] = movedCard;
-
-      updateGameServerState(
-        {
-          gameCode,
-          hand: newHand,
-        },
-        GameActions.REORDER_HAND,
+    const oldIndex = myself.hand.findIndex((c) => c.i === card.i);
+    if (oldIndex === -1 || newIndex < 0 || newIndex >= myself.hand.length) {
+      showErrorAlert(
+        "Tak co chceš, cheatovat nebo co? No nemůžeš si tu kartu dát do ruky, že jo...",
       );
-
-      alterMyself(gamePlayers, { hand: newHand }, GameActions.REORDER_HAND);
-      setPlayers(gamePlayers);
+      return;
     }
-  }
 
-  function drawCard() {
-    const myself = getMyself();
-    if (myself) {
-      if (!myself.isCardDrawed) {
-        const handLength = myself.hand.filter((c) => c.rank).length;
-        if (handLength === maxHandSize) return;
-        gameDeck.pop();
-        const newCard = { i: -1, rank: "počkej", suit: "na mě" };
-        addCardToHand(newCard);
-        setGameDeck(gameDeck);
+    const newHand = [...myself.hand];
+    const movedCard = newHand[oldIndex];
+    newHand[oldIndex] = newHand[newIndex];
+    newHand[newIndex] = movedCard;
 
-        updateGameServerState({ gameCode }, GameActions.DRAW_CARD);
-      } else {
-        showErrorAlert("Teď si nemůžeš líznout kartu.");
-      }
-    }
+    alterMyself({ hand: newHand });
+    updateGameServerState(
+      { gameCode, hand: newHand },
+      GameActions.REORDER_HAND,
+    );
   }
 
   function moveCardToSlot(card, targetIndex, destination) {
-    const myself = getMyself();
-    if (myself) {
-      let newBus = myself.bus;
-      let newHand = myself.hand;
-      let newBusStop = myself.busStop;
-      if (destination === "hand") {
-        showErrorAlert(
-          `Tak co chceš, cheatovat nebo co? No nemůžeš si tu kartu dát zpátky, že jo...`,
-        );
-        return;
-      }
+    const myself = getPlayerAndValid(players, currentPlayer, showErrorAlert);
+    if (!myself) return;
 
-      [newHand] = removeCardInTarget(myself.hand, card);
-      if (destination === "busStop") {
-        if (
-          !canPlaceInBusStop(card, myself.busStop, targetIndex, showErrorAlert)
-        ) {
-          return;
-        }
-
-        newBusStop = placeCardInBusStop(newBusStop, card, targetIndex);
-
-        updateGameServerState(
-          {
-            targetIndex,
-            card,
-            gameCode,
-          },
-          GameActions.MOVE_CARD_TO_BUS_STOP,
-        );
-      } else {
-        newBus = myself.bus.unshift(card);
-
-        updateGameServerState(
-          {
-            card,
-            gameCode,
-          },
-          GameActions.MOVE_CARD_TO_BUS,
-        );
-      }
-      setPlayers(
-        alterMyself(gamePlayers, {
-          hand: newHand,
-          busStop: newBusStop,
-          bus: newBus,
-        }),
-      );
+    if (myself.bus.some((c) => c?.i === card.i)) {
+      showErrorAlert("Necheatuj! Nemůžeš si vyndatavat karty z autobusu.");
+      return;
     }
+
+    let [newHand] = removeCardInTarget(myself.hand, card);
+    let newBusStop = myself.busStop;
+    let newBus = myself.bus;
+
+    if (destination === "hand") {
+      showErrorAlert(
+        "Tak co chceš, cheatovat nebo co? No nemůžeš si tu kartu dát do ruky, že jo...",
+      );
+      return;
+    }
+
+    if (destination === "busStop") {
+      if (!canPlaceInBusStop(card, myself.busStop, targetIndex, showErrorAlert))
+        return;
+      const newStop = [...myself.busStop];
+      newStop[targetIndex] = card;
+      newBusStop = newStop;
+      updateGameServerState(
+        { targetIndex, card, gameCode },
+        GameActions.MOVE_CARD_TO_BUS_STOP,
+      );
+    } else {
+      newBus = [card, ...myself.bus];
+      updateGameServerState({ card, gameCode }, GameActions.MOVE_CARD_TO_BUS);
+    }
+
+    alterMyself({ hand: newHand, busStop: newBusStop, bus: newBus });
   }
 
   return (
@@ -417,15 +281,13 @@ function GameContextProvider({ children }) {
         setGameCode,
         gameCode,
         setContextGame,
-        setPlayers,
         moveCardToSlot,
         drawCard,
         startNewPack,
         addToPack,
         reorderHand,
-        setGame,
         game,
-        players: gamePlayers,
+        players,
         deck: gameDeck,
         gameBoard,
         currentPlayer,

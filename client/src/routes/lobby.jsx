@@ -20,12 +20,7 @@ function Lobby() {
   const { user } = useAuth();
 
   const myself = gameContext.players.find((player) => player.myself);
-  useLobbySocket(
-    user.id,
-    gameContext.gameCode,
-    gameContext.setPlayers,
-    gameContext.setContextGame,
-  );
+  useLobbySocket(user.id, gameContext.gameCode, gameContext.setContextGame);
 
   useEffect(() => {
     if (gameContext.gameState === "active") {

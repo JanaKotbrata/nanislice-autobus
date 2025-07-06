@@ -11,8 +11,9 @@ function GameBoard({ player }) {
   const boardRef = useRef(null);
   const isCurrentPlayer =
     gameContext.players?.[gameContext.currentPlayer]?.myself;
-  const drawCardText =
-    isCurrentPlayer && !player.isCardDrawed ? "Lízní kartu!" : "🚌";
+  const isDrawedCard = isCurrentPlayer && !player.isCardDrawed;
+  const drawCardText = isDrawedCard ? "Lízní kartu!" : "🚌";
+
   //přetažení karty na bílou plochu - Neni to tu nutné, protože přetahuji na slot, ale necham to
   // const [{ isOver }, drop] = useDrop({
   //   accept: "CARD",
@@ -40,6 +41,7 @@ function GameBoard({ player }) {
           <CardPack
             text={drawCardText}
             onDrawCard={isCurrentPlayer && gameContext.drawCard}
+            isDrawedCard={isDrawedCard}
           />
         </div>
 
