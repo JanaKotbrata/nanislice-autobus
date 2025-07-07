@@ -78,6 +78,7 @@ function Game() {
 
   const [myself, players] = getPlayers(gameContext.players);
   const isTooManyPlayers = players.length > 3;
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div

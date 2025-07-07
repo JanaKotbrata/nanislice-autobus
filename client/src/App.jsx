@@ -14,6 +14,7 @@ import Lobby from "./routes/lobby.jsx";
 import Welcome from "./routes/welcome.jsx";
 import Game from "./routes/game.jsx";
 import About from "./routes/about.jsx";
+import Profile from "./routes/profile.jsx";
 import AuthCallback from "./routes/auth-callback.jsx";
 import StartGame from "./routes/start-game.jsx";
 import translations from "./i18n/translations.json";
@@ -82,6 +83,14 @@ function App() {
               element={
                 <NotAuthenticatedRoute>
                   <About />
+                </NotAuthenticatedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <NotAuthenticatedRoute>
+                  <Profile />
                 </NotAuthenticatedRoute>
               }
             />
