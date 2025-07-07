@@ -59,10 +59,7 @@ class AddGamePlayer extends PostResponseHandler {
                 const playerGame = structuredClone(updatedGame);
                 transformCurrentPlayerData(playerGame, playerId);
                 console.log(`Emitting playerAdded event to ${gameCode}_${playerId}`);
-                this.io.to(`${gameCode}_${playerId}`).emit("playerAdded", {
-                    gameCode,
-                    playerList: playerGame.playerList,
-                });
+                this.io.to(`${gameCode}_${playerId}`).emit("playerAdded", playerGame);
             })
             return {...updatedGame, success: true};
         } catch (error) {

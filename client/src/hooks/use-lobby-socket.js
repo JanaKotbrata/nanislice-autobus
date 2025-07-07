@@ -7,15 +7,14 @@ export function useLobbySocket(userId, gameCode, setContextGame) {
   useEffect(() => {
     if (gameCode && userId) {
       socket.emit("listenToGame", gameCode, userId);
-
       socket.on("playerAdded", (data) => {
-        if (data.gameCode === gameCode) {
+        if (data.code === gameCode) {
           setContextGame(data);
         }
       });
 
       socket.on("playerRemoved", (data) => {
-        if (data.gameCode === gameCode) {
+        if (data.code === gameCode) {
           setContextGame(data);
         }
       });

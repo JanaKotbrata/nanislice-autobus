@@ -47,10 +47,13 @@ class RemoveGamePlayer extends PostResponseHandler {
                 try {
                     const updatedGame = await games.updateGame(game.id, updateData);
                     transformCurrentPlayerData(updatedGame, userId);
-                    this.io.to(gameCode).emit("playerRemoved", {
-                        gameCode,
-                        playerList: updatedGame.playerList,
-                    });
+                    updatedGame.playerList.forEach(player => {
+                        const playerId = player.userId;
+                        const playerGame = structuredClone(updatedGame);
+                        transformCurrentPlayerData(playerGame, playerId);
+                        console.log(`Emitting playerRemoved event to ${gameCode}_${playerId}`);
+                        this.io.to(`${gameCode}_${playerId}`).emit("playerRemoved", playerGame);
+                    })
                     return {...updatedGame, success: true};
                 } catch (error) {
                     console.error("Failed to remove player:", error);
