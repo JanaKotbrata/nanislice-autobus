@@ -12,6 +12,7 @@ import { addPlayer, removePlayer } from "../services/game-service.jsx";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth-context.jsx";
 import BusPattern from "../components/bus-pattern.jsx";
+import { getAvatar } from "../services/user-service.jsx";
 
 function Lobby() {
   const navigate = useNavigate();
@@ -34,7 +35,11 @@ function Lobby() {
       );
 
       if (!isPlayerInGame) {
-        await addPlayer({ gameCode: gameContext.gameCode, userId: user.id });
+        const game = await addPlayer({
+          gameCode: gameContext.gameCode,
+          userId: user.id,
+        });
+        gameContext.setContextGame(game);
       }
     }
 
@@ -85,35 +90,38 @@ function Lobby() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {/* Left box - Players */}
           <div className="flex flex-col items-center border-b sm:border-b-0 sm:border-r-2 border-cyan-400/50 sm:pr-4 gap-4 w-full">
-            {gameContext.players.map((player) => (
-              <div
-                key={player.userId}
-                className="flex items-center justify-between w-full max-w-[280px] gap-2"
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <Member
-                    level={player.creator ? "Zakladatel" : "Pleb"}
-                    picture={player.picture}
-                  >
-                    <span className="truncate">{player.name}</span>
-                  </Member>
+            {gameContext.players.map((player) => {
+              const avatarUri = getAvatar(player.userId);
+              return (
+                <div
+                  key={player.userId}
+                  className="flex items-center justify-between w-full max-w-[280px] gap-2"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Member
+                      level={player.creator ? "Zakladatel" : "Pleb"}
+                      picture={avatarUri}
+                    >
+                      <span className="truncate">{player.name}</span>
+                    </Member>
+                  </div>
+                  <div className="shrink-0">
+                    {player.myself ? (
+                      <FaSignOutAlt
+                        className="text-gray-500 hover:text-red-500 cursor-pointer"
+                        onClick={async () =>
+                          await handleRemovePlayer(player.userId)
+                        }
+                        title="Vystup ze hry"
+                        size={18}
+                      />
+                    ) : (
+                      <FaSignOutAlt className="invisible" size={16} />
+                    )}
+                  </div>
                 </div>
-                <div className="shrink-0">
-                  {player.myself ? (
-                    <FaSignOutAlt
-                      className="text-gray-500 hover:text-red-500 cursor-pointer"
-                      onClick={async () =>
-                        await handleRemovePlayer(player.userId)
-                      }
-                      title="Vystup ze hry"
-                      size={18}
-                    />
-                  ) : (
-                    <FaSignOutAlt className="invisible" size={16} />
-                  )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
 
             <Invite />
 

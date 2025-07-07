@@ -2,10 +2,12 @@ import React, { useContext, useState } from "react";
 import GameContext from "../../context/game.js";
 import Slot from "./slot.jsx";
 import BusSlot from "./bus-slot.jsx";
+import Routes from "../../../../shared/constants/routes.json";
+import Config from "../../../../shared/config/config.json";
+import { getAvatar } from "../../services/user-service.jsx";
 
 function Player({
   player,
-  position,
   isActivePlayer = false,
   expandable = false,
   isDraggable = true,
@@ -28,6 +30,8 @@ function Player({
     }
   }
 
+  const avatarUri = getAvatar(player.userId);
+
   return (
     <div
       className={`w-full transition-all duration-300 ease-in-out rounded-xl border-b border-gray-600
@@ -39,9 +43,15 @@ function Player({
           ${expandable ? "cursor-pointer" : ""}`}
         onClick={() => expandable && setExpanded((prev) => !prev)}
       >
-        <span>
-          {position}. {player.name}
-        </span>
+        <div className="flex items-center gap-2 truncate">
+          <img
+            src={avatarUri}
+            alt={player.name}
+            className="w-6 h-6 rounded-full object-cover border border-gray-400"
+          />
+
+          <span className="truncate">{player.name}</span>
+        </div>
         {expandable && (
           <span className="ml-2 text-sm">{expanded ? "▲" : "▼"}</span>
         )}
@@ -75,7 +85,7 @@ function Player({
                   <div
                     className="absolute top-1 left-1 text-[0.6rem] bg-red-500 px-1 rounded
                       opacity-0 invisible group-hover:opacity-100 group-hover:visible
-                      transition-opacity duration-200 z-10"
+                      transition-opacity duration-200 z-30"
                   >
                     {slot.length}
                   </div>

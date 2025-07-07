@@ -3,6 +3,7 @@ const config = require('../../config/config.json');
 const UsersRepository = require('../models/users-repository');
 const jwt = require('jsonwebtoken');
 const Config = require('../../../shared/config/config.json');
+const downloadAvatar = require("../utils/download-image");
 const users = new UsersRepository();
 const JWT_SECRET = config.secret;
 
@@ -22,21 +23,28 @@ async function initSeznamAuth(passport, app) {
             async (accessToken, refreshToken, profile, done) => {
                 try {
                     const userInfoResponse = await fetch('https://login.szn.cz/api/v1/user', {
-                        headers: { Authorization: `Bearer ${accessToken}` },
+                        headers: {Authorization: `Bearer ${accessToken}`},
                     });
                     const userInfo = await userInfoResponse.json();
-                    const existingUser = await users.getUserByEmail(userInfo.email);
-                    if (existingUser) return done(null, existingUser);
-
-                    const newUser = await users.createUser({
-                        seznamId: userInfo.oauth_user_id,
-                        email: userInfo.email,
-                        name: userInfo.firstname + ' ' + userInfo.lastname,
-                        picture: userInfo.avatar_url || null,
-                        level: 0,
-                    });
-
-                    done(null, newUser);
+                    let user = await users.getUserByEmail(userInfo.email);
+                    if (!user) {
+                        user = await users.createUser({
+                            seznamId: userInfo.oauth_user_id,
+                            email: userInfo.email,
+                            name: userInfo.firstname + ' ' + userInfo.lastname,
+                            picture: userInfo.avatar_url || null,
+                            level: 0,
+                        });
+                    } else {
+                        if (!user.seznamId) {
+                            user = await users.updateUser(user.id, {
+                                seznamId: userInfo.oauth_user_id,
+                                sys: user.sys,
+                            });
+                        }
+                    }
+                    await downloadAvatar(user.picture, user.id);
+                    done(null, user);
                 } catch (err) {
                     done(err, null);
                 }
@@ -49,9 +57,9 @@ async function initSeznamAuth(passport, app) {
 
     app.get(
         '/auth/seznam/callback',
-        passport.authenticate('seznam', { failureRedirect: '/' }),
+        passport.authenticate('seznam', {failureRedirect: '/'}),
         (req, res) => {
-            const token = jwt.sign({ id: req.user.id }, JWT_SECRET, { expiresIn: '24h' });
+            const token = jwt.sign({id: req.user.id}, JWT_SECRET, {expiresIn: '24h'});
             res.redirect(`${Config.CLIENT_URI}/auth-callback?token=${token}`);
         }
     );

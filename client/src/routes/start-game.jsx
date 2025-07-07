@@ -7,6 +7,7 @@ import GameContext from "../context/game.js";
 import { FaSignInAlt } from "react-icons/fa";
 import BusPattern from "../components/bus-pattern.jsx";
 import Button from "../components/form/visual/button.jsx";
+import { getAvatar } from "../services/user-service.jsx";
 
 function StartGame() {
   const { user } = useAuth();
@@ -43,14 +44,15 @@ function StartGame() {
       return;
     }
     try {
-      await addPlayer({ userId: user.id, gameCode });
+      let game = await addPlayer({ userId: user.id, gameCode });
+      gameContext.setContextGame(game);
       navigate(`/lobby/${gameCode}`);
     } catch (error) {
       alert(error.message);
       console.error("Chyba při připojování do hry:", error);
     }
   }
-
+  const avatarUri = getAvatar(user.id);
   return (
     <section className="!bg-gray-900 min-h-screen flex items-center justify-center px-4">
       <BusPattern />
@@ -58,17 +60,22 @@ function StartGame() {
         {/* Left box - Player info */}
         <div className="flex flex-col items-center justify-center border-b-2 md:border-b-0 md:border-r-2 border-cyan-400/50 pb-6 md:pb-0 md:pr-4">
           <img
-            src={
-              user.picture ||
-              "https://s3.amazonaws.com/pix.iemoji.com/images/emoji/apple/ios-12/256/pig-face.png"
-            }
+            src={avatarUri}
             alt="avatar"
             className="w-20 h-20 sm:w-24 sm:h-24 rounded-full shadow-md mb-4"
           />
           <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-5 text-center break-words max-w-full">
             {user.name}
           </h2>
-          <Button onClick={startGame}>Vytvoř novou partičku</Button>
+          <Button onClick={startGame}>
+            <>
+              <span className="text-base">Vytvoř novou partičku</span>
+              <br />
+              <span className="text-sm text-gray-400">
+                Pokud již v nějaké jsi, tak tě to nasměruje na ní
+              </span>
+            </>
+          </Button>
 
           <div className="flex items-center justify-center gap-x-3 sm:gap-x-4 flex-wrap mt-4 w-full">
             <input

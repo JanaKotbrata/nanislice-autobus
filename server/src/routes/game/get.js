@@ -3,7 +3,6 @@ const {get: schema} = require("../../data-validations/game/validation-schemas");
 const {GetResponseHandler} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes.json");
 const {transformCurrentPlayerData, getGame} = require("../../services/game-service");
-const {States} = require("../../utils/game-constants");
 
 
 class GetGame extends GetResponseHandler {

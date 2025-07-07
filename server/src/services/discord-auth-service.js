@@ -4,6 +4,7 @@ const UsersRepository = require('../models/users-repository');
 const users = new UsersRepository();
 const jwt = require('jsonwebtoken');
 const Config = require("../../../shared/config/config.json");
+const downloadAvatar = require("../utils/download-image");
 const JWT_SECRET = config.secret;
 
 async function initDiscordAuth(passport, app) {
@@ -17,7 +18,10 @@ async function initDiscordAuth(passport, app) {
             },
             async (accessToken, refreshToken, profile, done) => {
                 const existingUser = await users.getUserByDiscordId(profile.id);
-                if (existingUser) return done(null, existingUser);
+                if (existingUser) {
+                    await downloadAvatar(existingUser.picture, existingUser.id);
+                    return done(null, existingUser);
+                }
                 //try to find user by email
                 let user = await users.getUserByEmail(profile.email);
                 if (!user) {
@@ -33,6 +37,7 @@ async function initDiscordAuth(passport, app) {
                         user = await users.updateUser(user.id, {discordId: profile.id, sys: user.sys});
                     }
                 }
+                await downloadAvatar(user.picture, user.id);
                 const newUser = await users.getUserById(user.id);
                 done(null, newUser);
             }

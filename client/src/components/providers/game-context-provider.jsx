@@ -19,7 +19,6 @@ function GameContextProvider({ children }) {
   const [showAlert, setShowAlert] = useState(false);
   const code = useRef(null);
   const navigate = useNavigate();
-
   const players = game?.playerList || [];
   const gameDeck = game?.deck || [];
   const currentPlayer = game?.currentPlayer;

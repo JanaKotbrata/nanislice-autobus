@@ -20,7 +20,7 @@ function GameBoard({ player }) {
     if (isDrawedCard) {
       const timer = setTimeout(() => {
         setShouldPulse(true);
-      }, 10000);
+      }, 7000);
       return () => clearTimeout(timer);
     } else {
       setShouldPulse(false);

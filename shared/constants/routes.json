@@ -12,6 +12,7 @@
         "ACTION_PROCESS": "/api/game/action/process"
     },
     "User": {
-        "AUTHENTICATE": "/api/user/authenticate"
+        "AUTHENTICATE": "/api/user/authenticate",
+        "GET_AVATAR": "/api/user/avatar/get"
     }
 }

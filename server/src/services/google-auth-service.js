@@ -4,6 +4,7 @@ const UsersRepository = require('../models/users-repository');
 const jwt = require("jsonwebtoken");
 const Config = require("../../../shared/config/config.json");
 const users = new UsersRepository();
+const downloadAvatar = require('../utils/download-image');
 const JWT_SECRET = config.secret;
 
 async function initGoogleAuth(passport, app) {
@@ -17,7 +18,10 @@ async function initGoogleAuth(passport, app) {
             async (accessToken, refreshToken, profile, done) => {
                 try {
                     const existingUser = await users.getUserByGoogleId(profile.id);
-                    if (existingUser) return done(null, existingUser);
+                    if (existingUser) {
+                        await downloadAvatar(existingUser.picture, existingUser.id);
+                        return done(null, existingUser);
+                    }
                     //try to find user by email
                     let user = await users.getUserByEmail(profile.emails[0].value);
                     if (!user) {
@@ -28,11 +32,13 @@ async function initGoogleAuth(passport, app) {
                             picture: profile.photos[0].value,
                             level: 0,
                         });
+
                     } else {
                         if (!user.googleId) {
                             user = await users.updateUser(user.id, {googleId: profile.id, sys: user.sys});
                         }
                     }
+                    await downloadAvatar(user.picture, user.id);
                     const newUser = await users.getUserById(user.id);
                     done(null, newUser);
                 } catch (err) {

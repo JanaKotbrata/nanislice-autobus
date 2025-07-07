@@ -1,5 +1,6 @@
 import axios from "axios";
 import Routes from "../../../shared/constants/routes.json";
+import Config from "../../../shared/config/config.json";
 
 export async function initAuth(token, logout) {
   let response;
@@ -25,4 +26,7 @@ export async function initAuth(token, logout) {
     logout();
     throw new Error("Unauthenticated user");
   }
+}
+export function getAvatar(userId) {
+  return `${Config.SERVER_URI}${Routes.User.GET_AVATAR}?userId=${userId}`;
 }

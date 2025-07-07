@@ -21,9 +21,9 @@
 .board {
   background-color: #3d5336;
   background-image: repeating-linear-gradient(
-          55deg,
-          rgba(255, 255, 255, 0.015) 0px,
-          rgba(255, 255, 255, 0.015) 1px,
+          45deg,
+          rgba(255, 255, 255, 0.045) 0px,
+          rgba(255, 255, 255, 0.045) 1px,
           transparent 2px,
           transparent 6px
   );

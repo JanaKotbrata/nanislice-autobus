@@ -63,18 +63,18 @@ function Game() {
       ...player,
       position: index + 1,
     }));
-    let index = newPlayers.findIndex((player) => player?.myself);
-    let myself = newPlayers.splice(index, 1)[0];
-    return [myself, newPlayers];
-  }
 
-  if (!gameContext?.players)
-    return (
-      //TODO loading
-      <div className="flex items-center justify-center h-full w-full">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
-      </div>
-    );
+    let index = newPlayers.findIndex((player) => player?.myself);
+
+    let myself = newPlayers.splice(index, 1)[0];
+
+    let orderedPlayers = [
+      ...newPlayers.slice(index),
+      ...newPlayers.slice(0, index),
+    ];
+
+    return [myself, orderedPlayers];
+  }
 
   const [myself, players] = getPlayers(gameContext.players);
   const isTooManyPlayers = players.length > 3;
@@ -95,7 +95,6 @@ function Game() {
             {players.map((player, index) => (
               <Player
                 key={"player_" + index}
-                position={player.position}
                 player={player}
                 isActivePlayer={
                   gameContext.players?.[gameContext.currentPlayer]?.userId ===
@@ -110,7 +109,6 @@ function Game() {
             <Player
               key={"myself_" + (gameContext.players.length - 1)}
               player={myself}
-              position={myself.position}
               isActivePlayer={
                 gameContext.players?.[gameContext.currentPlayer]?.userId ===
                 myself?.userId

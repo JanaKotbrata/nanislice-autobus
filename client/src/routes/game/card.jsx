@@ -62,7 +62,7 @@ function Card({ card, index, isBottomCard, packLength, isDraggable = true }) {
       title={`${card.rank} ${card.suit}`}
       className={`relative w-12 h-20 ${backgroundColor} border border-gray-800 flex items-center justify-center rounded-md shadow cursor-pointer ${
         isDragging ? "opacity-50" : ""
-      }`}
+      } z-20`}
     >
       <CornerLabel
         position="top"

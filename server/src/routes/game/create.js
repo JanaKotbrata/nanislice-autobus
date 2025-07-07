@@ -43,7 +43,7 @@ class CreateGame extends PostResponseHandler {
             const newGame = {
                 code: gameCode,
                 state: States.INITIAL,
-                playerList: [{userId: user.id, picture: user.picture, name: user.name, creator: true}],
+                playerList: [{userId: user.id, name: user.name, creator: true}],
                 gameBoard: [],
                 completedCardList: [],
             };
