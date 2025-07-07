@@ -1,7 +1,6 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { useGameCode } from "../hooks/use-game-code.js";
 import Player from "./game/player.jsx";
 import GameBoard from "./game/game-board.jsx";
 import GameContext from "../context/game.js";
@@ -19,7 +18,7 @@ function Game() {
   const [showEndGame, setShowEndGame] = useState(false);
   const dragRef = useRef(null);
   const { user } = useAuth();
-  useGameCode();
+
   useEffect(() => {
     if (gameContext?.gameState === "initial") {
       navigate(`/lobby/${gameContext?.gameCode}`);

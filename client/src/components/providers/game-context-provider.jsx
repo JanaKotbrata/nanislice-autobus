@@ -8,6 +8,7 @@ import {
   canPlaceOnGBPack,
   getPlayerAndValid,
 } from "../../services/game-validation";
+import { useNavigate } from "react-router-dom";
 
 const maxHandSize = 5;
 
@@ -17,6 +18,7 @@ function GameContextProvider({ children }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
   const code = useRef(null);
+  const navigate = useNavigate();
 
   const players = game?.playerList || [];
   const gameDeck = game?.deck || [];
@@ -31,6 +33,7 @@ function GameContextProvider({ children }) {
         setContextGame(fetchedGame);
       } catch (err) {
         console.error("Nepodařilo se načíst hru:", err);
+        navigate("/");
       }
     };
     if (gameCode && gameCode !== code.current) {
@@ -275,6 +278,13 @@ function GameContextProvider({ children }) {
     alterMyself({ hand: newHand, busStop: newBusStop, bus: newBus });
   }
 
+  function isLoading() {
+    console.log("Checking if loading...", gameCode, game);
+    const returnVal = (gameCode && !game) || gameCode !== game?.code;
+    console.log("isLoading:", returnVal);
+    return returnVal;
+  }
+
   return (
     <GameContext.Provider
       value={{
@@ -291,6 +301,7 @@ function GameContextProvider({ children }) {
         deck: gameDeck,
         gameBoard,
         currentPlayer,
+        loading: isLoading(),
         gameState,
         errorMessage,
         setErrorMessage,

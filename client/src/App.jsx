@@ -17,6 +17,8 @@ import About from "./routes/about.jsx";
 import AuthCallback from "./routes/auth-callback.jsx";
 import StartGame from "./routes/start-game.jsx";
 import translations from "./i18n/translations.json";
+import Loading from "./components/loading.jsx";
+import GameLoading from "./components/game-loading.jsx";
 
 let currentLang = "cs";
 
@@ -56,7 +58,7 @@ function NotAuthenticatedRoute({ children }) {
     return <Navigate to={navigateTo} />;
   }
   if (loading) {
-    return <div>Loading...</div>; // FIXME - komponenta pro loading
+    return <Loading />;
   }
   return children;
 }
@@ -96,7 +98,9 @@ function App() {
               path="/lobby/:code"
               element={
                 <ProtectedRoute>
-                  <Lobby />
+                  <GameLoading>
+                    <Lobby />
+                  </GameLoading>
                 </ProtectedRoute>
               }
             />
@@ -104,7 +108,9 @@ function App() {
               path="/game/:code"
               element={
                 <ProtectedRoute>
-                  <Game />
+                  <GameLoading>
+                    <Game />
+                  </GameLoading>
                 </ProtectedRoute>
               }
             />

@@ -15,7 +15,6 @@ import BusPattern from "../components/bus-pattern.jsx";
 
 function Lobby() {
   const navigate = useNavigate();
-  const code = useGameCode();
   const gameContext = useContext(GameContext);
   const { user } = useAuth();
 
@@ -25,9 +24,6 @@ function Lobby() {
   useEffect(() => {
     if (gameContext.gameState === "active") {
       navigate(`/game/${gameContext.gameCode}`);
-    }
-    if (!code || code === "null") {
-      navigate(`/`);
     }
   }, [gameContext.gameState]);
 
@@ -73,7 +69,9 @@ function Lobby() {
         {/* Header */}
         <div className="h-12 flex justify-between items-center border-b border-cyan-400/50 mb-10">
           <div>
-            <div className="text-xl font-bold text-gray-300">Lobby {code}</div>
+            <div className="text-xl font-bold text-gray-300">
+              Lobby {gameContext.gameCode}
+            </div>
             <div className="text-sm font-base text-gray-500">
               Čekání na další autobusáky...
             </div>
@@ -120,7 +118,10 @@ function Lobby() {
             <Invite />
 
             {shouldRender && (
-              <Start gameCode={code} playerList={gameContext.players} />
+              <Start
+                gameCode={gameContext.gameCode}
+                playerList={gameContext.players}
+              />
             )}
           </div>
 
