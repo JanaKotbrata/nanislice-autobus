@@ -27,6 +27,19 @@ export async function initAuth(token, logout) {
     throw new Error("Unauthenticated user");
   }
 }
-export function getAvatar(userId) {
-  return `${Config.SERVER_URI}${Routes.User.GET_AVATAR}?userId=${userId}`;
+export async function updateUser(data = {}) {
+  try {
+    const response = await axios.post(Routes.User.UPDATE, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error setting player:", error);
+    throw error;
+  }
+}
+export function getAvatar(userId, cacheBreaker = "") {
+  const target = `${Config.SERVER_URI}${Routes.User.GET_AVATAR}?userId=${userId}`;
+  if (cacheBreaker) {
+    return `${target}&cacheBreaker=${cacheBreaker}`;
+  }
+  return target;
 }

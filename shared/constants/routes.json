@@ -15,6 +15,7 @@
     "User": {
         "AUTHENTICATE": "/api/user/authenticate",
         "GET_AVATAR": "/api/user/avatar/get",
-        "LIST": "/api/user/list"
+        "LIST": "/api/user/list",
+        "UPDATE": "/api/user/update"
     }
 }

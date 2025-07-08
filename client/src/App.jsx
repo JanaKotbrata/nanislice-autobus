@@ -8,6 +8,7 @@ import {
   Navigate,
   useNavigate,
   useLocation,
+  Outlet,
 } from "react-router-dom";
 import GameContextProvider from "./components/providers/game-context-provider.jsx";
 import Lobby from "./routes/lobby.jsx";
@@ -20,6 +21,7 @@ import StartGame from "./routes/start-game.jsx";
 import translations from "./i18n/translations.json";
 import Loading from "./components/loading.jsx";
 import GameLoading from "./components/game-loading.jsx";
+import UserContextProvider from "./components/providers/user-context-provider.jsx";
 
 let currentLang = "cs";
 
@@ -68,63 +70,50 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <GameContextProvider>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <NotAuthenticatedRoute>
-                  <Welcome />
-                </NotAuthenticatedRoute>
-              }
-            />
-            <Route
-              path="/about"
-              element={
-                <NotAuthenticatedRoute>
-                  <About />
-                </NotAuthenticatedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <NotAuthenticatedRoute>
+        <Routes>
+          <Route path="/about" element={<About />} />
+          <Route
+            path="/"
+            element={
+              <NotAuthenticatedRoute>
+                <Welcome />
+              </NotAuthenticatedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <UserContextProvider>
                   <Profile />
-                </NotAuthenticatedRoute>
-              }
-            />
-            <Route path="/auth-callback" element={<AuthCallback />} />
+                </UserContextProvider>
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/auth-callback" element={<AuthCallback />} />
+
+          <Route
+            element={
+              <ProtectedRoute>
+                <GameContextProvider>
+                  <Outlet />
+                </GameContextProvider>
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/start-game" element={<StartGame />} />
             <Route
-              path="/start-game"
               element={
-                <ProtectedRoute>
-                  <StartGame />
-                </ProtectedRoute>
+                <GameLoading>
+                  <Outlet />
+                </GameLoading>
               }
-            />
-            <Route
-              path="/lobby/:code"
-              element={
-                <ProtectedRoute>
-                  <GameLoading>
-                    <Lobby />
-                  </GameLoading>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/game/:code"
-              element={
-                <ProtectedRoute>
-                  <GameLoading>
-                    <Game />
-                  </GameLoading>
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </GameContextProvider>
+            >
+              <Route path="/lobby/:code" element={<Lobby />} />
+              <Route path="/game/:code" element={<Game />} />
+            </Route>
+          </Route>
+        </Routes>
       </AuthProvider>
     </Router>
   );

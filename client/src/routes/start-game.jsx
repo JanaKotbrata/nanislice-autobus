@@ -4,10 +4,11 @@ import Instructions from "../components/instructions.jsx";
 import { useAuth } from "../context/auth-context.jsx";
 import { addPlayer, createGame, getGame } from "../services/game-service.jsx";
 import GameContext from "../context/game.js";
-import { FaSignInAlt } from "react-icons/fa";
+import { FaPencilAlt, FaSignInAlt } from "react-icons/fa";
 import BusPattern from "../components/bus-pattern.jsx";
 import Button from "../components/form/visual/button.jsx";
 import { getAvatar } from "../services/user-service.jsx";
+import Avatar from "../components/form/visual/avatar.jsx";
 
 function StartGame() {
   const { user } = useAuth();
@@ -52,18 +53,13 @@ function StartGame() {
       console.error("Chyba při připojování do hry:", error);
     }
   }
-  const avatarUri = getAvatar(user.id);
   return (
     <section className="!bg-gray-900 min-h-screen flex items-center justify-center px-4">
       <BusPattern />
       <div className="w-full max-w-5xl !bg-gray-950/80 !border-black rounded-2xl shadow-2xl p-4 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-6 z-10">
         {/* Left box - Player info */}
         <div className="flex flex-col items-center justify-center border-b-2 md:border-b-0 md:border-r-2 border-cyan-400/50 pb-6 md:pb-0 md:pr-4">
-          <img
-            src={avatarUri}
-            alt="avatar"
-            className="w-20 h-20 sm:w-24 sm:h-24 rounded-full shadow-md mb-4"
-          />
+          <Avatar user={user} gameCode={gameContext.gameCode} isMyself={true} />
           <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-5 text-center break-words max-w-full">
             {user.name}
           </h2>

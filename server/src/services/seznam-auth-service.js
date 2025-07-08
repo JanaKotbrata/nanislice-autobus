@@ -3,7 +3,7 @@ const config = require('../../config/config.json');
 const UsersRepository = require('../models/users-repository');
 const jwt = require('jsonwebtoken');
 const Config = require('../../../shared/config/config.json');
-const downloadAvatar = require("../utils/download-image");
+const {downloadAvatar} = require("../utils/download-image");
 const users = new UsersRepository();
 const JWT_SECRET = config.secret;
 

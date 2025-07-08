@@ -50,7 +50,7 @@ class AddGamePlayer extends PostResponseHandler {
         }
 
         const newPlayers = {
-            playerList: [...game.playerList, {userId, name: user.name, creator: false}],
+            playerList: [...game.playerList, {userId, name: user.name, creator: false, rev: user.sys.rev }],
         };
         try {
             const updatedGame = await games.updateGame(game.id, {...newPlayers, sys: game.sys});

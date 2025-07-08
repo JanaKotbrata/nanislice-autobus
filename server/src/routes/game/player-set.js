@@ -17,7 +17,7 @@ class SetGamePlayer extends PostResponseHandler {
     }
 
     async set(req) {
-        const validData = validateData(req.body, schema);
+        const validData = validateData(req.body, schema); //TODO ask milan :D userId - user/update
         const {userId, gameCode, gameId} = validData;
 
         let game;

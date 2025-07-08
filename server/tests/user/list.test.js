@@ -4,7 +4,7 @@ require("../services/setup-db");
 const connectionDb = require("../../src/models/connection-db");
 const ListUser = require('../../src/routes/user/list');
 const Routes = require("../../../shared/constants/routes.json");
-const {activeUser, userMock} = require("../helpers/default-mocks");
+const { userMock} = require("../helpers/default-mocks");
 let usersCollection;
 
 describe('GET /user/list', () => {

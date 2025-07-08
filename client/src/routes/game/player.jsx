@@ -5,6 +5,7 @@ import BusSlot from "./bus-slot.jsx";
 import Routes from "../../../../shared/constants/routes.json";
 import Config from "../../../../shared/config/config.json";
 import { getAvatar } from "../../services/user-service.jsx";
+import Avatar from "../../components/form/visual/avatar.jsx";
 
 function Player({
   player,
@@ -30,7 +31,10 @@ function Player({
     }
   }
 
-  const avatarUri = getAvatar(player.userId);
+  const avatarUri = getAvatar(
+    player.userId,
+    player.rev || gameContext.gameCode,
+  );
 
   return (
     <div
@@ -44,12 +48,12 @@ function Player({
         onClick={() => expandable && setExpanded((prev) => !prev)}
       >
         <div className="flex items-center gap-2 truncate">
-          <img
-            src={avatarUri}
-            alt={player.name}
-            className="w-6 h-6 rounded-full object-cover border border-gray-400"
+          <Avatar
+            picture={avatarUri}
+            size={"w-8 h-8 mt-1"}
+            isMyself={!!player.myself}
+            isInGame={true}
           />
-
           <span className="truncate">{player.name}</span>
         </div>
         {expandable && (

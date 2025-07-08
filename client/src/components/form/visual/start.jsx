@@ -31,7 +31,7 @@ function Start({ gameCode, playerList }) {
 
   return (
     <div className="p-6 ">
-      <Button onClick={() => handleStartClick()}>Start the game</Button>
+      <Button onClick={() => handleStartClick()}>Nechť hra započne</Button>
     </div>
   );
 }

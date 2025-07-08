@@ -23,7 +23,6 @@ class GetAvatar extends GetFileResponseHandler {
 
             const avatarFile = files.find(file => file.startsWith(`${userId}.`));
             if (!avatarFile) {
-                // todo misto chyby vratit defaultni obrazek
                 const filePath = path.join(avatarDir, "pig-face.png");
                 return res.sendFile(filePath);
             }

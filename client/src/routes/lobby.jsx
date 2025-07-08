@@ -93,7 +93,10 @@ function Lobby() {
           {/* Left box - Players */}
           <div className="flex flex-col items-center border-b sm:border-b-0 sm:border-r-2 border-cyan-400/50 sm:pr-4 gap-4 w-full">
             {gameContext.players.map((player) => {
-              const avatarUri = getAvatar(player.userId);
+              const avatarUri = getAvatar(
+                player.userId,
+                player.rev || gameContext.gameCode,
+              );
               return (
                 <div
                   key={player.userId}
@@ -101,7 +104,8 @@ function Lobby() {
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <Member
-                      level={player.creator ? "Zakladatel" : "Pleb"}
+                      isCreator={!!player.creator}
+                      isMyself={!!player.myself}
                       picture={avatarUri}
                     >
                       <span className="truncate">{player.name}</span>

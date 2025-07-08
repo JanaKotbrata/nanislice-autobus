@@ -2,27 +2,36 @@ const fs = require("fs");
 const path = require("path");
 const { Writable } = require("stream");
 
+const AVATAR_FOLDER = path.resolve(__dirname, '../../avatars')
+
+async function getExistingAvatar(userId) {
+    const files = await fs.promises.readdir(AVATAR_FOLDER);
+    return files.find(file => file.startsWith(userId + "."));
+}
+
+function ensureFolders() {
+    if (!fs.existsSync(AVATAR_FOLDER)) {
+        fs.mkdirSync(AVATAR_FOLDER, { recursive: true });
+    }
+}
+
 /**
  * Stáhne obrázek z URL a uloží ho jako soubor (jpg nebo png)
  * @param {string} url - URL obrázku
  * @param {string} userId - ID uživatele
- * @param {string} [destFolder='./public/avatars']
  */
-async function downloadAvatar(url, userId, destFolder = path.resolve(__dirname, '../../avatars')) {
+async function downloadAvatar(url, userId, ) {
     try {
-        if (!fs.existsSync(destFolder)) {
-            fs.mkdirSync(destFolder, { recursive: true });
-        }
+        ensureFolders();
         if (!url) {
             return;
         }
 
-        const files = fs.promises.readdir(destFolder);
-        const existingFile = (await files).find(file => file.startsWith(userId + "."));
+        const existingFile = await getExistingAvatar(userId);
 
         if (existingFile) {
             console.log(`Obrázek pro uživatele ${userId} již existuje.`);
-            return path.join(destFolder, existingFile);
+            return path.join(AVATAR_FOLDER, existingFile);
         }
 
         const response = await fetch(url);
@@ -32,7 +41,7 @@ async function downloadAvatar(url, userId, destFolder = path.resolve(__dirname, 
         }
 
         const ext = url.includes(".png") ? "png" : "jpg";
-        const filePath = path.join(destFolder, `${userId}.${ext}`);
+        const filePath = path.join(AVATAR_FOLDER, `${userId}.${ext}`);
 
         const writer = fs.createWriteStream(filePath);
 
@@ -46,4 +55,23 @@ async function downloadAvatar(url, userId, destFolder = path.resolve(__dirname, 
     }
 }
 
-module.exports = downloadAvatar;
+async function storeAvatar(userId, newFileBlob, mimeType) {
+    ensureFolders();
+
+    const existingFile = await getExistingAvatar(userId);
+
+    const ext = mimeType.includes("png") ? "png" : "jpg";
+    const filePath = path.join(AVATAR_FOLDER, `${userId}.${ext}`);
+
+    if (!filePath.endsWith(existingFile)) {
+        // remove old file
+        await fs.promises.rm(path.join(AVATAR_FOLDER, existingFile), { force: true })
+    }
+
+    await fs.promises.writeFile(filePath, newFileBlob);
+}
+
+module.exports = {
+    downloadAvatar,
+    storeAvatar,
+};

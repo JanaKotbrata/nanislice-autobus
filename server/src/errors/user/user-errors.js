@@ -7,6 +7,7 @@ class UserNotAuthenticatedError extends CommonError {
         this.params = params;
     }
 }
+
 class UserDoesNotExist extends CommonError {
     constructor(params) {
         super('UserDoesNotExist', "Requested user does not exist");
@@ -14,6 +15,7 @@ class UserDoesNotExist extends CommonError {
         this.params = params;
     }
 }
+
 class AvatarNotFound extends CommonError {
     constructor(params) {
         super('AvatarNotFound', "Avatar not found for user");
@@ -21,6 +23,7 @@ class AvatarNotFound extends CommonError {
         this.params = params;
     }
 }
+
 class FailToDownloadAvatar extends CommonError {
     constructor(params) {
         super('FailToDownloadAvatar', "Failed to download avatar");
@@ -29,10 +32,18 @@ class FailToDownloadAvatar extends CommonError {
     }
 }
 
+class UserUpdateError extends CommonError {
+    constructor(params) {
+        super('UserUpdateError', "Failed to update user");
+        this.status = 500;
+        this.params = params;
+    }
+}
 
 module.exports = {
     UserNotAuthenticatedError,
     UserDoesNotExist,
     AvatarNotFound,
+    UserUpdateError,
     FailToDownloadAvatar
 }

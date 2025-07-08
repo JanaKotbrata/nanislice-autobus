@@ -4,7 +4,7 @@ const UsersRepository = require('../models/users-repository');
 const jwt = require("jsonwebtoken");
 const Config = require("../../../shared/config/config.json");
 const users = new UsersRepository();
-const downloadAvatar = require('../utils/download-image');
+const {downloadAvatar} = require('../utils/download-image');
 const JWT_SECRET = config.secret;
 
 async function initGoogleAuth(passport, app) {

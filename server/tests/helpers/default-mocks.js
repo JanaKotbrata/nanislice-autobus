@@ -31,7 +31,13 @@ function basicUser(params = {}, extraParams = {}) {
     return {
         userId: params.userId || generateRandomId(),
         name: params.name || generateRandomCode(),
-        picture: params.picture || generateRandomUrl(), ...extraParams
+        picture: params.picture || generateRandomUrl(),
+        sys: params.sys || {
+            cts: params.cts || new Date().toISOString(),
+            mts: params.mts || new Date().toISOString(),
+            rev: params.rev || 0
+        },
+        ...extraParams
     };
 }
 
