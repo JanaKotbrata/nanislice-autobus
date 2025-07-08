@@ -103,3 +103,13 @@ export async function closeGame(data = {}) {
     throw error;
   }
 }
+
+export async function setPlayer(data = {}) {
+  try {
+    const response = await axios.post(Routes.Game.PLAYER_SET, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error setting player:", error);
+    throw error;
+  }
+}

@@ -26,13 +26,12 @@ async function initGoogleAuth(passport, app) {
                     let user = await users.getUserByEmail(profile.emails[0].value);
                     if (!user) {
                         user = await users.createUser({
-                            googleId: profile.id,
-                            email: profile.emails[0].value,
-                            name: profile.displayName,
-                            picture: profile.photos[0].value,
-                            level: 0,
-                        });
-
+                                googleId: profile.id
+                            },
+                            profile.emails[0].value,
+                            profile.displayName,
+                            profile.photos[0].value,
+                        );
                     } else {
                         if (!user.googleId) {
                             user = await users.updateUser(user.id, {googleId: profile.id, sys: user.sys});

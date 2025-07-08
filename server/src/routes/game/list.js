@@ -13,14 +13,14 @@ class ListGame extends GetResponseHandler {
 
     async list(req) {
         const validData = validateData(req.body, schema);
-        const {state} = validData;
+        const {state, pageInfo} = validData;
 
         let gameList;
 
         if (state) {
-            gameList = await games.listGameByState(state);
+            gameList = await games.listGameByState(state, pageInfo);
         } else {
-            gameList = await games.listGame();
+            gameList = await games.listGame(pageInfo);
         }
 
         return {...gameList, success: true};

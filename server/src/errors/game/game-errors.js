@@ -222,7 +222,13 @@ class GameAlreadyActive extends CommonError {
         this.params = params;
     }
 }
-
+class FailedToSetPlayer extends CommonError {
+    constructor(params) {
+        super('FailedToSetPlayer', "Failed to set player");
+        this.status = 500;
+        this.params = params;
+    }
+}
 module.exports = {
     GameDoesNotExist,
     GameIsNotActive,
@@ -251,6 +257,7 @@ module.exports = {
     PlayerMustDrawCardFirst,
     InvalidCardInBusStopDifferentIndex,
     UserCanNotStartGame,
-    GameAlreadyActive
+    GameAlreadyActive,
+    FailedToSetPlayer
 
 };

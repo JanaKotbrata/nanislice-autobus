@@ -7,12 +7,14 @@
         "DELETE": "/api/game/delete",
         "LIST": "/api/game/list",
         "PLAYER_ADD": "/api/game/player/add",
+        "PLAYER_SET": "/api/game/player/set",
         "PLAYER_REMOVE": "/api/game/player/remove",
         "START": "/api/game/start",
         "ACTION_PROCESS": "/api/game/action/process"
     },
     "User": {
         "AUTHENTICATE": "/api/user/authenticate",
-        "GET_AVATAR": "/api/user/avatar/get"
+        "GET_AVATAR": "/api/user/avatar/get",
+        "LIST": "/api/user/list"
     }
 }

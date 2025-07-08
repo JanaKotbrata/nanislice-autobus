@@ -1,18 +1,19 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
+import { FaCheck } from "react-icons/fa";
 import Member from "../components/form/visual/member.jsx";
 import Invite from "../components/form/visual/invite.jsx";
 import Start from "../components/form/visual/start.jsx";
 import nanislice from "../assets/nanislice.svg";
 import Instructions from "../components/instructions.jsx";
 import GameContext from "../context/game.js";
-import { useGameCode } from "../hooks/use-game-code.js";
 import { useLobbySocket } from "../hooks/use-lobby-socket.js";
 import { addPlayer, removePlayer } from "../services/game-service.jsx";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth-context.jsx";
 import BusPattern from "../components/bus-pattern.jsx";
 import { getAvatar } from "../services/user-service.jsx";
+import Button from "../components/form/visual/button.jsx";
 
 function Lobby() {
   const navigate = useNavigate();
@@ -56,6 +57,7 @@ function Lobby() {
       console.error("Jejda", JSON.stringify(e));
     }
   }
+  function handleStartClick() {}
 
   if (!gameContext?.players) {
     return (
@@ -66,7 +68,7 @@ function Lobby() {
   }
 
   const shouldRender = !!myself?.creator;
-
+  console.log("Lobby players:", gameContext.players);
   return (
     <section className="!bg-gray-900 min-h-screen flex items-center justify-center px-4">
       <BusPattern />
@@ -105,7 +107,7 @@ function Lobby() {
                       <span className="truncate">{player.name}</span>
                     </Member>
                   </div>
-                  <div className="shrink-0">
+                  <div className="shrink-0 flex items-center gap-2">
                     {player.myself ? (
                       <FaSignOutAlt
                         className="text-gray-500 hover:text-red-500 cursor-pointer"
@@ -117,6 +119,15 @@ function Lobby() {
                       />
                     ) : (
                       <FaSignOutAlt className="invisible" size={16} />
+                    )}
+                    {player.ready ? (
+                      <FaCheck
+                        className="text-green-300/50"
+                        title="Hráč je připraven"
+                        size={18}
+                      />
+                    ) : (
+                      <FaCheck className="invisible" size={16} />
                     )}
                   </div>
                 </div>
@@ -130,6 +141,17 @@ function Lobby() {
                 gameCode={gameContext.gameCode}
                 playerList={gameContext.players}
               />
+            )}
+            {!shouldRender && (
+              <div className="p-6 bg-gray-500/40 animate-[pulse_2s_ease-in-out_infinite] rounded-lg">
+                <Button onClick={() => gameContext.handleReady()}>
+                  {gameContext?.ready || myself?.ready ? (
+                    <FaCheck className="w-5 h-5 mx-auto" />
+                  ) : (
+                    "Už můžu hrát"
+                  )}
+                </Button>
+              </div>
             )}
           </div>
 

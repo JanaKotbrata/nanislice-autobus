@@ -9,9 +9,21 @@ function Start({ gameCode, playerList }) {
   const gameContext = useContext(GameContext);
   const handleStartClick = async () => {
     if (playerList.length > 1) {
-      const res = await startGame(gameCode);
-      gameContext.setContextGame(res);
-      navigate(`/game/${res.code}`);
+      let isEveryOneReady = true;
+      for (let player of playerList) {
+        if (!player.creator) {
+          if (!player.ready) {
+            isEveryOneReady = false;
+            alert("Všichni musí být připraveni, aby bylo možné začít hru.");
+            break;
+          }
+        }
+      }
+      if (isEveryOneReady) {
+        const res = await startGame(gameCode);
+        gameContext.setContextGame(res);
+        navigate(`/game/${res.code}`);
+      }
     } else {
       alert("Nedostatek autobusáků. Pozvi někoho."); //FIXME
     }

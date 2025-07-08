@@ -20,7 +20,8 @@ class UsersRepository extends Model { //TODO add revision
 
     }
 
-    async createUser(userData) {
+    async createUser(serviceId={},email,name,picture, level=0, role="pleb") {
+        let userData = {...serviceId, email,name,picture,level,role}
         return this.create(userData)
     }
 
@@ -42,6 +43,10 @@ class UsersRepository extends Model { //TODO add revision
 
     async listUser(pageInfo) {
         return this.list(pageInfo, {});
+    }
+
+    async listUserByRole(role, pageInfo) {
+        return this.list(pageInfo, {role});
     }
 
     async addUserXP(userId, amount){

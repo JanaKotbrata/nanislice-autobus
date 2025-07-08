@@ -29,12 +29,12 @@ async function initSeznamAuth(passport, app) {
                     let user = await users.getUserByEmail(userInfo.email);
                     if (!user) {
                         user = await users.createUser({
-                            seznamId: userInfo.oauth_user_id,
-                            email: userInfo.email,
-                            name: userInfo.firstname + ' ' + userInfo.lastname,
-                            picture: userInfo.avatar_url || null,
-                            level: 0,
-                        });
+                                seznamId: userInfo.oauth_user_id
+                            },
+                            userInfo.email,
+                            userInfo.firstname + ' ' + userInfo.lastname,
+                            userInfo.avatar_url || null,
+                        );
                     } else {
                         if (!user.seznamId) {
                             user = await users.updateUser(user.id, {

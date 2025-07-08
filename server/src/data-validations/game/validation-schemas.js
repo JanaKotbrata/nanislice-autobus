@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const GameActions = require("../../../../shared/constants/game-actions.json");
+const {bool} = require("joi");
 const id = Joi.string().length(24).alphanum();
 const code = Joi.string().length(6).pattern(/^[a-zA-Z0-9]+$/);
 const state = Joi.string().valid("initial", "active", "closed").optional();
@@ -24,6 +25,7 @@ const gDelete = Joi.object().keys({
     code
 }).or("id", "code");
 const playerAdd = Joi.object().keys({gameId: id, gameCode: code, userId: id}).or("gameId", "gameCode");
+const playerSet = Joi.object().keys({gameId: id, gameCode: code, userId: id, ready:Joi.boolean()}).or("gameId", "gameCode");
 const playerRemove = Joi.object().keys({gameId: id, gameCode: code, userId: id}).or("gameId", "gameCode");
 const startGame = Joi.object().keys({gameId: id, gameCode: code}).or("gameId", "gameCode");
 const processAction = Joi.object().keys({
@@ -61,4 +63,4 @@ const processAction = Joi.object().keys({
     }
 ).or("gameId", "gameCode");
 
-module.exports = {get, list, create, close, gDelete, playerAdd, playerRemove, startGame, processAction};
+module.exports = {get, list, create, close, gDelete, playerAdd, playerSet, playerRemove, startGame, processAction};

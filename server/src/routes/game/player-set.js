@@ -1,7 +1,7 @@
 const GamesRepository = require("../../models/games-repository");
 const UsersRepository = require("../../models/users-repository");
 const validateData = require("../../services/validation-service");
-const {playerAdd:schema} = require("../../data-validations/game/validation-schemas");
+const {playerSet:schema} = require("../../data-validations/game/validation-schemas");
 const { PostResponseHandler} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
@@ -10,13 +10,13 @@ const {States} = require("../../utils/game-constants");
 const games = new GamesRepository();
 const users = new UsersRepository();
 
-class AddGamePlayer extends PostResponseHandler {
+class SetGamePlayer extends PostResponseHandler {
     constructor(expressApp, io) {
-        super(expressApp, Routes.Game.PLAYER_ADD, "add");
+        super(expressApp, Routes.Game.PLAYER_SET, "set");
         this.io = io;
     }
 
-    async add(req) {
+    async set(req) {
         const validData = validateData(req.body, schema);
         const {userId, gameCode, gameId} = validData;
 
@@ -42,18 +42,16 @@ class AddGamePlayer extends PostResponseHandler {
         }
 
         //validation of playerList
-        const isPlayerInGame = game.playerList.find((player) =>
+        const playerIndex = game.playerList.findIndex((player) =>
             player.userId === userId
         );
-        if (isPlayerInGame) {
-            throw new GameErrors.PlayerAlreadyInGame(validData);
+        if (playerIndex === -1) {
+            throw new GameErrors.PlayerNotInGame(validData);
         }
-
-        const newPlayers = {
-            playerList: [...game.playerList, {userId, name: user.name, creator: false}],
-        };
+        let newPlayerList = structuredClone(game.playerList);
+        newPlayerList[playerIndex].ready = validData.ready;
         try {
-            const updatedGame = await games.updateGame(game.id, {...newPlayers, sys: game.sys});
+            const updatedGame = await games.updateGame(game.id, {playerList:newPlayerList, sys: game.sys});
             updatedGame.playerList.forEach(player => {
                 const playerId = player.userId;
                 const playerGame = structuredClone(updatedGame);
@@ -61,12 +59,12 @@ class AddGamePlayer extends PostResponseHandler {
                 console.log(`Emitting playerAdded event to ${gameCode}_${playerId}`);
                 this.io.to(`${gameCode}_${playerId}`).emit("playerAdded", playerGame);
             })
-            transformCurrentPlayerData(updatedGame,userId)
+            transformCurrentPlayerData(updatedGame, userId);
             return {...updatedGame, success: true};
         } catch (error) {
             console.error("Failed to add player:", error);
-            throw new GameErrors.FailedToAddPlayer(error);
+            throw new GameErrors.FailedToSetPlayer(error);
         }
     }
 }
-module.exports = AddGamePlayer;
+module.exports = SetGamePlayer;

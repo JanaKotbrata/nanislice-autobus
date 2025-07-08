@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import GameContext from "../../context/game";
 import GameActions from "../../../../shared/constants/game-actions.json";
-import { getGame, processAction } from "../../services/game-service";
+import { getGame, processAction, setPlayer } from "../../services/game-service";
 import {
   canPlaceInBusStop,
   canPlaceOnGameBoard,
@@ -17,6 +17,7 @@ function GameContextProvider({ children }) {
   const [game, setGame] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
+  const [ready, setReady] = useState(false);
   const code = useRef(null);
   const navigate = useNavigate();
   const players = game?.playerList || [];
@@ -44,6 +45,39 @@ function GameContextProvider({ children }) {
     setGame(game);
     code.current = game.code;
     setGameCode(game.code);
+    const myself = game.playerList.find((player) => player.myself);
+    setReady(myself?.ready || false);
+  }
+
+  function handleReady() {
+    let newReady;
+    if (!ready) {
+      newReady = true;
+      setReady(newReady);
+      console.log("true", newReady);
+      alterMyself({ ready: newReady });
+    } else {
+      newReady = false;
+      setReady(newReady);
+      console.log("false", newReady);
+      alterMyself({ ready: newReady });
+    }
+    const userId = game.playerList.find((player) => player.myself)?.userId;
+    console.log("ready před setPlayer", { gameCode, userId, ready: newReady });
+    setPlayer({
+      gameCode,
+      userId,
+      ready: newReady,
+    })
+      .then((updatedGame) => {
+        setContextGame(updatedGame);
+      })
+      .catch((err) => {
+        console.error("Chyba při nastavení připravenosti:", err);
+        setReady(!newReady);
+        console.log("ready po chybě", !newReady);
+        alterMyself({ ready: !newReady });
+      });
   }
 
   function showErrorAlert(message) {
@@ -278,10 +312,7 @@ function GameContextProvider({ children }) {
   }
 
   function isLoading() {
-    console.log("Checking if loading...", gameCode, game);
-    const returnVal = (gameCode && !game) || gameCode !== game?.code;
-    console.log("isLoading:", returnVal);
-    return returnVal;
+    return (gameCode && !game) || gameCode !== game?.code;
   }
 
   return (
@@ -297,6 +328,8 @@ function GameContextProvider({ children }) {
         reorderHand,
         game,
         players,
+        handleReady,
+        ready,
         deck: gameDeck,
         gameBoard,
         currentPlayer,

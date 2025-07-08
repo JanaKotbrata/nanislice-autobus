@@ -26,12 +26,11 @@ async function initDiscordAuth(passport, app) {
                 let user = await users.getUserByEmail(profile.email);
                 if (!user) {
                     user = await users.createUser({
-                        discordId: profile.id,
-                        email: profile.email,
-                        name: profile.username,
-                        picture: `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png`,
-                        level: 0,
-                    });
+                            discordId: profile.id,
+                        },
+                        profile.email,
+                        profile.username
+                    );
                 } else {
                     if (!user.discordId) {
                         user = await users.updateUser(user.id, {discordId: profile.id, sys: user.sys});

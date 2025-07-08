@@ -8,7 +8,7 @@ function Invite() {
 
   const handleCopy = async () => {
     try {
-      const url = `Pojď hrát game: ${window.location.origin} join to game by gameCode: ${gameContext.gameCode}`;
+      const url = `Pojď odvézt autobus do depa: ${window.location.origin}/lobby/${gameContext.gameCode} \nkódík pro připojení: ${gameContext.gameCode}`;
       await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
