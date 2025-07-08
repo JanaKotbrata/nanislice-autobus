@@ -10,7 +10,7 @@ function DangerAlert({ message, onClose }) {
         default={{
           x: 100,
           y: 100,
-          width: 300,
+          width: "auto",
           height: "auto",
         }}
         bounds="window"
@@ -63,6 +63,21 @@ function DangerAlert({ message, onClose }) {
           {showRules && (
             <div className="absolute inset-0 z-50 flex items-center justify-center !bg-black/60 rounded-lg">
               <div className="!bg-gray-700 p-4 rounded-lg shadow-lg max-w-xs text-sm  !text-gray-100">
+                <h3 className="font-semibold mb-2">Rady</h3>
+                <ol className="list-decimal pl-5 space-y-2">
+                  <li>
+                    Když dvakrát klikneš na autobus, tak se podíváš, jaká je tvá
+                    poslední karta.
+                  </li>
+                  <li>
+                    Když najedeš na jakýkoliv autobus myší, tak se ti zobrazí
+                    počet karet.
+                  </li>
+                  <li>
+                    Když najedeš na jakýkoliv balíček v zastávce, tak se ti
+                    zobrazí počet karet.
+                  </li>
+                </ol>
                 <h3 className="font-semibold mb-2">Pravidla</h3>
                 <h4>
                   Cílem hry, je zbavit se všech karet v autobusu. Hráč, který

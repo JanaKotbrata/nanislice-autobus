@@ -7,6 +7,7 @@ const howToPlaySteps = [
   "3. Do hracího pole se může jako první karta dát Eso nebo Joker (ten může nahradit jakoukoliv kartu). Na tyto karty se pokračuje v pořadí 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K. Když sloupec končí Králem, tak se uzavírá a míchá se zpět do balíčku karet, ze kterého se líže.",
   "4. Pokud má hráč v ruce, v zastávce nebo na vrchu autobusu nějakou kartu, která se hodí na hrací pole, může ji zahrát.",
   "5. Pokud již hráč nemá žádnou kartu, co by mohl zahrát, tak odkládá kartu do zastávky (Do zastávky se mohou odkládat jakékoliv karty kromě Joker a Esa. Pokud již v zastávce není místo, hráč může odložit stejný rank karty, co je v zastávce. Pokud nemá stejný rank, musí kartu odložit dospod autobusu.), pokud mu došly karty v ruce, doplňuje 5 karet do ruky a pokračuje dále.",
+  "6. Rady - 1) Když dvakrát klikneš na autobus, tak se podíváš, jaká je tvá poslední karta. 2) Když najedeš na jakýkoliv autobus myší, tak se ti zobrazí počet karet. 3) Když najedeš na jakýkoliv balíček v zastávce, tak se ti zobrazí počet karet.",
 ];
 
 function Instructions() {
