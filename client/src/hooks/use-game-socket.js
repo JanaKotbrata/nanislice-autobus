@@ -4,7 +4,7 @@ import Config from "../../../shared/config/config.json";
 
 const socket = io(Config.SERVER_URI);
 
-export function useGameSocket(userId, gameCode, setContextGame) {
+export function useGameSocket(userId, gameCode, setContextGame, showAlert) {
   useEffect(() => {
     if (gameCode && userId) {
       socket.emit("listenToGame", gameCode, userId);
@@ -20,8 +20,13 @@ export function useGameSocket(userId, gameCode, setContextGame) {
       });
     }
 
+    socket.on("notify-player-leaving", ({ playerName }) => {
+      showAlert(playerName);
+    });
     return () => {
       socket.off("processAction");
+      socket.off("playerRemoved");
+      socket.off("notify-player-leaving");
     };
   }, [userId, gameCode, setContextGame]);
 

@@ -57,7 +57,8 @@ const processAction = Joi.object().keys({
             then: Joi.object().keys({
                 i: Joi.number().integer().min(0).required(),
                 rank: Joi.string().required(),
-                suit: Joi.string().required()
+                suit: Joi.string().required(),
+                bg: Joi.string().optional()
             }).required(),
         }),
     }

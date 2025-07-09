@@ -30,16 +30,16 @@ function dealCardPerPlayer(deck, playerList, handNumber = 5, busNumber = 10) {
     return [cacheDeck, game];
 }
 
-function getCardDeck(i = 0) {
+function getCardDeck(i = 0, bg="red") {
     const pack = [];
     for (const suit of suits) {
         for (const rank of ranks) {
-            pack.push({i, rank, suit});
+            pack.push({i, rank, suit, bg});
             i++;
         }
     }
-    pack.push({i: i + 1, rank: joker, suit: "🃏"});
-    pack.push({i: i + 2, rank: joker, suit: "🃏"});
+    pack.push({i: i + 1, rank: joker, suit: "🃏", bg});
+    pack.push({i: i + 2, rank: joker, suit: "🃏", bg});
     return pack;
 }
 
@@ -55,20 +55,26 @@ function shuffleDeck(deck) {
     return shuffledDeck;
 }
 function initDeck(gamePlayers) {
-    let gamePack = getCardDeck();
-    const lastIndex = gamePack[gamePack.length - 1].i;
-    let deck = gamePack.concat(getCardDeck(lastIndex));
-    let multiplier = 1;
-    const basePlayers = 5;
+  const playerCount = gamePlayers.length;
+    let totalDecks = 2;
 
-    // Dynamické násobení balíčku
-    while (gamePlayers.length > basePlayers * multiplier) {
-        const lastIndex = deck[deck.length - 1].i;
-        deck = deck.concat(getCardDeck(lastIndex));
-        multiplier *= 2;
+  if (playerCount > 5) {
+    totalDecks = 2 + Math.ceil((playerCount - 5) / 3);
     }
+
+  const deck = [];
+    let lastIndex = 0;
+
+    for (let d = 0; d < totalDecks; d++) {
+    const bg = d % 2 === 0 ? "blue" : "red";
+        const part = getCardDeck(lastIndex, bg);
+        lastIndex = part[part.length - 1].i + 1;
+    deck.push(...part);
+    }
+
     return shuffleDeck(deck);
 }
+
 
 function getCardIndex(card, pack, error) {
   const index = pack.findIndex((c) => c.i === card.i);

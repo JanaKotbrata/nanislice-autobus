@@ -30,3 +30,81 @@
   background-blend-mode: overlay;
   color: white;
 }
+.back-card-red {
+    border: #ede2e2 4px solid;
+    background-image:
+            repeating-linear-gradient(
+            45deg,
+            #A10404FF 0px,
+            #ca0909 1px,
+            transparent 1px,
+            transparent 2px
+    ),
+            repeating-linear-gradient(
+                    -45deg,
+                    #ffffff 0px,
+                    #ffffff 0px,
+                    transparent 1px,
+                    transparent 1px
+            ),
+    repeating-linear-gradient(
+            -45deg,
+            #500101 0px,
+            #aa2727 1px,
+            transparent 1px,
+            transparent 2px
+    ),
+    repeating-linear-gradient(
+            45deg,
+            #A10404FF 0px,
+            #A10404FF 2px,
+            transparent 2px,
+            transparent 12px
+    ),
+    repeating-linear-gradient(
+            -45deg,
+            #A10404FF 0px,
+            #A10404FF 2px,
+            transparent 2px,
+            transparent 12px
+    )
+}
+.back-card-blue {
+    border: #ede2e2 4px solid;
+    background-image:
+            repeating-linear-gradient(
+                    45deg,
+                    #1432b6 0px,
+                    #2548e1 1px,
+                    transparent 1px,
+                    transparent 2px
+            ),
+            repeating-linear-gradient(
+                    -45deg,
+                    #ffffff 0px,
+                    #ffffff 0px,
+                    transparent 1px,
+                    transparent 1px
+            ),
+            repeating-linear-gradient(
+                    -45deg,
+                    #02135e 0px,
+                    #1c84c6 1px,
+                    transparent 1px,
+                    transparent 2px
+            ),
+            repeating-linear-gradient(
+                    45deg,
+                    #1432b6 0px,
+                    #1432b6 2px,
+                    transparent 2px,
+                    transparent 12px
+            ),
+            repeating-linear-gradient(
+                    -45deg,
+                    #1432b6 0px,
+                    #1432b6 2px,
+                    transparent 2px,
+                    transparent 12px
+            )
+}

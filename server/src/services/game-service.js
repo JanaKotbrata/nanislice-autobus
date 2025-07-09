@@ -35,7 +35,7 @@ function transformCurrentPlayerData(game, userId) {
     }
 
     if (game.deck?.length) {
-        game.deck = Array(game.deck.length).fill(null);
+        game.deck = game.deck.map(card => ({ bg: card.bg }));;
     }
 }
 

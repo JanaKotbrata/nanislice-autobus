@@ -9,8 +9,9 @@ import { useGameSocket } from "../hooks/use-game-socket.js";
 import { useAuth } from "../context/auth-context.jsx";
 import SuccessAlert from "../components/alerts/success-alert.jsx";
 import { closeGame } from "../services/game-service";
-import { FaSignOutAlt } from "react-icons/fa";
 import Leave from "../components/form/visual/leave.jsx";
+import LeaveInfoAlert from "../components/alerts/leave-info-alert.jsx";
+import gameContextProvider from "../components/providers/game-context-provider.jsx";
 
 function Game() {
   const navigate = useNavigate();
@@ -43,7 +44,12 @@ function Game() {
     }
   }, [gameContext?.gameState]);
 
-  useGameSocket(user.id, gameContext.gameCode, gameContext.setContextGame);
+  useGameSocket(
+    user.id,
+    gameContext.gameCode,
+    gameContext.setContextGame,
+    gameContext.setLeavingPlayer,
+  );
 
   function handleMouseDown() {
     setDragging(true);
@@ -149,6 +155,13 @@ function Game() {
             "No to je dost, že si vyhrál: " +
             gameContext.players.find((player) => !player.bus.length)?.name
           }
+        />
+      )}
+      {/* Alert při odchodu ze hry */}
+      {gameContext.leavingPlayer && (
+        <LeaveInfoAlert
+          onClose={() => gameContext.setLeavingPlayer(false)}
+          message={`${gameContext.leavingPlayer} se pokouší opustit hru.`}
         />
       )}
     </DndProvider>

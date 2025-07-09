@@ -17,6 +17,7 @@ const registerRoutes = require("./utils/register-routes");
 const createIndexes = require("./utils/create-indexes");
 const getPathFromRoot = require("./utils/get-path-from-root");
 const Config = require("../../shared/config/config.json")
+const {getPlayerIdListByGameCode} = require("./services/game-service");
 
 async function main() {
 // Init express
@@ -75,6 +76,18 @@ async function main() {
         socket.on("disconnect", () => {
             console.log("Uživatel odpojen:", socket.id);
         });
+
+        socket.on("player-attempted-leave", ({ userId, gameCode, playerName, playerIdList }) => {
+            console.log("Někdo se pokouší odejít:", playerName, playerIdList);
+            playerIdList.forEach((uid) => {
+                if (uid !== userId) { // nepošleme alert sobě
+                    socket.to(`${gameCode}_${uid}`).emit("notify-player-leaving", {
+                        playerName,
+                    });
+                }
+            });
+        });
+
     });
 
     // Adding routers
