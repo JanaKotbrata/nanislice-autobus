@@ -47,7 +47,7 @@ describe('POST /game/player/remove', () => {
         delete mockUser.userId;
         const result = await usersCollection.insertOne(mockUser);
         const user = await usersCollection.findOne({_id: result.insertedId});
-        const mockGame = activeGame({user: basicUser({...user, userId: user._id.toString()})});
+        const mockGame = activeGame({numberOfPlayers:5,user: basicUser({...user, userId: user._id.toString()})});
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.PLAYER_REMOVE)

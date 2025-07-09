@@ -63,7 +63,7 @@ async function storeAvatar(userId, newFileBlob, mimeType) {
     const ext = mimeType.includes("png") ? "png" : "jpg";
     const filePath = path.join(AVATAR_FOLDER, `${userId}.${ext}`);
 
-    if (!filePath.endsWith(existingFile)) {
+    if (existingFile && !filePath.endsWith(existingFile)) {
         // remove old file
         await fs.promises.rm(path.join(AVATAR_FOLDER, existingFile), { force: true })
     }
