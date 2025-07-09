@@ -33,7 +33,9 @@ function CornerLabel({ position, card, textColor, packLength }) {
           <div>{card.suit}</div>
         </>
       ) : (
-        <div>{packLength ? RANK_CARD_ORDER[packLength] : "🃏"}</div>
+        <div>
+          {packLength || packLength === 0 ? RANK_CARD_ORDER[packLength] : "🃏"}
+        </div>
       )}
     </div>
   );

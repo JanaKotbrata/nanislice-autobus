@@ -16,6 +16,7 @@ function GameContextProvider({ children }) {
   const [gameCode, setGameCode] = useState(null);
   const [game, setGame] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [showDangerAlert, setShowDangerAlert] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [ready, setReady] = useState(false);
   const code = useRef(null);
@@ -82,7 +83,7 @@ function GameContextProvider({ children }) {
 
   function showErrorAlert(message) {
     setErrorMessage(message);
-    setShowAlert(true);
+    setShowDangerAlert(true);
   }
 
   function updateGameServerState(actionData, action) {
@@ -338,7 +339,9 @@ function GameContextProvider({ children }) {
         errorMessage,
         setErrorMessage,
         showAlert,
+        showDangerAlert,
         setShowAlert,
+        setShowDangerAlert,
       }}
     >
       {children}

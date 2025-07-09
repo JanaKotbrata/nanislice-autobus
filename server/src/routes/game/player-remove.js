@@ -36,7 +36,8 @@ class RemoveGamePlayer extends PostResponseHandler {
         }
 
         //validation of playerList
-        const isPossibleToRemove = !!(game.playerList.length > 1);
+        const minLength = game.state === States.ACTIVE ? 2 : 1;
+        const isPossibleToRemove = !!(game.playerList.length > minLength);
         if (isPossibleToRemove) {
             const {newPlayers, newDeck} = this.#removePlayer(game, userId);
             if (newPlayers) {
@@ -46,14 +47,7 @@ class RemoveGamePlayer extends PostResponseHandler {
                 }
                 try {
                     const updatedGame = await games.updateGame(game.id, updateData);
-                    transformCurrentPlayerData(updatedGame, userId);
-                    updatedGame.playerList.forEach(player => {
-                        const playerId = player.userId;
-                        const playerGame = structuredClone(updatedGame);
-                        transformCurrentPlayerData(playerGame, playerId);
-                        console.log(`Emitting playerRemoved event to ${gameCode}_${playerId}`);
-                        this.io.to(`${gameCode}_${playerId}`).emit("playerRemoved", playerGame);
-                    })
+                  this.#emit(updatedGame, gameCode, userId);
                     return {...updatedGame, success: true};
                 } catch (error) {
                     console.error("Failed to remove player:", error);
@@ -63,13 +57,12 @@ class RemoveGamePlayer extends PostResponseHandler {
         } else {
             if (game.state === States.ACTIVE) {
                 const newGame = await closeGame(game);
+                this.#emit(newGame, gameCode, userId);
                 return {...newGame, success: true};
             } else if (game.state === States.INITIAL) {
                 await games.deleteGame(game.id);
                 return {success: true};
             }
-
-
         }
 
     }
@@ -94,6 +87,16 @@ class RemoveGamePlayer extends PostResponseHandler {
             }
         }
         return {newPlayers, newDeck};
+    }
+    #emit(updatedGame,gameCode, userId) {
+        transformCurrentPlayerData(updatedGame, userId);
+        updatedGame.playerList.forEach(player => {
+            const playerId = player.userId;
+            const playerGame = structuredClone(updatedGame);
+            transformCurrentPlayerData(playerGame, playerId);
+            console.log(`Emitting playerRemoved event to ${gameCode}_${playerId}`);
+            this.io.to(`${gameCode}_${playerId}`).emit("playerRemoved", playerGame);
+        })
     }
 }
 

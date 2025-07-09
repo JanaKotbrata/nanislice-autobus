@@ -9,6 +9,8 @@ import { useGameSocket } from "../hooks/use-game-socket.js";
 import { useAuth } from "../context/auth-context.jsx";
 import SuccessAlert from "../components/alerts/success-alert.jsx";
 import { closeGame } from "../services/game-service";
+import { FaSignOutAlt } from "react-icons/fa";
+import Leave from "../components/form/visual/leave.jsx";
 
 function Game() {
   const navigate = useNavigate();
@@ -40,6 +42,7 @@ function Game() {
       setShowEndGame(true);
     }
   }, [gameContext?.gameState]);
+
   useGameSocket(user.id, gameContext.gameCode, gameContext.setContextGame);
 
   function handleMouseDown() {
@@ -65,7 +68,6 @@ function Game() {
     }));
 
     let index = newPlayers.findIndex((player) => player?.myself);
-
     let myself = newPlayers.splice(index, 1)[0];
 
     let orderedPlayers = [
@@ -121,6 +123,7 @@ function Game() {
             />
           )}
         </div>
+
         {/* Resize lišta */}
         <div
           ref={dragRef}
@@ -129,13 +132,17 @@ function Game() {
         />
 
         {/* Pravá sekce - Hrací pole */}
-        <div className="flex-grow bg-gray-900 p-6">
-          <GameBoard
-            player={gameContext.players.find((p) => p.myself)}
-            cardPack={gameContext.deck}
-          />
+        <div className="flex-grow bg-gray-900 p-6 flex flex-col relative">
+          {/* Tlačítko nahoře nad GameBoard */}
+          <Leave userId={myself.userId} />
+          {/* GameBoard samotný */}
+          <div className="flex-grow">
+            <GameBoard player={myself} cardPack={gameContext.deck} />
+          </div>
         </div>
       </div>
+
+      {/* Alert při konci hry */}
       {showEndGame && (
         <SuccessAlert
           message={

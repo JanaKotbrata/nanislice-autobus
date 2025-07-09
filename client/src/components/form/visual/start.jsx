@@ -30,7 +30,7 @@ function Start({ gameCode, playerList }) {
   };
 
   return (
-    <div className="p-6 ">
+    <div className="p-6 bg-gray-500/40 animate-[pulse_2s_ease-in-out_infinite] rounded-lg">
       <Button onClick={() => handleStartClick()}>Nechť hra započne</Button>
     </div>
   );

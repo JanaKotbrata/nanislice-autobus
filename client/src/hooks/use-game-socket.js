@@ -13,6 +13,11 @@ export function useGameSocket(userId, gameCode, setContextGame) {
           setContextGame(data.newGame);
         }
       });
+      socket.on("playerRemoved", (data) => {
+        if (data.code.startsWith(gameCode)) {
+          setContextGame(data);
+        }
+      });
     }
 
     return () => {

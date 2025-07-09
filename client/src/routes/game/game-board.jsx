@@ -44,10 +44,10 @@ function GameBoard({ player }) {
         </div>
 
         <div className="game-board flex flex-row md:gap-10 gap-5">
-          {gameContext.showAlert && (
+          {gameContext.showDangerAlert && (
             <DangerAlert
               message={gameContext.errorMessage}
-              onClose={() => gameContext.setShowAlert(false)}
+              onClose={() => gameContext.setShowDangerAlert(false)}
             />
           )}
           {gameContext.gameBoard.map((pack, index) => {

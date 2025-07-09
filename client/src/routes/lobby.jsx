@@ -68,7 +68,6 @@ function Lobby() {
   }
 
   const shouldRender = !!myself?.creator;
-  console.log("Lobby players:", gameContext.players);
   return (
     <section className="!bg-gray-900 min-h-screen flex items-center justify-center px-4">
       <BusPattern />
@@ -112,7 +111,7 @@ function Lobby() {
                     </Member>
                   </div>
                   <div className="shrink-0 flex items-center gap-2">
-                    {player.myself ? (
+                    {player.myself && (
                       <FaSignOutAlt
                         className="text-gray-500 hover:text-red-500 cursor-pointer"
                         onClick={async () =>
@@ -121,17 +120,13 @@ function Lobby() {
                         title="Vystup ze hry"
                         size={18}
                       />
-                    ) : (
-                      <FaSignOutAlt className="invisible" size={16} />
                     )}
-                    {player.ready ? (
+                    {player.ready && (
                       <FaCheck
                         className="text-green-300/50"
                         title="Hráč je připraven"
                         size={18}
                       />
-                    ) : (
-                      <FaCheck className="invisible" size={16} />
                     )}
                   </div>
                 </div>
