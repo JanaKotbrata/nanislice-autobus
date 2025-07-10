@@ -58,6 +58,7 @@ class RemoveGamePlayer extends PostResponseHandler {
             if (game.state === States.ACTIVE) {
                 const newGame = await closeGame(game);
                 this.#emit(newGame, gameCode, userId);
+                await games.deleteGame(game.id);
                 return {...newGame, success: true};
             } else if (game.state === States.INITIAL) {
                 await games.deleteGame(game.id);

@@ -34,7 +34,7 @@ class UpdateUser extends PostFormDataResponseHandler {
             toUpdate.name = name;
         }
         try {
-            user = await users.updateUser(userId, {name, sys: user.sys});
+            user = await users.updateUser(userId, toUpdate);
         } catch (e) {
             throw new UserErrors.UserUpdateError(e);
         }
