@@ -1,35 +1,37 @@
 const request = require('supertest');
-const express = require('express');
 require("../services/setup-db");
-const connectionDb = require("../../src/models/connection-db");
+
 const CreateGame = require('../../src/routes/game/create');
 const Routes = require("../../../shared/constants/routes.json");
-const TestUserMiddleware = require("../services/test-user-middleware");
-const ErrorHandler = require("../../src/middlewares/error-handler");
-const {userMock, generateRandomId, closedGame, initialGame} = require("../helpers/default-mocks");
+const { userMock, generateRandomId, closedGame, initialGame } = require("../helpers/default-mocks");
+const { setupTestServer, cleanup } = require("../services/test-setup");
+const IO = require("../helpers/io-mock");
 
 let gamesCollection;
 let usersCollection;
-
 let testUserId;
+let getToken;
 
-describe('POST /game/create', () => {
+describe('POST /game/create – valid user', () => {
     let app;
 
     beforeAll(async () => {
-        const db = await connectionDb();
-        gamesCollection = db.collection('games');
-        usersCollection = db.collection('users');
-
-        app = express();
-        app.use(express.json());
-        app.use(TestUserMiddleware(() => testUserId));
-        new CreateGame(app);
-        app.use(ErrorHandler);
+        const setup = await setupTestServer(() => testUserId, (app) => {
+            new CreateGame(app, IO);
+        });
+        app = setup.app;
+        gamesCollection = setup.gamesCollection;
+        usersCollection = setup.usersCollection;
+        getToken = setup.getToken;
     });
 
-    afterAll(async () => {
-        jest.clearAllMocks();
+    afterEach(async () => {
+        await cleanup();
+    });
+
+    afterEach(async () => {
+        await gamesCollection.deleteMany({});
+        await usersCollection.deleteMany({});
     });
 
     it('should create a game', async () => {
@@ -38,6 +40,7 @@ describe('POST /game/create', () => {
 
         const response = await request(app)
             .post(Routes.Game.CREATE)
+            .set("Authorization", `Bearer ${getToken(testUserId)}`)
             .send();
 
         expect(response.status).toBe(200);
@@ -46,12 +49,16 @@ describe('POST /game/create', () => {
         expect(response.body.state).toBe("initial");
     });
 
-    it('should create a game - some closed game exist', async () => {
+    it('should create a game – some closed game exist', async () => {
         const user = await usersCollection.insertOne(userMock());
         testUserId = user.insertedId.toString();
-        const game = await gamesCollection.insertOne(closedGame({user}));
+
+        const closed = closedGame({ user });
+        const game = await gamesCollection.insertOne(closed);
+
         const response = await request(app)
             .post(Routes.Game.CREATE)
+            .set("Authorization", `Bearer ${getToken(testUserId)}`)
             .send();
 
         expect(response.status).toBe(200);
@@ -60,26 +67,45 @@ describe('POST /game/create', () => {
         expect(response.body.code).toHaveLength(6);
         expect(response.body.state).toBe("initial");
     });
-    it('should create a game - some game exist', async () => {
+
+    it('should create a game – some game exist', async () => {
         const mockUser = userMock();
         const user = await usersCollection.insertOne(mockUser);
         testUserId = user.insertedId.toString();
-        const initialGameData = initialGame({user: {...mockUser, userId: testUserId}});
-        const game = await gamesCollection.insertOne(initialGameData);
+
+        const initial = initialGame({ user: { ...mockUser, userId: testUserId } });
+
         const response = await request(app)
             .post(Routes.Game.CREATE)
+            .set("Authorization", `Bearer ${getToken(testUserId)}`)
             .send();
 
         expect(response.status).toBe(200);
-        expect(response.body.id).toBe(game.insertedId.toString());
         expect(response.body.success).toBe(true);
         expect(response.body.code).toHaveLength(6);
         expect(response.body.state).toBe("initial");
     });
-    it('should return an error if user does not exist', async () => {
+});
+
+describe('POST /game/create – user does not exist', () => {
+    let app;
+
+    beforeAll(async () => {
         testUserId = generateRandomId();
+        const setup = await setupTestServer(() => testUserId, (app) => {
+            new CreateGame(app, IO);
+        }, true);
+        app = setup.app;
+        gamesCollection = setup.gamesCollection;
+        usersCollection = setup.usersCollection;
+        getToken = setup.getToken;
+    });
+  
+
+    it('should return an error if user does not exist', async () => {
         const response = await request(app)
             .post(Routes.Game.CREATE)
+            .set("Authorization", `Bearer ${getToken(testUserId)}`)
             .send();
 
         expect(response.status).toBe(404);

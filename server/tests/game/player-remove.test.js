@@ -1,30 +1,31 @@
 const request = require('supertest');
-const express = require('express');
 require("../services/setup-db");
-const connectionDb = require("../../src/models/connection-db");
 const GamePlayerRemove = require('../../src/routes/game/player-remove');
 const Routes = require("../../../shared/constants/routes");
-const ErrorHandler = require("../../src/middlewares/error-handler");
 const {userMock, initialGame, generateRandomId, basicUser, activeGame} = require("../helpers/default-mocks");
 const IO = require("../helpers/io-mock");
+const {setupTestServer, cleanup} = require("../services/test-setup");
 let gamesCollection;
 let usersCollection;
+let testUserId;
+let getToken;
 
 describe('POST /game/player/remove', () => {
     let app;
     beforeAll(async () => {
-        const db = await connectionDb();
-        gamesCollection = db.collection('games');
-        usersCollection = db.collection('users');
+        const setup = await setupTestServer(() => testUserId, (app) => {
+            new GamePlayerRemove(app, IO);
+        });
+        app = setup.app;
+        gamesCollection = setup.gamesCollection;
+        usersCollection = setup.usersCollection;
+        getToken = setup.getToken;
+    });
+  
+    afterEach(async () => {
+        await cleanup();
+    });
 
-        app = express();
-        app.use(express.json());
-        new GamePlayerRemove(app, IO);
-        app.use(ErrorHandler);
-    });
-    afterAll(async () => {
-        jest.clearAllMocks();
-    });
 
     it('should be able to remove a game', async () => {
         let mockUser = userMock();
@@ -35,6 +36,7 @@ describe('POST /game/player/remove', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.PLAYER_REMOVE)
+            .set("Authorization", `Bearer ${getToken()}`)
             .send({userId: user._id.toString(), gameCode: mockGame.code});
 
         expect(response.status).toBe(200);
@@ -51,6 +53,7 @@ describe('POST /game/player/remove', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.PLAYER_REMOVE)
+            .set("Authorization", `Bearer ${getToken()}`)
             .send({userId: user._id.toString(), gameCode: mockGame.code});
         const deletedPlayer = mockGame.playerList.find((player) => player.userId === user._id.toString());
         expect(response.status).toBe(200);
@@ -67,6 +70,7 @@ describe('POST /game/player/remove', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.PLAYER_REMOVE)
+            .set("Authorization", `Bearer ${getToken()}`)
             .send({userId: user._id.toString(), gameCode: mockGame.code});
 
         expect(response.status).toBe(200);
@@ -78,6 +82,7 @@ describe('POST /game/player/remove', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.PLAYER_REMOVE)
+            .set("Authorization", `Bearer ${getToken()}`)
             .send({userId: generateRandomId(), gameCode: mockGame.code});
 
         expect(response.status).toBe(400);
@@ -88,6 +93,7 @@ describe('POST /game/player/remove', () => {
         const id = user.insertedId.toString();
         const response = await request(app)
             .post(Routes.Game.PLAYER_REMOVE)
+            .set("Authorization", `Bearer ${getToken()}`)
             .send({userId: id, gameCode: "nonexi"});
 
         expect(response.status).toBe(404);

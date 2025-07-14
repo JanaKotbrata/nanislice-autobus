@@ -17,7 +17,7 @@ const registerRoutes = require("./utils/register-routes");
 const createIndexes = require("./utils/create-indexes");
 const getPathFromRoot = require("./utils/get-path-from-root");
 const Config = require("../../shared/config/config.json")
-const {getPlayerIdListByGameCode} = require("./services/game-service");
+const {initJwtStrategy} = require("./services/jwt-auth");
 
 async function main() {
 // Init express
@@ -35,26 +35,11 @@ async function main() {
         credentials: true
     }));
 
-    app.use(
-        session({
-            secret: config.secret,
-            resave: false,
-            saveUninitialized: true,
-            cookie: {
-                sameSite: 'lax',
-                secure: process.env.NODE_ENV === 'production'
-            }
-        })
-    );
-    app.use(passport.initialize());
-    app.use(passport.session());
 
-    passport.serializeUser((user, done) => done(null, user.id));
-    passport.deserializeUser(async (id, done) => {
-        const user =
-            await users.getUserById(id);
-        done(null, user);
-    });
+    app.use(passport.initialize());
+    await initJwtStrategy(passport);
+
+
 
     //Init AUTH
     await initGoogleAuth(passport, app);

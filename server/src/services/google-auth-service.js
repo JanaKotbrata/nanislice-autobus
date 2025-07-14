@@ -48,17 +48,14 @@ async function initGoogleAuth(passport, app) {
     );
 
     //ROUTES
-    app.get('/', (req, res) => res.send('Hlavní stránka'));
-
-    app.get('/auth/google', passport.authenticate('google', {scope: ['profile', 'email']}));
+    app.get('/auth/google', passport.authenticate('google', {session: false, scope: ['profile', 'email']}));
 
     app.get(
         '/auth/google/callback',
-        passport.authenticate('google', {failureRedirect: '/'}),
+        passport.authenticate('google', { session: false, failureRedirect: '/'}),
         (req, res) => {
-            const token = jwt.sign({id: req.user.id}, JWT_SECRET, {expiresIn: '24h'});
-            const userId = req.user.id; // TODO nepotrebujeme uzivatele, staci nam token (pak si uzivatele nacitame)
-            res.redirect(`${Config.CLIENT_URI}/auth-callback?token=${token}&userId=${userId}`);
+            const token = jwt.sign({id: req.user.id, loginHash: "necoRandom"}, JWT_SECRET, {expiresIn: '24h'});
+            res.redirect(`${Config.CLIENT_URI}/auth-callback?token=${token}`);
         }
     );
 }

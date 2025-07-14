@@ -4,7 +4,7 @@ import { useAuth } from "../../context/auth-context.jsx";
 import { updateUser } from "../../services/user-service.jsx";
 
 function UserContextProvider({ children }) {
-  const { user: authUser } = useAuth();
+  const { user: authUser, token } = useAuth();
   const [user, setUser] = React.useState(authUser);
 
   function setContextUser(user) {
@@ -12,7 +12,7 @@ function UserContextProvider({ children }) {
   }
   async function update(formData) {
     try {
-      const updatedUser = await updateUser(formData);
+      const updatedUser = await updateUser(formData, token);
       setContextUser(updatedUser);
       return updatedUser;
     } catch (err) {

@@ -5,14 +5,16 @@ import GameContext from "../../../context/game.js";
 import { removePlayer } from "../../../services/game-service.jsx";
 import { io } from "socket.io-client";
 import Config from "../../../../../shared/config/config.json";
+import { useAuth } from "../../../context/auth-context.jsx";
 
 const socket = io(Config.SERVER_URI);
 
 function Leave({ userId }) {
   const gameContext = React.useContext(GameContext);
+  const { token } = useAuth();
   const handleLeave = async () => {
     gameContext.setShowAlert(false);
-    removePlayer({ gameCode: gameContext.gameCode, userId })
+    removePlayer({ gameCode: gameContext.gameCode, userId }, token)
       .then((game) => {
         gameContext.setContextGame(game);
       })

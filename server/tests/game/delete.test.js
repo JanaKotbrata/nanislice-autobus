@@ -1,38 +1,40 @@
 const request = require('supertest');
-const express = require('express');
 require("../services/setup-db");
-const connectionDb = require("../../src/models/connection-db");
 const DeleteGame = require('../../src/routes/game/delete');
 const Routes = require("../../../shared/constants/routes.json");
-const ErrorHandler = require("../../src/middlewares/error-handler");
-const {initialGame, generateRandomId} = require("../helpers/default-mocks");
+const {initialGame, generateRandomId, userMock} = require("../helpers/default-mocks");
+const {setupTestServer, cleanup} = require("../services/test-setup");
+const IO = require("../helpers/io-mock");
 let gamesCollection;
-
+let usersCollection;
+let testUserId;
+let getToken;
 describe('POST /game/delete', () => {
     let app;
-
     beforeAll(async () => {
-        const db = await connectionDb();
-        gamesCollection = db.collection('games');
-
-        app = express();
-        app.use(express.json());
-        new DeleteGame(app);
-        app.use(ErrorHandler);
+        const setup = await setupTestServer(() => testUserId, (app) => {
+            new DeleteGame(app, IO);
+        });
+        app = setup.app;
+        gamesCollection = setup.gamesCollection;
+        usersCollection = setup.usersCollection;
+        getToken = setup.getToken;
     });
-
-    afterAll(async () => {
-        jest.clearAllMocks();
+  
+    afterEach(async () => {
+        await cleanup();
     });
 
     it('should delete a game', async () => {
+        const user = await usersCollection.insertOne(userMock({}, ));
+        testUserId = user.insertedId.toString();
         const mockGame = initialGame();
-
         const game = await gamesCollection.insertOne(mockGame);
         const id = game.insertedId.toString();
 
         const response = await request(app)
             .post(Routes.Game.DELETE)
+            .set("Authorization", `Bearer ${getToken()}`)
             .send({ id });
 
         expect(response.status).toBe(200);
@@ -40,8 +42,11 @@ describe('POST /game/delete', () => {
     });
 
     it('should return an error if game does not exist', async () => {
+        const user = await usersCollection.insertOne(userMock({}, ));
+        testUserId = user.insertedId.toString();
         const response = await request(app)
             .post(Routes.Game.DELETE)
+            .set("Authorization", `Bearer ${getToken()}`)
             .send({ id: generateRandomId() });
 
         expect(response.status).toBe(404);

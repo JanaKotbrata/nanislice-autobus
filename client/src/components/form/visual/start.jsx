@@ -7,6 +7,8 @@ import Button from "./button.jsx";
 function Start({ gameCode, playerList }) {
   const navigate = useNavigate();
   const gameContext = useContext(GameContext);
+  const { token } = useAuth();
+  console.log("token", token);
   const handleStartClick = async () => {
     if (playerList.length > 1) {
       let isEveryOneReady = true;
@@ -20,7 +22,7 @@ function Start({ gameCode, playerList }) {
         }
       }
       if (isEveryOneReady) {
-        const res = await startGame(gameCode);
+        const res = await startGame(gameCode, token);
         gameContext.setContextGame(res);
         navigate(`/game/${res.code}`);
       }

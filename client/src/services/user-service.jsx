@@ -1,19 +1,11 @@
-import axios from "axios";
 import Routes from "../../../shared/constants/routes.json";
 import Config from "../../../shared/config/config.json";
+import { post } from "./http-method-service";
 
 export async function initAuth(token, logout) {
   let response;
   try {
-    response = await axios.post(
-      Routes.User.AUTHENTICATE,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
+    response = await post(Routes.User.AUTHENTICATE, {}, token);
   } catch (error) {
     console.error("Auth initialization failed:", error);
     logout();
@@ -27,9 +19,9 @@ export async function initAuth(token, logout) {
     throw new Error("Unauthenticated user");
   }
 }
-export async function updateUser(data = {}) {
+export async function updateUser(data = {}, token) {
   try {
-    const response = await axios.post(Routes.User.UPDATE, data);
+    const response = await post(Routes.User.UPDATE, data, token);
     return response.data;
   } catch (error) {
     console.error("Error setting player:", error);

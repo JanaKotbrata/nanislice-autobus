@@ -9,6 +9,7 @@ import {
   getPlayerAndValid,
 } from "../../services/game-validation";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/auth-context.jsx";
 
 const maxHandSize = 5;
 
@@ -27,11 +28,12 @@ function GameContextProvider({ children }) {
   const currentPlayer = game?.currentPlayer;
   const gameBoard = game?.gameBoard || [];
   const gameState = game?.state;
+  const { token } = useAuth();
 
   useEffect(() => {
     const fetchGame = async () => {
       try {
-        const fetchedGame = await getGame({ code: gameCode });
+        const fetchedGame = await getGame({ code: gameCode }, token);
         setContextGame(fetchedGame);
       } catch (err) {
         console.error("Nepodařilo se načíst hru:", err);
@@ -66,11 +68,14 @@ function GameContextProvider({ children }) {
     }
     const userId = game.playerList.find((player) => player.myself)?.userId;
     console.log("ready před setPlayer", { gameCode, userId, ready: newReady });
-    setPlayer({
-      gameCode,
-      userId,
-      ready: newReady,
-    })
+    setPlayer(
+      {
+        gameCode,
+        userId,
+        ready: newReady,
+      },
+      token,
+    )
       .then((updatedGame) => {
         setContextGame(updatedGame);
       })
@@ -88,7 +93,7 @@ function GameContextProvider({ children }) {
   }
 
   function updateGameServerState(actionData, action) {
-    processAction({ ...actionData, action })
+    processAction({ ...actionData, action }, token)
       .then(setGame)
       .catch((err) => {
         console.error("Chyba při updateGameServerState:", err);

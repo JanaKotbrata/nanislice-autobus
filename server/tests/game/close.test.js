@@ -1,36 +1,39 @@
 const request = require('supertest');
-const express = require('express');
 require("../services/setup-db");
-const connectionDb = require("../../src/models/connection-db");
 const CloseGame = require('../../src/routes/game/close');
 const Routes = require("../../../shared/constants/routes.json");
-const {activeGame} = require("../helpers/default-mocks");
-const ErrorHandler = require("../../src/middlewares/error-handler");
+const {activeGame, userMock} = require("../helpers/default-mocks");
+const {setupTestServer, cleanup} = require("../services/test-setup");
+const IO = require("../helpers/io-mock");
 let gamesCollection;
-
+let usersCollection;
+let testUserId;
+let getToken;
 describe('POST /game/close', () => {
     let app;
-
     beforeAll(async () => {
-        const db = await connectionDb();
-        gamesCollection = db.collection('games');
-
-        app = express();
-        app.use(express.json());
-        new CloseGame(app);
-        app.use(ErrorHandler);
+        const setup = await setupTestServer(() => testUserId, (app) => {
+            new CloseGame(app, IO);
+        });
+        app = setup.app;
+        gamesCollection = setup.gamesCollection;
+        usersCollection = setup.usersCollection;
+        getToken = setup.getToken;
     });
-
-    afterAll(async () => {
-        jest.clearAllMocks();
+  
+    afterEach(async () => {
+        await cleanup();
     });
 
     it('should close a game by CODE', async () => {
+        const user = await usersCollection.insertOne(userMock({}, ));
+        testUserId = user.insertedId.toString();
         const mockGame = activeGame();
             await gamesCollection.insertOne(mockGame);
 
         const response = await request(app)
             .post(Routes.Game.CLOSE)
+            .set("Authorization", `Bearer ${getToken()}`)
             .send({gameCode: mockGame.code})
 
         expect(response.status).toBe(200);
@@ -40,8 +43,11 @@ describe('POST /game/close', () => {
 
     });
     test('CODE must be string with length 6', async () => {
+        const user = await usersCollection.insertOne(userMock({}, ));
+        testUserId = user.insertedId.toString();
         const response = await request(app)
             .post(Routes.Game.CLOSE)
+            .set("Authorization", `Bearer ${getToken()}`)
             .send({gameCode: 1})
 
         expect(response.status).toBe(400);

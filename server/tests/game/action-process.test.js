@@ -1,11 +1,7 @@
 const request = require('supertest');
-const express = require('express');
 require("../services/setup-db");
-const connectionDb = require("../../src/models/connection-db");
 const ProcessAction = require('../../src/routes/game/action-process');
 const Routes = require("../../../shared/constants/routes.json");
-const TestUserMiddleware = require("../services/test-user-middleware");
-const ErrorHandler = require("../../src/middlewares/error-handler");
 const GameActions = require("../../../shared/constants/game-actions.json");
 const {
     userMock,
@@ -18,29 +14,28 @@ const {
 const {generateGameCode} = require("../../src/utils/helpers");
 const {RANK_CARD_ORDER} = require("../../src/utils/game-constants");
 const IO = require("../helpers/io-mock");
+const {setupTestServer, cleanup} = require("../services/test-setup");
+const CreateGame = require("../../src/routes/game/create");
 
 let gamesCollection;
 let usersCollection;
-
 let testUserId;
+let getToken;
 
 describe('POST /game/action/process', () => {
     let app;
-
     beforeAll(async () => {
-        const db = await connectionDb();
-        gamesCollection = db.collection('games');
-        usersCollection = db.collection('users');
-
-        app = express();
-        app.use(express.json());
-        app.use(TestUserMiddleware(() => testUserId));
-        new ProcessAction(app, IO);
-        app.use(ErrorHandler);
+        const setup = await setupTestServer(() => testUserId, (app) => {
+            new ProcessAction(app, IO);
+        });
+        app = setup.app;
+        gamesCollection = setup.gamesCollection;
+        usersCollection = setup.usersCollection;
+        getToken = setup.getToken;
     });
 
-    afterAll(async () => {
-        jest.clearAllMocks();
+    afterEach(async () => {
+        await cleanup();
     });
 
     it('should return an error if game does not exist', async () => {
@@ -48,21 +43,13 @@ describe('POST /game/action/process', () => {
         testUserId = user.insertedId.toString();
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${getToken(testUserId)}`)
             .send({gameCode: generateRandomCode(), action: GameActions.DRAW_CARD});
 
         expect(response.status).toBe(404);
         expect(response.body.message).toBe("Requested game does not exist");
     });
-    it('User does not exist ', async () => {
-        testUserId = generateRandomId();
-        const response = await request(app)
-            .post(Routes.Game.ACTION_PROCESS)
-            .send({gameCode: generateGameCode(), action: GameActions.DRAW_CARD});
 
-        expect(response.status).toBe(404);
-        expect(response.body.name).toBe("UserDoesNotExist");
-
-    });
     it('Current user is not in game', async () => {
         const user = await usersCollection.insertOne(userMock());
         testUserId = user.insertedId.toString();
@@ -72,6 +59,7 @@ describe('POST /game/action/process', () => {
 
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${getToken(testUserId)}`)
             .send({gameCode: mockGame.code, action: GameActions.DRAW_CARD});
 
         expect(response.status).toBe(400);
@@ -87,6 +75,7 @@ describe('POST /game/action/process', () => {
 
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${getToken(testUserId)}`)
             .send({gameCode: mockGame.code, action: GameActions.DRAW_CARD});
 
         expect(response.status).toBe(400);
@@ -104,6 +93,7 @@ describe('POST /game/action/process', () => {
         const oldHand = mockGame.playerList[1].hand;
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${getToken(testUserId)}`)
             .send({gameCode: mockGame.code, action: GameActions.REORDER_HAND, hand: oldHand});
 
         expect(response.status).toBe(200);
@@ -121,6 +111,7 @@ describe('POST /game/action/process', () => {
         const oldHand = mockGame.playerList[1].hand;
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${getToken(testUserId)}`)
             .send({gameCode: mockGame.code, action: GameActions.REORDER_HAND, hand: oldHand});
 
         expect(response.status).toBe(200);
@@ -135,6 +126,7 @@ describe('POST /game/action/process', () => {
         const oldHand = mockGame.playerList[1].hand;
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${getToken(testUserId)}`)
             .send({gameCode: mockGame.code, action: GameActions.REORDER_HAND, hand: oldHand});
 
         expect(response.status).toBe(200);
@@ -149,6 +141,7 @@ describe('POST /game/action/process', () => {
         const oldHand = mockGame.playerList[1].hand;
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${getToken(testUserId)}`)
             .send({gameCode: mockGame.code, action: "invalid", hand: oldHand});
 
         expect(response.status).toBe(400);
@@ -164,6 +157,7 @@ describe('POST /game/action/process', () => {
         const oldHand = mockGame.playerList[1].hand;
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${getToken(testUserId)}`)
             .send({gameCode: mockGame.code, action: GameActions.MOVE_CARD_TO_BOARD, targetIndex:0, card: oldHand[0]});
 
         expect(response.status).toBe(400);
@@ -172,6 +166,32 @@ describe('POST /game/action/process', () => {
     });
 
 });
+describe('POST /game/action/process – user does not exist', () => {
+    let app;
+
+    beforeAll(async () => {
+        testUserId = generateRandomId();
+        const setup = await setupTestServer(() => testUserId, (app) => {
+            new ProcessAction(app, IO);
+        }, true);
+        app = setup.app;
+        gamesCollection = setup.gamesCollection;
+        usersCollection = setup.usersCollection;
+        getToken = setup.getToken;
+    });
+    it('User does not exist ', async () => {
+        const response = await request(app)
+            .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${getToken(testUserId)}`)
+            .send({gameCode: generateGameCode(), action: GameActions.DRAW_CARD});
+
+        expect(response.status).toBe(404);
+        expect(response.body.name).toBe("UserDoesNotExist");
+
+    });
+
+});
+
 function splitCardsIntoGroups(cards) {
     const rankOrder = RANK_CARD_ORDER;
 

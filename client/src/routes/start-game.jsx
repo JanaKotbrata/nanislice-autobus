@@ -4,21 +4,20 @@ import Instructions from "../components/instructions.jsx";
 import { useAuth } from "../context/auth-context.jsx";
 import { addPlayer, createGame, getGame } from "../services/game-service.jsx";
 import GameContext from "../context/game.js";
-import { FaPencilAlt, FaSignInAlt } from "react-icons/fa";
+import { FaSignInAlt } from "react-icons/fa";
 import BusPattern from "../components/bus-pattern.jsx";
 import Button from "../components/form/visual/button.jsx";
-import { getAvatar } from "../services/user-service.jsx";
 import Avatar from "../components/form/visual/avatar.jsx";
 
 function StartGame() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
   const gameContext = useContext(GameContext);
   const [gameCode, setGameCode] = useState("");
 
   async function startGame() {
     try {
-      const response = await createGame();
+      const response = await createGame({}, token);
       gameContext.setContextGame(response);
       if (response.state === "active") {
         navigate(`/game/${response.code}`);
@@ -27,9 +26,12 @@ function StartGame() {
       }
     } catch (error) {
       if (error.response?.data?.name === "UserAlreadyInGame") {
-        const game = await getGame({
-          id: `?id=${error.response.data?.params?.gameId}`,
-        });
+        const game = await getGame(
+          {
+            id: `?id=${error.response.data?.params?.gameId}`,
+          },
+          token,
+        );
         gameContext.setContextGame(game);
         navigate(`/lobby/${game?.code}`);
       } else {
@@ -45,7 +47,7 @@ function StartGame() {
       return;
     }
     try {
-      let game = await addPlayer({ userId: user.id, gameCode });
+      let game = await addPlayer({ userId: user.id, gameCode }, token);
       gameContext.setContextGame(game);
       navigate(`/lobby/${gameCode}`);
     } catch (error) {

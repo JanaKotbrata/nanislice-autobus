@@ -1,33 +1,30 @@
 const request = require('supertest');
-const express = require('express');
 require("../services/setup-db");
-const connectionDb = require("../../src/models/connection-db");
 const GetGame = require('../../src/routes/game/get');
 const Routes = require("../../../shared/constants/routes.json");
 const {generateGameCode} = require("../../src/utils/helpers");
-const ErrorHandler = require("../../src/middlewares/error-handler");
 const {initialGame, userMock, basicUser} = require("../helpers/default-mocks");
-const TestUserMiddleware = require("../services/test-user-middleware");
+const {setupTestServer, cleanup} = require("../services/test-setup");
+const IO = require("../helpers/io-mock");
 let gamesCollection;
 let usersCollection;
 let testUserId;
+let getToken;
+
 describe('GET /game/get', () => {
     let app;
-
     beforeAll(async () => {
-        const db = await connectionDb();
-        gamesCollection = db.collection('games');
-        usersCollection = db.collection('users');
-
-        app = express();
-        app.use(express.json());
-        app.use(TestUserMiddleware(() => testUserId));
-        new GetGame(app);
-        app.use(ErrorHandler);
+        const setup = await setupTestServer(() => testUserId, (app) => {
+            new GetGame(app, IO);
+        });
+        app = setup.app;
+        gamesCollection = setup.gamesCollection;
+        usersCollection = setup.usersCollection;
+        getToken = setup.getToken;
     });
-
-    afterAll(async () => {
-        jest.clearAllMocks();
+  
+    afterEach(async () => {
+        await cleanup();
     });
 
     it('should return a game by ID', async () => {
@@ -39,6 +36,7 @@ describe('GET /game/get', () => {
 
         const response = await request(app)
             .get(Routes.Game.GET)
+            .set("Authorization", `Bearer ${getToken()}`)
             .query({id})
 
         expect(response.body.success).toBe(true);
@@ -47,11 +45,12 @@ describe('GET /game/get', () => {
 
     });
     it('should return a game by CODE', async () => {
-        const mockGame = {code: generateGameCode(), playerList:[]};
+        const mockGame = {code: generateGameCode(), playerList: []};
         await gamesCollection.insertOne(mockGame);
 
         const response = await request(app)
             .get(Routes.Game.GET)
+            .set("Authorization", `Bearer ${getToken()}`)
             .query({code: mockGame.code})
 
         expect(response.status).toBe(200);
@@ -62,6 +61,7 @@ describe('GET /game/get', () => {
     test('CODE must be string with length 6', async () => {
         const response = await request(app)
             .get(Routes.Game.GET)
+            .set("Authorization", `Bearer ${getToken()}`)
             .query({code: 1})
 
         expect(response.status).toBe(400);
@@ -71,8 +71,9 @@ describe('GET /game/get', () => {
     });
 
     test('ID must be id', async () => {
-          const response = await request(app)
+        const response = await request(app)
             .get(Routes.Game.GET)
+            .set("Authorization", `Bearer ${getToken()}`)
             .query({id: 1})
 
 

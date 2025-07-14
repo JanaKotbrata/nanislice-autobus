@@ -1,11 +1,7 @@
 const request = require('supertest');
-const express = require('express');
 require("../../services/setup-db");
-const connectionDb = require("../../../src/models/connection-db");
 const ProcessAction = require('../../../src/routes/game/action-process');
 const Routes = require("../../../../shared/constants/routes.json");
-const TestUserMiddleware = require("../../services/test-user-middleware");
-const ErrorHandler = require("../../../src/middlewares/error-handler");
 const GameActions = require("../../../../shared/constants/game-actions.json");
 const {
     userMock,
@@ -13,30 +9,29 @@ const {
     basicUser,
 } = require("../../helpers/default-mocks");
 const IO = require("../../helpers/io-mock");
+const {setupTestServer, cleanup} = require("../../services/test-setup");
 
 let gamesCollection;
 let usersCollection;
-
+let getToken;
 let testUserId;
 
-describe('POST /game/action/process', () => {
+describe('POST /game/action/process - move card to board from busstop', () => {
     let app;
 
     beforeAll(async () => {
-        const db = await connectionDb();
-        gamesCollection = db.collection('games');
-        usersCollection = db.collection('users');
-
-        app = express();
-        app.use(express.json());
-        app.use(TestUserMiddleware(() => testUserId));
-        new ProcessAction(app, IO);
-        app.use(ErrorHandler);
+        const setup = await setupTestServer(() => testUserId, (app) => {
+            new ProcessAction(app, IO);
+        });
+        app = setup.app;
+        gamesCollection = setup.gamesCollection;
+        usersCollection = setup.usersCollection;
+        getToken = setup.getToken;
+    });
+    afterEach(async () => {
+        await cleanup();
     });
 
-    afterAll(async () => {
-        jest.clearAllMocks();
-    });
 
     it('Move card to board from  busStop', async () => {
         const user = await usersCollection.insertOne(userMock());
@@ -52,6 +47,7 @@ describe('POST /game/action/process', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${getToken(id)}`)
             .send({
                 gameCode: mockGame.code,
                 targetIndex,

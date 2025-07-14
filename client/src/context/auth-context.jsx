@@ -8,13 +8,15 @@ const LOCAL_TOKEN_KEY = "userToken";
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const [token, setToken] = useState(null);
   function logout() {
     setUser(null);
+    setToken(null);
     localStorage.removeItem(LOCAL_TOKEN_KEY);
   }
 
   async function login(token) {
+    setToken(token);
     const user = await initAuth(token, logout);
     setUser(user);
     localStorage.setItem(LOCAL_TOKEN_KEY, token);
@@ -23,6 +25,8 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const token = localStorage.getItem(LOCAL_TOKEN_KEY);
     if (token) {
+      // TODO zkontrolovat platnost tokenu
+      setToken(token);
       initAuth(token)
         .then((user) => setUser(user))
         .catch(() => logout())
@@ -33,7 +37,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

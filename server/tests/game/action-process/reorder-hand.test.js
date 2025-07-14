@@ -1,11 +1,7 @@
 const request = require('supertest');
-const express = require('express');
 require("../../services/setup-db");
-const connectionDb = require("../../../src/models/connection-db");
 const ProcessAction = require('../../../src/routes/game/action-process');
 const Routes = require("../../../../shared/constants/routes.json");
-const TestUserMiddleware = require("../../services/test-user-middleware");
-const ErrorHandler = require("../../../src/middlewares/error-handler");
 const GameActions = require("../../../../shared/constants/game-actions.json");
 const {
     userMock,
@@ -14,29 +10,27 @@ const {
 } = require("../../helpers/default-mocks");
 const {generateGameCode} = require("../../../src/utils/helpers");
 const IO = require("../../helpers/io-mock");
+const {setupTestServer, cleanup} = require("../../services/test-setup");
 
 let gamesCollection;
 let usersCollection;
-
+let getToken;
 let testUserId;
 
-describe('POST /game/action/process', () => {
+describe('POST /game/action/process - reorder hand', () => {
     let app;
 
     beforeAll(async () => {
-        const db = await connectionDb();
-        gamesCollection = db.collection('games');
-        usersCollection = db.collection('users');
-
-        app = express();
-        app.use(express.json());
-        app.use(TestUserMiddleware(() => testUserId));
-        new ProcessAction(app, IO);
-        app.use(ErrorHandler);
-    });
-
-    afterAll(async () => {
-        jest.clearAllMocks();
+        const setup = await setupTestServer(() => testUserId, (app) => {
+            new ProcessAction(app, IO);
+        });
+        app = setup.app;
+        gamesCollection = setup.gamesCollection;
+        usersCollection = setup.usersCollection;
+        getToken = setup.getToken;
+    }, 15000);
+    afterEach(async () => {
+        await cleanup();
     });
     it('Reorder hand', async () => {
         const user = await usersCollection.insertOne(userMock());
@@ -48,6 +42,7 @@ describe('POST /game/action/process', () => {
         const newHand = [oldHand[2], oldHand[0], oldHand[1], oldHand[3], oldHand[4]];
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${getToken(testUserId)}`)
             .send({gameCode: mockGame.code, action: GameActions.REORDER_HAND, hand: newHand});
 
         expect(response.status).toBe(200);
@@ -61,6 +56,7 @@ describe('POST /game/action/process', () => {
     it('Reorder hand - hand is required', async () => {
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${getToken(testUserId)}`)
             .send({gameCode: generateGameCode(), action: GameActions.REORDER_HAND});
 
         expect(response.status).toBe(400);
@@ -70,6 +66,7 @@ describe('POST /game/action/process', () => {
     it('Reorder hand - invalid hand', async () => {
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${getToken(testUserId)}`)
             .send({gameCode: generateGameCode(), action: GameActions.REORDER_HAND, hand: "invalid"});
 
         expect(response.status).toBe(400);
@@ -86,6 +83,7 @@ describe('POST /game/action/process', () => {
         const newHand = [oldHand[2], oldHand[0], oldHand[1], oldHand[3], ""];
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${getToken(testUserId)}`)
             .send({gameCode: mockGame.code, action: GameActions.REORDER_HAND, hand: newHand});
 
         expect(response.status).toBe(400);
@@ -101,11 +99,11 @@ describe('POST /game/action/process', () => {
         const newHand = [oldHand[2], oldHand[0], oldHand[1], oldHand[3]];
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${getToken(testUserId)}`)
             .send({gameCode: mockGame.code, action: GameActions.REORDER_HAND, hand: newHand});
 
         expect(response.status).toBe(400);
         expect(response.body.name).toBe("InvalidHandReorder");
     });
-
 
 });

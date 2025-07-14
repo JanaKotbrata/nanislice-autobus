@@ -53,11 +53,11 @@ async function initSeznamAuth(passport, app) {
     );
 
     // ROUTES
-    app.get('/auth/seznam', passport.authenticate('seznam'));
+    app.get('/auth/seznam', passport.authenticate('seznam', {session: false}));
 
     app.get(
         '/auth/seznam/callback',
-        passport.authenticate('seznam', {failureRedirect: '/'}),
+        passport.authenticate('seznam', {session:false,failureRedirect: '/'}),
         (req, res) => {
             const token = jwt.sign({id: req.user.id}, JWT_SECRET, {expiresIn: '24h'});
             res.redirect(`${Config.CLIENT_URI}/auth-callback?token=${token}`);

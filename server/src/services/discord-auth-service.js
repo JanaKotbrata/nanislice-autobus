@@ -44,12 +44,12 @@ async function initDiscordAuth(passport, app) {
     );
 
     //ROUTES
-    app.get('/auth/discord', passport.authenticate('discord'));
+    app.get('/auth/discord', passport.authenticate('discord',{session: false}));
 
 
     app.get(
         '/auth/discord/callback',
-        passport.authenticate('discord', {failureRedirect: '/'}),
+        passport.authenticate('discord', {session: false, failureRedirect: '/'}),
         (req, res) => {
             const token = jwt.sign({id: req.user.id}, JWT_SECRET, {expiresIn: '24h'});
             const userId = req.user.id;

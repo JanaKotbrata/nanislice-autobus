@@ -20,7 +20,7 @@ function Game() {
   const [dragging, setDragging] = useState(false);
   const [showEndGame, setShowEndGame] = useState(false);
   const dragRef = useRef(null);
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   useEffect(() => {
     if (gameContext?.gameState === "initial") {
@@ -37,7 +37,7 @@ function Game() {
       gameContext.gameState === "finished"
     ) {
       setTimeout(() => {
-        closeGame({ gameCode: gameContext.gameCode });
+        closeGame({ gameCode: gameContext.gameCode }, token);
         navigate(`/`);
       }, 10000);
       setShowEndGame(true);

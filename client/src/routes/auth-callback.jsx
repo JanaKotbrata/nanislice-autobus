@@ -23,7 +23,7 @@ export default function AuthCallback() {
 
         await login(token);
 
-        const activeGame = await getGameByUser();
+        const activeGame = await getGameByUser(token);
         if (activeGame?.state === "active") {
           gameContext.setContextGame(activeGame);
           //TODO konstanty

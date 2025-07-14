@@ -1,30 +1,29 @@
 const request = require('supertest');
-const express = require('express');
 require("../services/setup-db");
-const connectionDb = require("../../src/models/connection-db");
 const GamePlayerAdd = require('../../src/routes/game/player-add');
 const Routes = require("../../../shared/constants/routes.json");
-const ErrorHandler = require("../../src/middlewares/error-handler");
 const {activeGame, initialGame, generateRandomId, userMock} = require("../helpers/default-mocks");
 const IO = require("../helpers/io-mock");
+const {setupTestServer, cleanup} = require("../services/test-setup");
 let gamesCollection;
 let usersCollection;
+let testUserId;
+let getToken;
 
 describe('POST /game/player-add', () => {
     let app;
     beforeAll(async () => {
-        const db = await connectionDb();
-        gamesCollection = db.collection('games');
-        usersCollection = db.collection('users');
-
-        app = express();
-        app.use(express.json());
-
-        new GamePlayerAdd(app, IO);
-        app.use(ErrorHandler);
+        const setup = await setupTestServer(() => testUserId, (app) => {
+            new GamePlayerAdd(app, IO);
+        });
+        app = setup.app;
+        gamesCollection = setup.gamesCollection;
+        usersCollection = setup.usersCollection;
+        getToken = setup.getToken;
     });
-    afterAll(async () => {
-        jest.clearAllMocks();
+  
+    afterEach(async () => {
+        await cleanup();
     });
     it("should add a player to a game", async () => {
         const user = await usersCollection.insertOne(userMock());
@@ -34,6 +33,7 @@ describe('POST /game/player-add', () => {
 
         const response = await request(app)
             .post(Routes.Game.PLAYER_ADD)
+            .set("Authorization", `Bearer ${getToken()}`)
             .send({userId: id, gameCode: mockGame.code});
 
         expect(response.status).toBe(200);
@@ -48,6 +48,7 @@ describe('POST /game/player-add', () => {
 
         const response = await request(app)
             .post(Routes.Game.PLAYER_ADD)
+            .set("Authorization", `Bearer ${getToken()}`)
             .send({userId: id, gameCode: mockGame.code});
 
         expect(response.status).toBe(400);
@@ -58,6 +59,7 @@ describe('POST /game/player-add', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.PLAYER_ADD)
+            .set("Authorization", `Bearer ${getToken()}`)
             .send({userId: generateRandomId(), gameCode: mockGame.code});
 
         expect(response.status).toBe(404);
@@ -66,7 +68,7 @@ describe('POST /game/player-add', () => {
     test("should return an error if game does not exist", async () => {
         const user = await usersCollection.insertOne(userMock());
         const id = user.insertedId.toString();
-        const response = await request(app).post(Routes.Game.PLAYER_ADD).send({userId: id, gameCode: "nonexi"});
+        const response = await request(app).post(Routes.Game.PLAYER_ADD).set("Authorization", `Bearer ${getToken()}`).send({userId: id, gameCode: "nonexi"});
 
         expect(response.status).toBe(404);
         expect(response.body.message).toBe("Requested game does not exist");

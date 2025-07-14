@@ -1,11 +1,7 @@
 const request = require('supertest');
-const express = require('express');
 require("../../services/setup-db");
-const connectionDb = require("../../../src/models/connection-db");
 const ProcessAction = require('../../../src/routes/game/action-process');
 const Routes = require("../../../../shared/constants/routes.json");
-const TestUserMiddleware = require("../../services/test-user-middleware");
-const ErrorHandler = require("../../../src/middlewares/error-handler");
 const GameActions = require("../../../../shared/constants/game-actions.json");
 const IO = require("../../helpers/io-mock");
 
@@ -14,29 +10,25 @@ const {
     activeGame,
     basicUser,
 } = require("../../helpers/default-mocks");
+const {setupTestServer, cleanup} = require("../../services/test-setup");
 
 let gamesCollection;
 let usersCollection;
-
 let testUserId;
-
-describe('POST /game/action/process', () => {
+let getToken;
+describe('POST /game/action/process - drawcard', () => {
     let app;
-
     beforeAll(async () => {
-        const db = await connectionDb();
-        gamesCollection = db.collection('games');
-        usersCollection = db.collection('users');
-
-        app = express();
-        app.use(express.json());
-        app.use(TestUserMiddleware(() => testUserId));
-        new ProcessAction(app, IO);
-        app.use(ErrorHandler);
+        const setup = await setupTestServer(() => testUserId, (app) => {
+            new ProcessAction(app, IO);
+        });
+        app = setup.app;
+        gamesCollection = setup.gamesCollection;
+        usersCollection = setup.usersCollection;
+        getToken = setup.getToken;
     });
-
-    afterAll(async () => {
-        jest.clearAllMocks();
+    afterEach(async () => {
+        await cleanup();
     });
 
     it('Draw card', async () => {
@@ -47,6 +39,7 @@ describe('POST /game/action/process', () => {
         const game = await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${getToken(id)}`)
             .send({gameId: game.insertedId.toString(), action: GameActions.DRAW_CARD});
 
         expect(response.status).toBe(200);
@@ -60,6 +53,7 @@ describe('POST /game/action/process', () => {
         const game = await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${getToken(id)}`)
             .send({gameId: game.insertedId.toString(), action: GameActions.DRAW_CARD});
 
         expect(response.status).toBe(400);
@@ -73,6 +67,7 @@ describe('POST /game/action/process', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${getToken(id)}`)
             .send({gameCode: mockGame.code, action: GameActions.DRAW_CARD});
 
         expect(response.status).toBe(400);
@@ -86,6 +81,7 @@ describe('POST /game/action/process', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${getToken(id)}`)
             .send({gameCode: mockGame.code, action: GameActions.DRAW_CARD});
 
         expect(response.status).toBe(400);

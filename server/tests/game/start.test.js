@@ -1,34 +1,29 @@
 const request = require('supertest');
-const express = require('express');
 require("../services/setup-db");
-const connectionDb = require("../../src/models/connection-db");
 const StartGame = require('../../src/routes/game/start');
 const Routes = require("../../../shared/constants/routes.json");
-const ErrorHandler = require("../../src/middlewares/error-handler");
 const {initialGame, generateRandomCode, userMock, getPlayerList} = require("../helpers/default-mocks");
-const TestUserMiddleware = require("../services/test-user-middleware");
 const IO = require("../helpers/io-mock");
+const {setupTestServer, cleanup} = require("../services/test-setup");
 let gamesCollection;
 let usersCollection;
 let testUserId;
+let getToken;
 
 describe('POST /game/start', () => {
     let app;
-
     beforeAll(async () => {
-        const db = await connectionDb();
-        gamesCollection = db.collection('games');
-        usersCollection = db.collection('users');
-
-        app = express();
-        app.use(express.json());
-        app.use(TestUserMiddleware(() => testUserId));
-        new StartGame(app, IO);
-        app.use(ErrorHandler);
+        const setup = await setupTestServer(() => testUserId, (app) => {
+            new StartGame(app, IO);
+        });
+        app = setup.app;
+        gamesCollection = setup.gamesCollection;
+        usersCollection = setup.usersCollection;
+        getToken = setup.getToken;
     });
 
-    afterAll(async () => {
-        jest.clearAllMocks();
+    afterEach(async () => {
+        await cleanup();
     });
 
     it('should start a game', async () => {
@@ -41,6 +36,7 @@ describe('POST /game/start', () => {
 
         const response = await request(app)
             .post(Routes.Game.START)
+            .set("Authorization", `Bearer ${getToken()}`)
             .send({gameCode: mockGame.code});
 
         expect(response.status).toBe(200);
@@ -55,6 +51,7 @@ describe('POST /game/start', () => {
     it('should return an error if game does not exist', async () => {
         const response = await request(app)
             .post(Routes.Game.START)
+            .set("Authorization", `Bearer ${getToken()}`)
             .send({gameCode: generateRandomCode()});
 
         expect(response.status).toBe(404);

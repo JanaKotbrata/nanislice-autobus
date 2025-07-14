@@ -18,7 +18,7 @@ import Button from "../components/form/visual/button.jsx";
 function Lobby() {
   const navigate = useNavigate();
   const gameContext = useContext(GameContext);
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   const myself = gameContext.players.find((player) => player.myself);
   useLobbySocket(user.id, gameContext.gameCode, gameContext.setContextGame);
@@ -36,10 +36,13 @@ function Lobby() {
       );
 
       if (!isPlayerInGame) {
-        const game = await addPlayer({
-          gameCode: gameContext.gameCode,
-          userId: user.id,
-        });
+        const game = await addPlayer(
+          {
+            gameCode: gameContext.gameCode,
+            userId: user.id,
+          },
+          token,
+        );
         gameContext.setContextGame(game);
       }
     }
@@ -51,7 +54,7 @@ function Lobby() {
 
   async function handleRemovePlayer(userId) {
     try {
-      await removePlayer({ gameCode: gameContext.gameCode, userId });
+      await removePlayer({ gameCode: gameContext.gameCode, userId }, token);
       navigate(`/`);
     } catch (e) {
       console.error("Jejda", JSON.stringify(e));
