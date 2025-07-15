@@ -10,7 +10,7 @@ import { useAuth } from "../context/auth-context.jsx";
 import SuccessAlert from "../components/alerts/success-alert.jsx";
 import { closeGame } from "../services/game-service";
 import Leave from "../components/form/visual/leave.jsx";
-import LeaveInfoAlert from "../components/alerts/leave-info-alert.jsx";
+import InfoAlert from "../components/alerts/info-alert.jsx";
 import gameContextProvider from "../components/providers/game-context-provider.jsx";
 
 function Game() {
@@ -159,7 +159,7 @@ function Game() {
       )}
       {/* Alert při odchodu ze hry */}
       {gameContext.leavingPlayer && (
-        <LeaveInfoAlert
+        <InfoAlert
           onClose={() => gameContext.setLeavingPlayer(false)}
           message={`${gameContext.leavingPlayer} se pokouší opustit hru.`}
         />

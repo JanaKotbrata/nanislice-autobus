@@ -40,7 +40,7 @@ describe('POST /user/update', () => {
 
         const response = await request(app)
             .post(Routes.User.UPDATE)
-            .set("Authorization", `Bearer ${getToken(testUserId)}`)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send({name});
 
         expect(response.status).toBe(200);
@@ -55,7 +55,7 @@ describe('POST /user/update', () => {
 
         const response = await request(app)
             .post(Routes.User.UPDATE)
-            .set("Authorization", `Bearer ${getToken(testUserId)}`)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send({name});
 
         expect(response.status).toBe(200);

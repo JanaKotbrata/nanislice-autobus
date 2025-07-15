@@ -33,7 +33,7 @@ describe('POST /game/close', () => {
 
         const response = await request(app)
             .post(Routes.Game.CLOSE)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
             .send({gameCode: mockGame.code})
 
         expect(response.status).toBe(200);
@@ -47,7 +47,7 @@ describe('POST /game/close', () => {
         testUserId = user.insertedId.toString();
         const response = await request(app)
             .post(Routes.Game.CLOSE)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
             .send({gameCode: 1})
 
         expect(response.status).toBe(400);

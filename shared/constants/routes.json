@@ -15,7 +15,9 @@
     "User": {
         "AUTHENTICATE": "/api/user/authenticate",
         "GET_AVATAR": "/api/user/avatar/get",
+        "DELETE_TOKEN": "/api/user/token/delete",
         "LIST": "/api/user/list",
-        "UPDATE": "/api/user/update"
+        "UPDATE": "/api/user/update",
+        "DELETE_ALL_TOKENS": "/api/service/user/tokens/deleteAll"
     }
 }

@@ -36,7 +36,7 @@ describe('POST /game/start', () => {
 
         const response = await request(app)
             .post(Routes.Game.START)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
             .send({gameCode: mockGame.code});
 
         expect(response.status).toBe(200);
@@ -51,7 +51,7 @@ describe('POST /game/start', () => {
     it('should return an error if game does not exist', async () => {
         const response = await request(app)
             .post(Routes.Game.START)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
             .send({gameCode: generateRandomCode()});
 
         expect(response.status).toBe(404);

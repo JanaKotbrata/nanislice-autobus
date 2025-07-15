@@ -1,4 +1,4 @@
-function LeaveInfoAlert({ onClose, message }) {
+function InfoAlert({ onClose, message }) {
   return (
     <div
       id="alert-border-4"
@@ -25,4 +25,4 @@ function LeaveInfoAlert({ onClose, message }) {
     </div>
   );
 }
-export default LeaveInfoAlert;
+export default InfoAlert;

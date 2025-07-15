@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const Config = require("../../../shared/config/config.json");
 const users = new UsersRepository();
 const {downloadAvatar} = require('../utils/download-image');
+const {createTokenHash} = require("./token-service");
 const JWT_SECRET = config.secret;
 
 async function initGoogleAuth(passport, app) {
@@ -53,8 +54,9 @@ async function initGoogleAuth(passport, app) {
     app.get(
         '/auth/google/callback',
         passport.authenticate('google', { session: false, failureRedirect: '/'}),
-        (req, res) => {
-            const token = jwt.sign({id: req.user.id, loginHash: "necoRandom"}, JWT_SECRET, {expiresIn: '24h'});
+        async (req, res) => {
+            const {hash} = await createTokenHash(req.user.id);
+            const token = jwt.sign({id: req.user.id, loginHash: hash}, JWT_SECRET, {expiresIn: '24h'});
             res.redirect(`${Config.CLIENT_URI}/auth-callback?token=${token}`);
         }
     );

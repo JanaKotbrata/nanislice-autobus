@@ -40,7 +40,7 @@ describe('POST /game/create – valid user', () => {
 
         const response = await request(app)
             .post(Routes.Game.CREATE)
-            .set("Authorization", `Bearer ${getToken(testUserId)}`)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send();
 
         expect(response.status).toBe(200);
@@ -58,7 +58,7 @@ describe('POST /game/create – valid user', () => {
 
         const response = await request(app)
             .post(Routes.Game.CREATE)
-            .set("Authorization", `Bearer ${getToken(testUserId)}`)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send();
 
         expect(response.status).toBe(200);
@@ -77,7 +77,7 @@ describe('POST /game/create – valid user', () => {
 
         const response = await request(app)
             .post(Routes.Game.CREATE)
-            .set("Authorization", `Bearer ${getToken(testUserId)}`)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send();
 
         expect(response.status).toBe(200);
@@ -105,7 +105,7 @@ describe('POST /game/create – user does not exist', () => {
     it('should return an error if user does not exist', async () => {
         const response = await request(app)
             .post(Routes.Game.CREATE)
-            .set("Authorization", `Bearer ${getToken(testUserId)}`)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send();
 
         expect(response.status).toBe(404);

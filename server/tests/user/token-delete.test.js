@@ -1,21 +1,22 @@
 const request = require('supertest');
 require("../services/setup-db");
-const ListUser = require('../../src/routes/user/list');
+const TokenDelete = require('../../src/routes/user/token-delete');
 const Routes = require("../../../shared/constants/routes.json");
 const { userMock} = require("../helpers/default-mocks");
 const {setupTestServer, cleanup} = require("../services/test-setup");
 const IO = require("../helpers/io-mock");
-
 let usersCollection;
+let gamesCollection;
 let testUserId;
 let getToken;
-describe('GET /user/list', () => {
+describe('POST /user/token/delete', () => {
     let app;
     beforeAll(async () => {
         const setup = await setupTestServer(() => testUserId, (app) => {
-            new ListUser(app, IO);
+            new TokenDelete(app, IO);
         });
         app = setup.app;
+        gamesCollection = setup.gamesCollection;
         usersCollection = setup.usersCollection;
         getToken = setup.getToken;
     });
@@ -23,27 +24,19 @@ describe('GET /user/list', () => {
     afterEach(async () => {
         await cleanup();
         await usersCollection.deleteMany({});
+
     });
 
-    it('should list all user', async () => {
-        const count = 10;
-        let user;
-        for (let i = 0; i < count; i++) {
-            const mockUser = userMock();
-            user = await usersCollection.insertOne(mockUser);
-        }
+    it('should delete token', async () => {
+        const user = await usersCollection.insertOne(userMock());
         testUserId = user.insertedId.toString();
 
         const response = await request(app)
-            .get(Routes.User.LIST)
-            .set("Authorization", `Bearer ${await getToken()}`)
+            .post(Routes.User.DELETE_TOKEN)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send({});
 
         expect(response.status).toBe(200);
-        expect(response.body.list).toHaveLength(count);
-        expect(response.body.pageInfo).toBeDefined();
-        expect(response.body.pageInfo.totalCount).toBe(count);
-        expect(response.body.success).toBe(true);
     });
 
 });

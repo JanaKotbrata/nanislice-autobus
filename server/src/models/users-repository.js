@@ -2,7 +2,7 @@ const {ObjectId} = require('mongodb');
 const Model = require('./model');
 const collectionName = 'users';
 
-class UsersRepository extends Model { //TODO add revision
+class UsersRepository extends Model {
     _getCollectionName() {
         return collectionName;
     }

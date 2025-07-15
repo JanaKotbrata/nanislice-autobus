@@ -36,7 +36,7 @@ describe('GET /game/get', () => {
 
         const response = await request(app)
             .get(Routes.Game.GET)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
             .query({id})
 
         expect(response.body.success).toBe(true);
@@ -50,7 +50,7 @@ describe('GET /game/get', () => {
 
         const response = await request(app)
             .get(Routes.Game.GET)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
             .query({code: mockGame.code})
 
         expect(response.status).toBe(200);
@@ -61,7 +61,7 @@ describe('GET /game/get', () => {
     test('CODE must be string with length 6', async () => {
         const response = await request(app)
             .get(Routes.Game.GET)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
             .query({code: 1})
 
         expect(response.status).toBe(400);
@@ -73,7 +73,7 @@ describe('GET /game/get', () => {
     test('ID must be id', async () => {
         const response = await request(app)
             .get(Routes.Game.GET)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
             .query({id: 1})
 
 

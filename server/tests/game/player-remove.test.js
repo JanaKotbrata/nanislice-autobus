@@ -36,7 +36,7 @@ describe('POST /game/player/remove', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.PLAYER_REMOVE)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
             .send({userId: user._id.toString(), gameCode: mockGame.code});
 
         expect(response.status).toBe(200);
@@ -53,7 +53,7 @@ describe('POST /game/player/remove', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.PLAYER_REMOVE)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
             .send({userId: user._id.toString(), gameCode: mockGame.code});
         const deletedPlayer = mockGame.playerList.find((player) => player.userId === user._id.toString());
         expect(response.status).toBe(200);
@@ -70,7 +70,7 @@ describe('POST /game/player/remove', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.PLAYER_REMOVE)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
             .send({userId: user._id.toString(), gameCode: mockGame.code});
 
         expect(response.status).toBe(200);
@@ -82,7 +82,7 @@ describe('POST /game/player/remove', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.PLAYER_REMOVE)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
             .send({userId: generateRandomId(), gameCode: mockGame.code});
 
         expect(response.status).toBe(400);
@@ -93,7 +93,7 @@ describe('POST /game/player/remove', () => {
         const id = user.insertedId.toString();
         const response = await request(app)
             .post(Routes.Game.PLAYER_REMOVE)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
             .send({userId: id, gameCode: "nonexi"});
 
         expect(response.status).toBe(404);

@@ -5,6 +5,7 @@ const users = new UsersRepository();
 const jwt = require('jsonwebtoken');
 const Config = require("../../../shared/config/config.json");
 const {downloadAvatar} = require("../utils/download-image");
+const {createTokenHash} = require("./token-service");
 const JWT_SECRET = config.secret;
 
 async function initDiscordAuth(passport, app) {
@@ -50,8 +51,9 @@ async function initDiscordAuth(passport, app) {
     app.get(
         '/auth/discord/callback',
         passport.authenticate('discord', {session: false, failureRedirect: '/'}),
-        (req, res) => {
-            const token = jwt.sign({id: req.user.id}, JWT_SECRET, {expiresIn: '24h'});
+        async (req, res) => {
+            const {hash} = await createTokenHash(req.user.id);
+            const token = jwt.sign({id: req.user.id, loginHash: hash}, JWT_SECRET, {expiresIn: '24h'});
             const userId = req.user.id;
             res.redirect(`${Config.CLIENT_URI}/auth-callback?token=${token}&userId=${userId}`);
         }

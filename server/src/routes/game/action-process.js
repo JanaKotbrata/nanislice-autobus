@@ -232,10 +232,9 @@ class ProcessAction extends PostResponseHandler {
                     unusedCards.push(...cardList);
                 }
                 unusedCards = shuffleDeck(unusedCards);
-                game.deck = [...unusedCards, ...game.deck]; //FIXME podívej se jak se líže a zamysli se
-            } else {
+                game.deck = [...unusedCards, ...game.deck];
                 const completedCardList = shuffleDeck(game.completedCardList);
-                game.deck = [...completedCardList, ...game.deck]; //FIXME podívej se jak se líže a zamysli se
+                game.deck = [...completedCardList, ...game.deck];
                 game.completedCardList = [];
             }
         }

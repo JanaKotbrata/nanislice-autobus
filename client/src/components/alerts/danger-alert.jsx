@@ -6,7 +6,6 @@ function DangerAlert({ message, onClose }) {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // Zjistíme, jestli je mobilní zařízení
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
     checkMobile();
     window.addEventListener("resize", checkMobile);
@@ -98,7 +97,6 @@ function DangerAlert({ message, onClose }) {
   return (
     <div className="fixed inset-0 flex items-center justify-center !bg-gray-700/50 z-40">
       {isMobile ? (
-        // Na mobilu nedáváme Rnd kvůli problémům s touch
         content
       ) : (
         <Rnd

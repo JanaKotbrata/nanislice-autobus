@@ -42,7 +42,7 @@ describe('POST /game/action/process - reorder hand', () => {
         const newHand = [oldHand[2], oldHand[0], oldHand[1], oldHand[3], oldHand[4]];
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(testUserId)}`)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send({gameCode: mockGame.code, action: GameActions.REORDER_HAND, hand: newHand});
 
         expect(response.status).toBe(200);
@@ -56,7 +56,7 @@ describe('POST /game/action/process - reorder hand', () => {
     it('Reorder hand - hand is required', async () => {
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(testUserId)}`)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send({gameCode: generateGameCode(), action: GameActions.REORDER_HAND});
 
         expect(response.status).toBe(400);
@@ -66,7 +66,7 @@ describe('POST /game/action/process - reorder hand', () => {
     it('Reorder hand - invalid hand', async () => {
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(testUserId)}`)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send({gameCode: generateGameCode(), action: GameActions.REORDER_HAND, hand: "invalid"});
 
         expect(response.status).toBe(400);
@@ -83,7 +83,7 @@ describe('POST /game/action/process - reorder hand', () => {
         const newHand = [oldHand[2], oldHand[0], oldHand[1], oldHand[3], ""];
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(testUserId)}`)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send({gameCode: mockGame.code, action: GameActions.REORDER_HAND, hand: newHand});
 
         expect(response.status).toBe(400);
@@ -99,7 +99,7 @@ describe('POST /game/action/process - reorder hand', () => {
         const newHand = [oldHand[2], oldHand[0], oldHand[1], oldHand[3]];
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(testUserId)}`)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send({gameCode: mockGame.code, action: GameActions.REORDER_HAND, hand: newHand});
 
         expect(response.status).toBe(400);

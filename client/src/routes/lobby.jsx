@@ -14,6 +14,7 @@ import { useAuth } from "../context/auth-context.jsx";
 import BusPattern from "../components/bus-pattern.jsx";
 import { getAvatar } from "../services/user-service.jsx";
 import Button from "../components/form/visual/button.jsx";
+import InfoAlert from "../components/alerts/info-alert.jsx";
 
 function Lobby() {
   const navigate = useNavigate();
@@ -60,7 +61,6 @@ function Lobby() {
       console.error("Jejda", JSON.stringify(e));
     }
   }
-  function handleStartClick() {}
 
   if (!gameContext?.players) {
     return (
@@ -142,6 +142,12 @@ function Lobby() {
               <Start
                 gameCode={gameContext.gameCode}
                 playerList={gameContext.players}
+              />
+            )}
+            {gameContext.startAlert && (
+              <InfoAlert
+                onClose={() => gameContext.setStartAlert(false)}
+                message={`Nedostatek autobusáků. Pozvi někoho.`}
               />
             )}
             {!shouldRender && (

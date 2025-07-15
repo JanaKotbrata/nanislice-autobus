@@ -47,7 +47,7 @@ class StartGame extends PostResponseHandler {
         }
         const fullDeck = initDeck(game.playerList);
         const [deck, playerList] = dealCardPerPlayer(fullDeck, game.playerList);
-        let newGame = {...game, state: "active", deck, playerList, currentPlayer: 0} //TODO maybe random number between 0 and playerList.length
+        let newGame = {...game, state: "active", deck, playerList, currentPlayer: 0}
         try {
             const startedGame = await games.updateGame(game.id, newGame);
             startedGame.playerList.forEach(player => {

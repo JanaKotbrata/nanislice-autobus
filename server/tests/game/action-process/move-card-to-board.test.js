@@ -46,7 +46,7 @@ describe('POST /game/action/process move card to board', () => {
         const card = mockGame.playerList[1].hand.find((card) => card.rank === preferredRank);
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(testUserId)}`)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send({
                 gameCode: mockGame.code,
                 targetIndex,
@@ -67,7 +67,7 @@ describe('POST /game/action/process move card to board', () => {
     it('Move card to board - invalid input', async () => {
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(testUserId)}`)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send({gameCode: generateGameCode(), targetIndex: 0, action: GameActions.MOVE_CARD_TO_BOARD});
 
         expect(response.status).toBe(400);
@@ -84,7 +84,7 @@ describe('POST /game/action/process move card to board', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(testUserId)}`)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send({
                 gameCode: mockGame.code,
                 targetIndex,
@@ -105,7 +105,7 @@ describe('POST /game/action/process move card to board', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(testUserId)}`)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send({
                 gameCode: mockGame.code,
                 targetIndex,
@@ -141,7 +141,7 @@ describe('POST /game/action/process move card to board', () => {
         const card = mockGame.playerList[1].hand.find((card) => card.rank === preferredRank)
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(testUserId)}`)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send({
                 gameCode: mockGame.code,
                 targetIndex,

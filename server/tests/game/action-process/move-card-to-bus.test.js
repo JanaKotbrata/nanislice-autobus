@@ -41,7 +41,7 @@ describe('POST /game/action/process - move card to bus', () => {
         const card = mockGame.playerList[1].hand.find((card) => card.rank === preferredRank);
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(testUserId)}`)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send({
                 gameCode: mockGame.code,
                 action: GameActions.MOVE_CARD_TO_BUS,

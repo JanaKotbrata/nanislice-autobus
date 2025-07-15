@@ -34,7 +34,7 @@ describe('POST /game/delete', () => {
 
         const response = await request(app)
             .post(Routes.Game.DELETE)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
             .send({ id });
 
         expect(response.status).toBe(200);
@@ -46,7 +46,7 @@ describe('POST /game/delete', () => {
         testUserId = user.insertedId.toString();
         const response = await request(app)
             .post(Routes.Game.DELETE)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
             .send({ id: generateRandomId() });
 
         expect(response.status).toBe(404);

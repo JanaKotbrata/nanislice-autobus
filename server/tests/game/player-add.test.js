@@ -33,7 +33,7 @@ describe('POST /game/player-add', () => {
 
         const response = await request(app)
             .post(Routes.Game.PLAYER_ADD)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
             .send({userId: id, gameCode: mockGame.code});
 
         expect(response.status).toBe(200);
@@ -48,7 +48,7 @@ describe('POST /game/player-add', () => {
 
         const response = await request(app)
             .post(Routes.Game.PLAYER_ADD)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
             .send({userId: id, gameCode: mockGame.code});
 
         expect(response.status).toBe(400);
@@ -59,7 +59,7 @@ describe('POST /game/player-add', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.PLAYER_ADD)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
             .send({userId: generateRandomId(), gameCode: mockGame.code});
 
         expect(response.status).toBe(404);
@@ -68,7 +68,7 @@ describe('POST /game/player-add', () => {
     test("should return an error if game does not exist", async () => {
         const user = await usersCollection.insertOne(userMock());
         const id = user.insertedId.toString();
-        const response = await request(app).post(Routes.Game.PLAYER_ADD).set("Authorization", `Bearer ${getToken()}`).send({userId: id, gameCode: "nonexi"});
+        const response = await request(app).post(Routes.Game.PLAYER_ADD).set("Authorization", `Bearer ${await getToken()}`).send({userId: id, gameCode: "nonexi"});
 
         expect(response.status).toBe(404);
         expect(response.body.message).toBe("Requested game does not exist");

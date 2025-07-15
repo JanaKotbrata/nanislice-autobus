@@ -23,9 +23,15 @@ async function setupTestServer(testUserIdCallback, registerRoutes, notExistUser 
     const db = await connectionDb();
     const gamesCollection = db.collection('games');
     const usersCollection = db.collection('users');
+    const tokenHashCollection = db.collection('tokenHash');
 
-    const getToken = () =>
-        jwt.sign({ id: testUserIdCallback() }, JWT_SECRET, { expiresIn: '24h' });
+    const getToken = async () => {
+        const hash = "AAAaaa";
+        const userId = testUserIdCallback();
+        await tokenHashCollection.insertOne({userId, hash});
+        return jwt.sign({ id: userId, loginHash: hash }, JWT_SECRET, { expiresIn: '24h' })
+    }
+
 
     const app = express();
     app.use(express.json());

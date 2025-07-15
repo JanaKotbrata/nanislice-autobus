@@ -35,7 +35,6 @@ function GameBoard({ player }) {
     }
   }, [isDrawedCard]);
 
-  // ✅ NOVÁ detekce: když se pack zvětší z 12 na 13 → přidalo se "K"
   useEffect(() => {
     const prevBoard = prevBoardRef.current;
     const currentBoard = gameContext.gameBoard;

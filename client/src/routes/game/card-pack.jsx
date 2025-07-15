@@ -44,7 +44,6 @@ function CardPack({
         {text}
       </motion.button>
 
-      {/* Padací karty (jen pokud interaktivní) */}
       {isInteractive &&
         cardOffsets.map((i) => (
           <motion.div
@@ -56,8 +55,6 @@ function CardPack({
             style={{ zIndex: 20 - i }}
           />
         ))}
-
-      {/* Počet karet – zobrazí se při hoveru */}
       <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 text-white text-sm hidden group-hover:block pointer-events-none z-40">
         {count}
       </div>

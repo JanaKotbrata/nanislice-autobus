@@ -39,7 +39,7 @@ describe('POST /game/action/process - drawcard', () => {
         const game = await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(id)}`)
+            .set("Authorization", `Bearer ${await getToken(id)}`)
             .send({gameId: game.insertedId.toString(), action: GameActions.DRAW_CARD});
 
         expect(response.status).toBe(200);
@@ -53,7 +53,7 @@ describe('POST /game/action/process - drawcard', () => {
         const game = await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(id)}`)
+            .set("Authorization", `Bearer ${await getToken(id)}`)
             .send({gameId: game.insertedId.toString(), action: GameActions.DRAW_CARD});
 
         expect(response.status).toBe(400);
@@ -67,7 +67,7 @@ describe('POST /game/action/process - drawcard', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(id)}`)
+            .set("Authorization", `Bearer ${await getToken(id)}`)
             .send({gameCode: mockGame.code, action: GameActions.DRAW_CARD});
 
         expect(response.status).toBe(400);
@@ -81,7 +81,7 @@ describe('POST /game/action/process - drawcard', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(id)}`)
+            .set("Authorization", `Bearer ${await getToken(id)}`)
             .send({gameCode: mockGame.code, action: GameActions.DRAW_CARD});
 
         expect(response.status).toBe(400);

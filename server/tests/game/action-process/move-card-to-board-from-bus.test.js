@@ -44,7 +44,7 @@ describe('POST /game/action/process - move card to board from bus', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(id)}`)
+            .set("Authorization", `Bearer ${await getToken(id)}`)
             .send({
                 gameCode: mockGame.code,
                 targetIndex,
@@ -68,7 +68,7 @@ describe('POST /game/action/process - move card to board from bus', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(id)}`)
+            .set("Authorization", `Bearer ${await getToken(id)}`)
             .send({
                 gameCode: mockGame.code,
                 targetIndex,

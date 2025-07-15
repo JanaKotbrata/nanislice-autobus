@@ -20,6 +20,7 @@ function GameContextProvider({ children }) {
   const [showDangerAlert, setShowDangerAlert] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [leavingPlayer, setLeavingPlayer] = useState(false);
+  const [startAlert, setStartAlert] = useState(false);
   const [ready, setReady] = useState(false);
   const code = useRef(null);
   const navigate = useNavigate();
@@ -347,9 +348,11 @@ function GameContextProvider({ children }) {
         setErrorMessage,
         showAlert,
         showDangerAlert,
+        startAlert,
         setShowAlert,
         setShowDangerAlert,
         setLeavingPlayer,
+        setStartAlert,
       }}
     >
       {children}

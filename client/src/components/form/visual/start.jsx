@@ -27,12 +27,12 @@ function Start({ gameCode, playerList }) {
         navigate(`/game/${res.code}`);
       }
     } else {
-      alert("Nedostatek autobusáků. Pozvi někoho."); //FIXME
+      gameContext.setStartAlert(true);
     }
   };
 
   return (
-    <div className="p-6 bg-gray-500/40 animate-[pulse_2s_ease-in-out_infinite] rounded-lg">
+    <div className="p-6 bg-gray-500/40 animate-[pulse_5s_ease-in-out_infinite] rounded-lg">
       <Button onClick={() => handleStartClick()}>Nechť hra započne</Button>
     </div>
   );

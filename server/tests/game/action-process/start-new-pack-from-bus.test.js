@@ -42,7 +42,7 @@ describe('POST /game/action/process', () => {
         const card = mockGame.playerList[1].bus.find((card) => card.rank === preferredRankInBus);
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(testUserId)}`)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send({
                 gameCode: mockGame.code,
                 action: GameActions.START_NEW_PACK_FROM_BUS,
@@ -68,7 +68,7 @@ describe('POST /game/action/process', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(id)}`)
+            .set("Authorization", `Bearer ${await getToken(id)}`)
             .send({
                 gameCode: mockGame.code,
                 targetIndex,
@@ -91,7 +91,7 @@ describe('POST /game/action/process', () => {
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${getToken(id)}`)
+            .set("Authorization", `Bearer ${await getToken(id)}`)
             .send({
                 gameCode: mockGame.code,
                 targetIndex,

@@ -5,9 +5,6 @@ const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
 const connectToDb = require('./models/connection-db');
-const usersRepository = require('./models/users-repository');
-const users = new usersRepository();
-
 const ErrorHandler = require("./middlewares/error-handler");
 const initGoogleAuth = require("./services/google-auth-service");
 const initDiscordAuth = require("./services/discord-auth-service");

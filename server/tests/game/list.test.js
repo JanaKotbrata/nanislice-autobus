@@ -40,7 +40,7 @@ describe('GET /game/list', () => {
 
         const response = await request(app)
             .get(Routes.Game.LIST)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
 
         expect(response.status).toBe(200);
         expect(response.body.list).toHaveLength(count);
@@ -53,7 +53,7 @@ describe('GET /game/list', () => {
         testUserId = user.insertedId.toString();
         const response = await request(app)
             .get(Routes.Game.LIST)
-            .set("Authorization", `Bearer ${getToken()}`)
+            .set("Authorization", `Bearer ${await getToken()}`)
 
         expect(response.status).toBe(200);
         expect(response.body.list.length).toBe(0);

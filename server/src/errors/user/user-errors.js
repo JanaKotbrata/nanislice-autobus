@@ -39,11 +39,19 @@ class UserUpdateError extends CommonError {
         this.params = params;
     }
 }
+class UserNotAuthorizedError extends CommonError {
+    constructor(params) {
+        super('UserNotAuthorizedError', "User is not authorized to perform this action");
+        this.status = 403;
+        this.params = params;
+    }
+}
 
 module.exports = {
     UserNotAuthenticatedError,
     UserDoesNotExist,
     AvatarNotFound,
     UserUpdateError,
-    FailToDownloadAvatar
+    FailToDownloadAvatar,
+    UserNotAuthorizedError
 }
