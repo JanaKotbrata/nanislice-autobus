@@ -7,6 +7,7 @@ const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
 const {initDeck, dealCardPerPlayer} = require("../../services/card-service");
 const {transformCurrentPlayerData} = require("../../services/game-service");
+const {authorizeUser} = require("../../services/auth-service");
 
 const games = new GamesRepository();
 const users = new UsersRepository();
@@ -22,10 +23,8 @@ class StartGame extends PostResponseHandler {
         const {gameCode, gameId} = validData;
         const userId = req.user.id;
         let game;
-        const user = await users.getUserById(userId);
-        if (!user) {
-            throw new GameErrors.UserDoesNotExist(user);
-        }
+
+        await authorizeUser(userId, GameErrors.UserDoesNotExist, GameErrors.UserNotAuthorized);
 
         if (gameId) {
             game = await games.getGameById(gameId);
@@ -42,7 +41,7 @@ class StartGame extends PostResponseHandler {
             throw new GameErrors.GameIsClosed(validData);
         }
         const player = game.playerList.find(player => player.userId === userId);
-        if(!player?.creator){
+        if (!player?.creator) {
             throw new GameErrors.UserCanNotStartGame({...validData, userId});
         }
         const fullDeck = initDeck(game.playerList);
@@ -55,7 +54,7 @@ class StartGame extends PostResponseHandler {
                 const playerGame = structuredClone(startedGame);
                 transformCurrentPlayerData(playerGame, playerId);
                 this.io.to(`${gameCode}_${playerId}`).emit("gameStarted", {
-                  ...playerGame
+                    ...playerGame
                 });
             })
             transformCurrentPlayerData(startedGame, userId);

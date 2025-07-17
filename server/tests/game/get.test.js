@@ -28,7 +28,7 @@ describe('GET /game/get', () => {
     });
 
     it('should return a game by ID', async () => {
-        const user = await usersCollection.insertOne(userMock());
+        const user = await usersCollection.insertOne(userMock({role:"admin"}));
         testUserId = user.insertedId.toString();
         const mockGame = initialGame({user: basicUser({...user, userId: testUserId})});
         const game = await gamesCollection.insertOne(mockGame);
@@ -56,6 +56,21 @@ describe('GET /game/get', () => {
         expect(response.status).toBe(200);
         expect(response.body.success).toBe(true);
         expect(response.body.code).toBe(mockGame.code);
+
+    });
+    it('should not return a game by CODE - UserNotAuthorized', async () => {
+        const user = await usersCollection.insertOne(userMock({role:"pleb"}));
+        testUserId = user.insertedId.toString();
+        const mockGame = initialGame({user: basicUser({...user, userId: testUserId})});
+        await gamesCollection.insertOne(mockGame);
+
+        const response = await request(app)
+            .get(Routes.Game.GET)
+            .set("Authorization", `Bearer ${await getToken()}`)
+            .query({code: mockGame.code})
+
+        expect(response.status).toBe(403);
+        expect(response.body.name).toBe("UserNotAuthorized");
 
     });
     test('CODE must be string with length 6', async () => {

@@ -27,7 +27,7 @@ describe('POST /game/player/remove', () => {
     });
 
 
-    it('should be able to remove a game', async () => {
+    it('should be able to remove a player', async () => {
         let mockUser = userMock();
         delete mockUser.userId;
         const result = await usersCollection.insertOne(mockUser);
@@ -44,17 +44,17 @@ describe('POST /game/player/remove', () => {
         expect(response.body.playerList.length).toBe(1);
 
     });
-    it('should be able to remove a game - activegame', async () => {
+    it('should be able to remove a player - activegame', async () => {
         let mockUser = userMock();
-        delete mockUser.userId;
         const result = await usersCollection.insertOne(mockUser);
         const user = await usersCollection.findOne({_id: result.insertedId});
-        const mockGame = activeGame({numberOfPlayers:5,user: basicUser({...user, userId: user._id.toString()})});
-        await gamesCollection.insertOne(mockGame);
+        const mockGame = activeGame({numberOfPlayers:5,user: basicUser({...user, userId: user._id.toString(), creator:true})});
+        testUserId = user._id.toString();
+        const game = await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.PLAYER_REMOVE)
             .set("Authorization", `Bearer ${await getToken()}`)
-            .send({userId: user._id.toString(), gameCode: mockGame.code});
+            .send({userId:testUserId, gameId: game.insertedId.toString()});
         const deletedPlayer = mockGame.playerList.find((player) => player.userId === user._id.toString());
         expect(response.status).toBe(200);
         expect(response.body.deck.length).not.toBe(mockGame.deck.length);
@@ -66,6 +66,7 @@ describe('POST /game/player/remove', () => {
         delete mockUser.userId;
         const result = await usersCollection.insertOne(mockUser);
         const user = await usersCollection.findOne({_id: result.insertedId});
+        testUserId = user._id.toString();
         const mockGame = initialGame({playerList: [basicUser({...user, userId: user._id.toString()})]});
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
@@ -77,19 +78,75 @@ describe('POST /game/player/remove', () => {
         expect(response.body.playerList).toBeUndefined();
 
     });
+    it('should be able to remove a game- creator', async () => {
+        let mockUser = userMock();
+        delete mockUser.userId;
+        const result = await usersCollection.insertOne(mockUser);
+        const user = await usersCollection.findOne({_id: result.insertedId});
+        testUserId = user._id.toString();
+        const mockGame = initialGame({user:{...user, userId: user._id.toString(), creator:true}});
+        await gamesCollection.insertOne(mockGame);
+        const response = await request(app)
+            .post(Routes.Game.PLAYER_REMOVE)
+            .set("Authorization", `Bearer ${await getToken()}`)
+            .send({userId: user._id.toString(), gameCode: mockGame.code});
+
+        expect(response.status).toBe(200);
+        expect(response.body.playerList.length).toBe(1);
+
+    });
+    it('should be able to remove a player and close and delete the game', async () => {
+        let mockUser = userMock();
+        delete mockUser.userId;
+        const result = await usersCollection.insertOne(mockUser);
+        const user = await usersCollection.findOne({_id: result.insertedId});
+        testUserId = user._id.toString();
+        const mockGame = activeGame({playerList: [basicUser({...user, userId: user._id.toString()})]});
+        await gamesCollection.insertOne(mockGame);
+        const response = await request(app)
+            .post(Routes.Game.PLAYER_REMOVE)
+            .set("Authorization", `Bearer ${await getToken()}`)
+            .send({userId: user._id.toString(), gameCode: mockGame.code});
+
+        expect(response.status).toBe(200);
+        expect(response.body.state).toBe("closed");
+
+    });
     test('should return an error if user does not exist', async () => {
+        const result = await usersCollection.insertOne(userMock({role:"admin"}));
         const mockGame = initialGame();
         await gamesCollection.insertOne(mockGame);
         const response = await request(app)
             .post(Routes.Game.PLAYER_REMOVE)
             .set("Authorization", `Bearer ${await getToken()}`)
-            .send({userId: generateRandomId(), gameCode: mockGame.code});
+            .send({userId: result.insertedId.toString(), gameCode: mockGame.code});
 
         expect(response.status).toBe(400);
         expect(response.body.message).toBe("Player is not in game");
     });
+
+    test('should return an error if user not allowed to remove player', async () => {
+        let mockUser = userMock();
+        delete mockUser.userId;
+        const result = await usersCollection.insertOne(mockUser);
+        const invalidUser = await usersCollection.insertOne(userMock());
+
+        const user = await usersCollection.findOne({_id: result.insertedId});
+        const user2 = await usersCollection.findOne({_id: invalidUser.insertedId});
+        testUserId = user2._id.toString();
+
+        const mockGame = initialGame({playerList: [basicUser({...user, userId: user._id.toString()})]});
+        await gamesCollection.insertOne(mockGame);
+        const response = await request(app)
+            .post(Routes.Game.PLAYER_REMOVE)
+            .set("Authorization", `Bearer ${await getToken()}`)
+            .send({userId: user._id.toString(), gameCode: mockGame.code});
+
+        expect(response.status).toBe(403);
+        expect(response.body.message).toBe("User is not authorized to perform this action");
+    });
     test('should return an error if game does not exist', async () => {
-        const user = await usersCollection.insertOne(userMock());
+        const user = await usersCollection.insertOne(userMock({role: "admin"}));
         const id = user.insertedId.toString();
         const response = await request(app)
             .post(Routes.Game.PLAYER_REMOVE)

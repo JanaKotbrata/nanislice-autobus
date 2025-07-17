@@ -1,5 +1,4 @@
 const GamesRepository = require("../../models/games-repository");
-const UsersRepository = require("../../models/users-repository");
 const validateData = require("../../services/validation-service");
 const {playerAdd:schema} = require("../../data-validations/game/validation-schemas");
 const { PostResponseHandler} = require("../../services/response-handler");
@@ -7,8 +6,8 @@ const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
 const {transformCurrentPlayerData} = require("../../services/game-service");
 const {States} = require("../../utils/game-constants");
+const {authorizeUser} = require("../../services/auth-service");
 const games = new GamesRepository();
-const users = new UsersRepository();
 
 class AddGamePlayer extends PostResponseHandler {
     constructor(expressApp, io) {
@@ -19,6 +18,7 @@ class AddGamePlayer extends PostResponseHandler {
     async add(req) {
         const validData = validateData(req.body, schema);
         const {userId, gameCode, gameId} = validData;
+        const user = await authorizeUser(userId, GameErrors.UserDoesNotExist, GameErrors.UserNotAuthorized);
 
         let game;
 
@@ -34,11 +34,6 @@ class AddGamePlayer extends PostResponseHandler {
 
         if(game.state === States.ACTIVE){
             throw new GameErrors.GameAlreadyActive(validData);
-        }
-
-        const user = await users.getUserById(userId);
-        if (!user) {
-            throw new GameErrors.UserDoesNotExist(validData);
         }
 
         //validation of playerList

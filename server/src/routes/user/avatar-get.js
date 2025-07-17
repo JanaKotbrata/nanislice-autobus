@@ -3,8 +3,7 @@ const path = require("path");
 const {GetFileResponseHandler} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes.json");
 const UserErrors = require("../../errors/user/user-errors");
-const UsersRepository = require("../../models/users-repository");
-const users = new UsersRepository();
+const {authorizeUser} = require("../../services/auth-service");
 
 class GetAvatar extends GetFileResponseHandler {
     constructor(expressApp) {
@@ -13,10 +12,8 @@ class GetAvatar extends GetFileResponseHandler {
 
     async get(req, res) {
         const userId = req.query.userId;
-        const user = await users.getUserById(userId);
-        if (!user) {
-            throw new UserErrors.UserDoesNotExist(user);
-        }
+        const user = await authorizeUser(userId, UserErrors.UserDoesNotExist, UserErrors.UserNotAuthorized);
+
         try {
             const avatarDir = path.resolve(__dirname, "../../../avatars");
             const files = await fs.promises.readdir(avatarDir);

@@ -6,6 +6,7 @@ const Routes = require("../../../../shared/constants/routes.json");
 const UserErrors = require("../../errors/user/user-errors");
 const {storeAvatar} = require("../../utils/download-image");
 const GamesRepository = require("../../models/games-repository");
+const {authorizeUser} = require("../../services/auth-service");
 const users = new UsersRepository();
 const games = new GamesRepository();
 
@@ -23,10 +24,7 @@ class UpdateUser extends PostFormDataResponseHandler {
         const validData = validateData(dataToValidate, schema);
         const {name, picture} = validData;
 
-        let user = await users.get({id: userId});
-        if (!user) {
-            throw new UserErrors.UserDoesNotExist(user);
-        }
+        let user = await authorizeUser(userId, UserErrors.UserDoesNotExist, UserErrors.UserNotAuthorized);//TODO admin or update own user
         const activeGameWithUser = await games.findNotClosedGameByUserId(userId);
 
         let toUpdate = {sys: user.sys}
@@ -36,13 +34,13 @@ class UpdateUser extends PostFormDataResponseHandler {
         try {
             user = await users.updateUser(userId, toUpdate);
         } catch (e) {
-            throw new UserErrors.UserUpdateError(e);
+            throw new UserErrors.UserUpdateFailed(e);
         }
         if (picture) {
             try {
                 await storeAvatar(userId, req.file.buffer, req.file.mimetype);
             } catch (e) {
-                throw new UserErrors.UserUpdateError(e);
+                throw new UserErrors.UserUpdateFailed(e);
             }
         }
         if (activeGameWithUser) {
@@ -57,7 +55,7 @@ class UpdateUser extends PostFormDataResponseHandler {
             try {
                 await games.updateGame(activeGameWithUser.id, {playerList: newPlayerList, sys: activeGameWithUser.sys});
             } catch (e) {
-                throw new UserErrors.UserUpdateError(e);
+                throw new UserErrors.UserUpdateFailed(e);
             }
         }
 

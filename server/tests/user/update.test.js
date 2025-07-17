@@ -1,14 +1,11 @@
+const fs = require("fs");
+const path = require("path");
 const request = require('supertest');
-const express = require('express');
 require("../services/setup-db");
-const connectionDb = require("../../src/models/connection-db");
 const UpdateUser = require('../../src/routes/user/update');
 const Routes = require("../../../shared/constants/routes.json");
-const { userMock, initialGame} = require("../helpers/default-mocks");
-const TestUserMiddleware = require("../services/test-user-middleware");
-const ErrorHandler = require("../../src/middlewares/error-handler");
+const {userMock, initialGame} = require("../helpers/default-mocks");
 const {setupTestServer, cleanup} = require("../services/test-setup");
-const CreateGame = require("../../src/routes/game/create");
 const IO = require("../helpers/io-mock");
 let usersCollection;
 let gamesCollection;
@@ -29,7 +26,6 @@ describe('POST /user/update', () => {
     afterEach(async () => {
         await cleanup();
         await usersCollection.deleteMany({});
-
     });
 
     it('should update user', async () => {
@@ -60,5 +56,25 @@ describe('POST /user/update', () => {
 
         expect(response.status).toBe(200);
         expect(response.body.name).toBe(name);
+    });
+    it('should update user - with picture', async () => {
+        const mock = userMock();
+        const user = await usersCollection.insertOne(mock);
+        testUserId = user.insertedId.toString();
+
+        const imagePath = path.join(__dirname, "../avatars/pig-face.png");
+        const token = await getToken(testUserId);
+
+        const response = await request(app)
+            .post(Routes.User.UPDATE)
+            .set("Authorization", `Bearer ${token}`)
+            .attach("picture", imagePath)
+            .field("name", "karel");
+
+        expect(response.status).toBe(200);
+        expect(response.body.success).toBe(true);
+        expect(response.body.name).toBe("karel");
+        const avatarPath = path.join(__dirname, `../../avatars/${testUserId}.png`);
+        await fs.promises.unlink(avatarPath);
     });
 });

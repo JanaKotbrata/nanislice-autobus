@@ -32,6 +32,7 @@ function basicUser(params = {}, extraParams = {}) {
         userId: params.userId || generateRandomId(),
         name: params.name || generateRandomCode(),
         picture: params.picture || generateRandomUrl(),
+        role: params.role || "pleb",
         sys: params.sys || {
             cts: params.cts || new Date().toISOString(),
             mts: params.mts || new Date().toISOString(),
@@ -70,6 +71,12 @@ function getPlayerListAndDeck(playersNumber = 1, user, win = false, params) {
     }
 
     const [cacheDeck, players] = dealCardPerPlayer(deck, playerList, params.handNumber, params.busNumber);
+    if(params.firstPositionInBusStop) {
+        players[players.length - 1].busStop = [[{i:234561, rank:"2", suit:"<3"}], [], [], []];
+    }
+    if(params.fullBusStop){
+        players[players.length - 1].busStop = [[{i:234561, rank:"2", suit:"<3"}], [{i:334561, rank:"3", suit:"<3"}], [{i:434561, rank:"4", suit:"<3"}], [{i:534561, rank:"5", suit:"<3"}]];
+    }
     if(user?.isCardDrawed === false){
         players[players.length - 1].isCardDrawed = false;
     }
@@ -117,6 +124,8 @@ function activeGame(params = {}, extraParams) {
         handNumber: params.handNumber,
         preferredRank: params.preferredRank,
         preferredRankInBus: params.preferredRankInBus,
+        firstPositionInBusStop: params.firstPositionInBusStop,
+        fullBusStop: params.fullBusStop
     });
     let gameBoard = params.gameBoard || [];
     if (!params.gameBoard) {
@@ -128,7 +137,7 @@ function activeGame(params = {}, extraParams) {
     return initialGame({
         playerList,
         ...params,
-        state: "active",
+        state: params.state || "active",
         rev: params.rev || 1
     }, {
         ...extraParams,

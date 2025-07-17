@@ -3,7 +3,7 @@ require("../services/setup-db");
 
 const CreateGame = require('../../src/routes/game/create');
 const Routes = require("../../../shared/constants/routes.json");
-const { userMock, generateRandomId, closedGame, initialGame } = require("../helpers/default-mocks");
+const { userMock, generateRandomId, closedGame, initialGame, activeGame} = require("../helpers/default-mocks");
 const { setupTestServer, cleanup } = require("../services/test-setup");
 const IO = require("../helpers/io-mock");
 
@@ -48,7 +48,23 @@ describe('POST /game/create – valid user', () => {
         expect(response.body.code).toHaveLength(6);
         expect(response.body.state).toBe("initial");
     });
+    it('should return existing game', async () => {
+        const result = await usersCollection.insertOne(userMock());
+        const user = await usersCollection.findOne({_id: result.insertedId});
+        testUserId = user._id.toString();
 
+        const mockGame = activeGame({user: {...user, userId: testUserId}});
+         await gamesCollection.insertOne(mockGame);
+        const response = await request(app)
+            .post(Routes.Game.CREATE)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
+            .send();
+
+        expect(response.status).toBe(200);
+        expect(response.body.success).toBe(true);
+        expect(response.body.code).toHaveLength(6);
+        expect(response.body.state).toBe("active");
+    });
     it('should create a game – some closed game exist', async () => {
         const user = await usersCollection.insertOne(userMock());
         testUserId = user.insertedId.toString();
@@ -72,8 +88,7 @@ describe('POST /game/create – valid user', () => {
         const mockUser = userMock();
         const user = await usersCollection.insertOne(mockUser);
         testUserId = user.insertedId.toString();
-
-        const initial = initialGame({ user: { ...mockUser, userId: testUserId } });
+        initialGame({ user: { ...mockUser, userId: testUserId } });
 
         const response = await request(app)
             .post(Routes.Game.CREATE)

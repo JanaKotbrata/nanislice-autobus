@@ -30,7 +30,7 @@ describe('GET /game/list', () => {
     })
 
     it('should list all game', async () => {
-        const user = await usersCollection.insertOne(userMock({}, ));
+        const user = await usersCollection.insertOne(userMock({role: "admin"}));
         testUserId = user.insertedId.toString();
         const count = 10;
         for (let i = 0; i < count; i++) {
@@ -49,11 +49,12 @@ describe('GET /game/list', () => {
         expect(response.body.success).toBe(true);
     });
     test('should return empty list', async () => {
-        const user = await usersCollection.insertOne(userMock({}, ));
+        const user = await usersCollection.insertOne(userMock({role: "admin"}));
         testUserId = user.insertedId.toString();
         const response = await request(app)
             .get(Routes.Game.LIST)
             .set("Authorization", `Bearer ${await getToken()}`)
+            .query({state: "active"})
 
         expect(response.status).toBe(200);
         expect(response.body.list.length).toBe(0);

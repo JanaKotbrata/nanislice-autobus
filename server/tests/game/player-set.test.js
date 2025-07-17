@@ -3,7 +3,7 @@ require("../services/setup-db");
 const {setupTestServer, cleanup} = require("../services/test-setup");
 const GamePlayerAdd = require('../../src/routes/game/player-set');
 const Routes = require("../../../shared/constants/routes.json");
-const {initialGame, generateRandomId, userMock, basicUser} = require("../helpers/default-mocks");
+const {initialGame, generateRandomId, userMock, basicUser, activeGame} = require("../helpers/default-mocks");
 const IO = require("../helpers/io-mock");
 let gamesCollection;
 let usersCollection;
@@ -42,6 +42,37 @@ describe('POST /game/player-set', () => {
         expect(response.body.playerList).toBeDefined();
         expect(response.body.playerList[1].userId).toBe(id);
         expect(response.body.playerList[1].ready).toBe(true);
+    });
+    it("should not set a player to active game", async () => {
+        let mockUser = userMock();
+        delete mockUser.userId;
+        const result = await usersCollection.insertOne(mockUser);
+        const user = await usersCollection.findOne({_id: result.insertedId});
+        const mockGame = activeGame({user: basicUser({...user, userId: user._id.toString()})});
+        const game = await gamesCollection.insertOne(mockGame);
+        const id = user._id.toString()
+        const response = await request(app)
+            .post(Routes.Game.PLAYER_SET)
+            .set("Authorization", `Bearer ${await getToken()}`)
+            .send({userId: id, gameId: game.insertedId.toString() , ready: true});
+
+        expect(response.body.name).toBe("GameAlreadyActive");
+    });
+    it("should not set a player which is not in a game", async () => {
+        let mockUser = userMock();
+        delete mockUser.userId;
+        const result = await usersCollection.insertOne(mockUser);
+        const user = await usersCollection.findOne({_id: result.insertedId});
+        const mockGame = initialGame();
+        const game = await gamesCollection.insertOne(mockGame);
+        const id = user._id.toString()
+        const response = await request(app)
+            .post(Routes.Game.PLAYER_SET)
+            .set("Authorization", `Bearer ${await getToken()}`)
+            .send({userId: id, gameId: game.insertedId.toString() , ready: true});
+
+        expect(response.status).toBe(400);
+        expect(response.body.name).toBe("PlayerNotInGame");
     });
     test("should return an error if user does not exist", async () => {
         const mockGame = initialGame();

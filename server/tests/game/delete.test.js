@@ -2,7 +2,7 @@ const request = require('supertest');
 require("../services/setup-db");
 const DeleteGame = require('../../src/routes/game/delete');
 const Routes = require("../../../shared/constants/routes.json");
-const {initialGame, generateRandomId, userMock} = require("../helpers/default-mocks");
+const {initialGame, userMock, generateRandomCode} = require("../helpers/default-mocks");
 const {setupTestServer, cleanup} = require("../services/test-setup");
 const IO = require("../helpers/io-mock");
 let gamesCollection;
@@ -20,13 +20,13 @@ describe('POST /game/delete', () => {
         usersCollection = setup.usersCollection;
         getToken = setup.getToken;
     });
-  
+
     afterEach(async () => {
         await cleanup();
     });
 
     it('should delete a game', async () => {
-        const user = await usersCollection.insertOne(userMock({}, ));
+        const user = await usersCollection.insertOne(userMock({role: "admin"}));
         testUserId = user.insertedId.toString();
         const mockGame = initialGame();
         const game = await gamesCollection.insertOne(mockGame);
@@ -35,19 +35,19 @@ describe('POST /game/delete', () => {
         const response = await request(app)
             .post(Routes.Game.DELETE)
             .set("Authorization", `Bearer ${await getToken()}`)
-            .send({ id });
+            .send({id});
 
         expect(response.status).toBe(200);
         expect(response.body.success).toBe(true);
     });
 
     it('should return an error if game does not exist', async () => {
-        const user = await usersCollection.insertOne(userMock({}, ));
+        const user = await usersCollection.insertOne(userMock({role: "admin"}));
         testUserId = user.insertedId.toString();
         const response = await request(app)
             .post(Routes.Game.DELETE)
             .set("Authorization", `Bearer ${await getToken()}`)
-            .send({ id: generateRandomId() });
+            .send({code: generateRandomCode()});
 
         expect(response.status).toBe(404);
         expect(response.body.message).toBe("Requested game does not exist");

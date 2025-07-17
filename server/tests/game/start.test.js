@@ -2,7 +2,14 @@ const request = require('supertest');
 require("../services/setup-db");
 const StartGame = require('../../src/routes/game/start');
 const Routes = require("../../../shared/constants/routes.json");
-const {initialGame, generateRandomCode, userMock, getPlayerList} = require("../helpers/default-mocks");
+const {
+    initialGame,
+    generateRandomCode,
+    userMock,
+    getPlayerList,
+    activeGame,
+    closedGame
+} = require("../helpers/default-mocks");
 const IO = require("../helpers/io-mock");
 const {setupTestServer, cleanup} = require("../services/test-setup");
 let gamesCollection;
@@ -27,7 +34,7 @@ describe('POST /game/start', () => {
     });
 
     it('should start a game', async () => {
-        const user = await usersCollection.insertOne(userMock({}, ));
+        const user = await usersCollection.insertOne(userMock({},));
         testUserId = user.insertedId.toString();
         const playerList = getPlayerList();
         playerList[0].userId = testUserId;
@@ -48,6 +55,38 @@ describe('POST /game/start', () => {
         expect(response.body.playerList[0].busStop).toBeDefined();
     });
 
+    it('should return an error if game is closed', async () => {
+        const result = await usersCollection.insertOne(userMock({},));
+        testUserId = result.insertedId.toString();
+        const user = await usersCollection.findOne({_id: result.insertedId});
+        const mockGame = closedGame({user: {...user, userId: testUserId}});
+        const game = await gamesCollection.insertOne(mockGame);
+
+        const response = await request(app)
+            .post(Routes.Game.START)
+            .set("Authorization", `Bearer ${await getToken()}`)
+            .send({gameId: game.insertedId.toString()});
+
+        expect(response.status).toBe(400);
+        expect(response.body.name).toBe("GameIsClosed");
+
+    });
+    it('should return an error if startes is not creator', async () => {
+        const result = await usersCollection.insertOne(userMock({},));
+        testUserId = result.insertedId.toString();
+        const user = await usersCollection.findOne({_id: result.insertedId});
+        const mockGame = initialGame({user: {...user, userId: testUserId}});
+        const game = await gamesCollection.insertOne(mockGame);
+
+        const response = await request(app)
+            .post(Routes.Game.START)
+            .set("Authorization", `Bearer ${await getToken()}`)
+            .send({gameId: game.insertedId.toString()});
+
+        expect(response.status).toBe(403);
+        expect(response.body.name).toBe("UserCanNotStartGame");
+
+    });
     it('should return an error if game does not exist', async () => {
         const response = await request(app)
             .post(Routes.Game.START)

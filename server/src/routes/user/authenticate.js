@@ -13,7 +13,7 @@ class AuthenticateUser extends PostResponseHandler {
         const userId = req.user.id;
 
         if (!req.isAuthenticated()) {
-            throw new UserErrors.UserNotAuthenticatedError(userId);
+            throw new UserErrors.UserNotAuthenticated(userId);
         }
         const user = await users.getUserById(userId);
         if (!user) {

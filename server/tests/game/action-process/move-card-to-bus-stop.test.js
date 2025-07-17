@@ -34,7 +34,7 @@ describe('POST /game/action/process move card to bus stop', () => {
 
     it('Move card to bus stop - invalid input', async () => {
         const user = await usersCollection.insertOne(userMock());
-         testUserId = user.insertedId.toString();
+        testUserId = user.insertedId.toString();
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
             .set("Authorization", `Bearer ${await getToken(testUserId)}`)
@@ -95,32 +95,6 @@ describe('POST /game/action/process move card to bus stop', () => {
 
     })
 
-    it('Move card to busstop - invalid card - in not empty position', async () => { //FIXME sometimes does not work in coverage
-        const user = await usersCollection.insertOne(userMock());
-        const id = user.insertedId.toString();
-        const targetIndex = 0;
-        const preferredRank = "K";
-        testUserId = id;
-        const mockGame = activeGame({handNumber: 4, preferredRank, user: basicUser({...user, userId: id})});
-        const card = mockGame.playerList[1].hand.find((card) => card.rank === preferredRank);
-        const cardIndex = mockGame.playerList[1].hand.find((c) => c.i === card.i);
-        mockGame.playerList[1].hand.splice(cardIndex, 1);
-        mockGame.playerList[1].busStop[0].push(card);
-        await gamesCollection.insertOne(mockGame);
-        const response = await request(app)
-            .post(Routes.Game.ACTION_PROCESS)
-            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
-            .send({
-                gameCode: mockGame.code,
-                targetIndex,
-                action: GameActions.MOVE_CARD_TO_BUS_STOP,
-                card: mockGame.playerList[1].hand.find((card) => card.rank !== preferredRank)
-            });
-
-        expect(response.status).toBe(400);
-        expect(response.body.name).toBe("InvalidCardInBusStop");
-
-    })
     it('Move card to busstop - in not empty position', async () => {
         const user = await usersCollection.insertOne(userMock());
         const id = user.insertedId.toString();
@@ -174,5 +148,58 @@ describe('POST /game/action/process move card to bus stop', () => {
 
     })
 
+    it('Move card to busstop - InvalidCardInBusStop', async () => {
+        const user = await usersCollection.insertOne(userMock());
+        const id = user.insertedId.toString();
+        const targetIndex = 0;
+        const preferredRank = "3";
+        testUserId = id;
+        const mockGame = activeGame({
+            handNumber: 4,
+            preferredRank,
+            user: basicUser({...user, userId: id}),
+            firstPositionInBusStop: true
+        });
+        await gamesCollection.insertOne(mockGame);
+        const response = await request(app)
+            .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
+            .send({
+                gameCode: mockGame.code,
+                targetIndex,
+                action: GameActions.MOVE_CARD_TO_BUS_STOP,
+                card: mockGame.playerList[1].hand.find((card) => card.rank === preferredRank)
+            });
 
+        expect(response.status).toBe(400);
+        expect(response.body.name).toBe("InvalidCardInBusStop");
+
+    })
+    it('Move card to busstop - InvalidCardInBusStopDifferentIndex', async () => {
+        const user = await usersCollection.insertOne(userMock());
+        const id = user.insertedId.toString();
+        const targetIndex = 0;
+        const preferredRank = "4";
+        testUserId = id;
+        const mockGame = activeGame({
+            handNumber: 4,
+            preferredRank,
+            user: basicUser({...user, userId: id}),
+            fullBusStop: true
+        });
+        await gamesCollection.insertOne(mockGame);
+        const response = await request(app)
+            .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
+            .send({
+                gameCode: mockGame.code,
+                targetIndex,
+                action: GameActions.MOVE_CARD_TO_BUS_STOP,
+                card: mockGame.playerList[1].hand.find((card) => card.rank === preferredRank)
+            });
+
+        expect(response.status).toBe(400);
+        expect(response.body.name).toBe("InvalidCardInBusStopDifferentIndex");
+
+    })
 });

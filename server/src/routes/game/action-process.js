@@ -10,6 +10,7 @@ const GameBoardValidation = require("../../services/gameboard-validation");
 const {RANK_CARD_ORDER, joker, States} = require("../../utils/game-constants");
 const {shuffleDeck, getCardIndex} = require("../../services/card-service");
 const {transformCurrentPlayerData} = require("../../services/game-service");
+const {authorizeUser} = require("../../services/auth-service");
 const games = new GamesRepository();
 const users = new UsersRepository();
 
@@ -24,10 +25,8 @@ class ProcessAction extends PostResponseHandler {
         const {gameId, gameCode} = validData;
         const userId = req.user.id;
 
-        const user = await users.getUserById(userId);
-        if (!user) {
-            throw new GameErrors.UserDoesNotExist(user);
-        }
+        await authorizeUser(userId, GameErrors.UserDoesNotExist, GameErrors.UserNotAuthorized);
+
         let game;
         if (gameId) {
             game = await games.getGameById(gameId);
@@ -100,7 +99,7 @@ class ProcessAction extends PostResponseHandler {
         }
 
         if (!found) {
-            throw new Error("Karta nebyla nalezena v busStop.");
+            throw new GameErrors.CardIsMissing(cardToRemove);
         }
     }
 

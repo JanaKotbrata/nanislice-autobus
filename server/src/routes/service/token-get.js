@@ -12,11 +12,7 @@ class TokenGet extends PostResponseHandler {
         if (!user) {
             return {success: false, message: "User not authenticated"};
         }
-
-        // Generate a token for the user
-        const token = this.generateToken(user.id);
-
-        // Return the token
+        //TODO
         return {success: true, token};
     }
 }

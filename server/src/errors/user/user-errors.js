@@ -1,8 +1,8 @@
 const CommonError = require("../common-errors");
 
-class UserNotAuthenticatedError extends CommonError {
+class UserNotAuthenticated extends CommonError {
     constructor(params) {
-        super('UserNotAuthenticatedError', "User is not authenticated");
+        super('UserNotAuthenticated', "User is not authenticated");
         this.status = 404;
         this.params = params;
     }
@@ -32,26 +32,26 @@ class FailToDownloadAvatar extends CommonError {
     }
 }
 
-class UserUpdateError extends CommonError {
+class UserUpdateFailed extends CommonError {
     constructor(params) {
-        super('UserUpdateError', "Failed to update user");
+        super('UserUpdateFailed', "Failed to update user");
         this.status = 500;
         this.params = params;
     }
 }
-class UserNotAuthorizedError extends CommonError {
+class UserNotAuthorized extends CommonError {
     constructor(params) {
-        super('UserNotAuthorizedError', "User is not authorized to perform this action");
+        super('UserNotAuthorized', "User is not authorized to perform this action");
         this.status = 403;
         this.params = params;
     }
 }
 
 module.exports = {
-    UserNotAuthenticatedError,
+    UserNotAuthenticated,
     UserDoesNotExist,
     AvatarNotFound,
-    UserUpdateError,
+    UserUpdateFailed,
     FailToDownloadAvatar,
-    UserNotAuthorizedError
+    UserNotAuthorized
 }

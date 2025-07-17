@@ -1,5 +1,4 @@
 const GamesRepository = require("../../models/games-repository");
-const UsersRepository = require("../../models/users-repository");
 const validateData = require("../../services/validation-service");
 const {create: schema} = require("../../data-validations/game/validation-schemas");
 const {PostResponseHandler} = require("../../services/response-handler");
@@ -8,8 +7,8 @@ const GameErrors = require("../../errors/game/game-errors");
 const {generateGameCode} = require("../../utils/helpers");
 const {States} = require("../../utils/game-constants");
 const {transformCurrentPlayerData} = require("../../services/game-service");
+const {authorizeUser} = require("../../services/auth-service");
 const games = new GamesRepository();
-const users = new UsersRepository();
 
 const maxAttempts = 5;
 
@@ -24,15 +23,12 @@ class CreateGame extends PostResponseHandler {
         let isDuplicateKey = false;
         let tryCount = 0;
 
-        const user = await users.getUserById(userId);
-        if (!user) {
-            throw new GameErrors.UserDoesNotExist(user);
-        }
+        const user = await authorizeUser(userId, GameErrors.UserDoesNotExist, GameErrors.UserNotAuthorized);
 
         const activeGameWithUser = await games.findNotClosedGameByUserId(userId);
 
         if (activeGameWithUser) {
-           transformCurrentPlayerData(activeGameWithUser, userId);
+            transformCurrentPlayerData(activeGameWithUser, userId);
             return {...activeGameWithUser, success: true};
         }
 

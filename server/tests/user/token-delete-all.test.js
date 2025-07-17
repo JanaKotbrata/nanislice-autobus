@@ -28,11 +28,11 @@ describe('POST /user/token/deleteAll', () => {
     });
 
     it('should delete token', async () => {
-        const user = await usersCollection.insertOne(userMock());
+        const user = await usersCollection.insertOne(userMock({role: 'admin'}));
         testUserId = user.insertedId.toString();
 
         const response = await request(app)
-            .post(Routes.User.DELETE_ALL_TOKENS)
+            .post(Routes.User.DELETE_ALL_TOKEN)
             .set("Authorization", `Bearer ${await getToken(testUserId)}`)
             .send({});
 

@@ -61,4 +61,33 @@ describe('POST /game/action/process - move card to board from busstop', () => {
 
     })
 
+    it('Move card to board from  busStop - CardIsMissing', async () => {
+        const user = await usersCollection.insertOne(userMock());
+        const id = user.insertedId.toString();
+        const targetIndex = 0;
+        const preferredRank = "2";
+        testUserId = id;
+        const mockGame = activeGame({user: basicUser({...user, userId: id})});
+        const preferredCard = mockGame.deck.find((card => card.rank === preferredRank));
+        const preferredCardIndex = mockGame.deck.indexOf((c => c.i === preferredCard.i));
+        mockGame.deck.splice(preferredCardIndex, 1);
+        mockGame.playerList[1].busStop[targetIndex].push(preferredCard);
+        const game = await gamesCollection.insertOne(mockGame);
+        let card = mockGame.playerList[1].busStop[targetIndex][0]
+        card.i = 123456789;
+        const response = await request(app)
+            .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${await getToken(id)}`)
+            .send({
+                gameId: game.insertedId.toString(),
+                targetIndex,
+                action: GameActions.MOVE_CARD_TO_BOARD_FROM_BUS_STOP,
+                card
+            });
+
+        expect(response.status).toBe(400);
+        expect(response.body.name).toBe("CardIsMissing");
+
+    })
+
 });

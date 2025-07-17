@@ -45,5 +45,25 @@ describe('GET /user/list', () => {
         expect(response.body.pageInfo.totalCount).toBe(count);
         expect(response.body.success).toBe(true);
     });
+    it('should list user by role', async () => {
+        const count = 10;
+        let user;
+        for (let i = 0; i < count; i++) {
+            const mockUser = userMock();
+            user = await usersCollection.insertOne(mockUser);
+        }
+        testUserId = user.insertedId.toString();
+
+        const response = await request(app)
+            .get(Routes.User.LIST)
+            .set("Authorization", `Bearer ${await getToken()}`)
+            .query({role:"pleb"});
+
+        expect(response.status).toBe(200);
+        expect(response.body.list).toHaveLength(count);
+        expect(response.body.pageInfo).toBeDefined();
+        expect(response.body.pageInfo.totalCount).toBe(count);
+        expect(response.body.success).toBe(true);
+    });
 
 });

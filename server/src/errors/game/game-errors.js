@@ -229,6 +229,34 @@ class FailedToSetPlayer extends CommonError {
         this.params = params;
     }
 }
+class UserNotAuthorized extends CommonError {
+    constructor(params) {
+        super('UserNotAuthorized', "User is not authorized to perform this action");
+        this.status = 403;
+        this.params = params;
+    }
+}
+class UserIsNotAllowedToDeleteGame extends CommonError {
+    constructor(params) {
+        super('UserIsNotAllowedToDeleteGame', "User is not allowed to delete this game");
+        this.status = 403;
+        this.params = params;
+    }
+}
+class UserIsNotAllowedToCloseGame extends CommonError {
+    constructor(params) {
+        super('UserIsNotAllowedToCloseGame', "User is not allowed to close this game");
+        this.status = 403;
+        this.params = params;
+    }
+}
+class CardIsMissing extends CommonError {
+    constructor(params) {
+        super('CardIsMissing', "Card is missing");
+        this.status = 400;
+        this.params = params;
+    }
+}
 module.exports = {
     GameDoesNotExist,
     GameIsNotActive,
@@ -258,6 +286,10 @@ module.exports = {
     InvalidCardInBusStopDifferentIndex,
     UserCanNotStartGame,
     GameAlreadyActive,
-    FailedToSetPlayer
+    FailedToSetPlayer,
+    UserNotAuthorized,
+    UserIsNotAllowedToDeleteGame,
+    UserIsNotAllowedToCloseGame,
+    CardIsMissing
 
 };
