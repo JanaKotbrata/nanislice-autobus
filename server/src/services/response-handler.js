@@ -14,6 +14,18 @@ class GetResponseHandler {
         })
     }
 }
+class NotAuthenticatedGetResponseHandler {
+    constructor(expressApp, route, handler) {
+        expressApp.get(route, async (req, res, next) => {
+            try {
+                const result = await this[handler](req, res);
+                res.status(200).json(result)
+            } catch (e) {
+                next(e);
+            }
+        })
+    }
+}
 class GetFileResponseHandler {
     constructor(expressApp, route, handler) {
         expressApp.get(route, async (req, res, next) => {
@@ -51,4 +63,4 @@ class PostFormDataResponseHandler {
 }
 
 
-module.exports = { GetResponseHandler, PostResponseHandler, GetFileResponseHandler, PostFormDataResponseHandler };
+module.exports = { GetResponseHandler, PostResponseHandler, GetFileResponseHandler, PostFormDataResponseHandler, NotAuthenticatedGetResponseHandler };
