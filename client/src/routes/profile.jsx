@@ -55,7 +55,7 @@ function Profile() {
   };
 
   const level = userContext.user.level ?? 1;
-  const xp = userContext.user.xp ?? 100;
+  const xp = userContext.user.xp ?? 0;
   const xpPercent = Math.min((xp / 1000) * 100, 100);
   const email = userContext.user.email || "";
   const role = userContext.user.role || "pleb";

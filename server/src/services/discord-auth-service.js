@@ -30,7 +30,8 @@ async function initDiscordAuth(passport, app) {
                             discordId: profile.id,
                         },
                         profile.email,
-                        profile.username
+                        profile.username,
+                        `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png`
                     );
                 } else {
                     if (!user.discordId) {
