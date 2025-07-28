@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useContext, useRef } from "react";
 import { useDrag } from "react-dnd";
 import RANK_CARD_ORDER from "../../../../shared/constants/rank-card-order.json";
+import GameContext from "../../context/game.js";
 
 function getEmoji(rank) {
   switch (rank) {
@@ -41,7 +42,16 @@ function CornerLabel({ position, card, textColor, packLength }) {
   );
 }
 
-function Card({ card, index, isBottomCard, packLength, isDraggable = true }) {
+function Card({
+  card,
+  index,
+  isBottomCard,
+  packLength,
+  isDraggable = true,
+  isMyself = false,
+  isMyselfJrInBus = false,
+}) {
+  const gameContext = useContext(GameContext);
   const [{ isDragging }, drag] = useDrag(
     () => ({
       type: "CARD",
@@ -54,6 +64,35 @@ function Card({ card, index, isBottomCard, packLength, isDraggable = true }) {
     [card.i, index, isDraggable],
   );
 
+  const clickTimeout = useRef(null);
+  const showErrorAlert = (message) => {
+    gameContext.setErrorMessage(message);
+    gameContext.setShowDangerAlert(true);
+  };
+  const handlePointerDown = (e) => {
+    if (isDraggable) return;
+
+    if (clickTimeout.current) {
+      clearTimeout(clickTimeout.current);
+      clickTimeout.current = null;
+      return;
+    }
+
+    clickTimeout.current = setTimeout(() => {
+      if (isMyself && !isDraggable) {
+        showErrorAlert(`Kam pospícháš?! Nejsi na tahu!`);
+      }
+      if (isMyself && isMyselfJrInBus) {
+        showErrorAlert(`Vyjeď z autobusu tim žolíkem!`);
+      }
+      clickTimeout.current = null;
+    }, 250);
+  };
+
+  const handleDoubleClick = () => {
+    if (!isDraggable) return;
+  };
+
   const isRedSuit = card.suit === "♥" || card.suit === "♦";
   const textColor = isRedSuit ? "text-red-600" : "text-amber-950";
   const backgroundColor = isBottomCard ? "bg-red-100 opacity-70" : "bg-white";
@@ -65,6 +104,8 @@ function Card({ card, index, isBottomCard, packLength, isDraggable = true }) {
       className={`relative w-12 h-20 ${backgroundColor} border border-gray-800 flex items-center justify-center rounded-md shadow cursor-pointer ${
         isDragging ? "opacity-50" : ""
       } z-20`}
+      onPointerDown={handlePointerDown}
+      onDoubleClick={handleDoubleClick}
     >
       <CornerLabel
         position="top"

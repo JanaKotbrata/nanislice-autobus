@@ -1,7 +1,15 @@
 import React, { useState } from "react";
 import Slot from "./slot.jsx";
 
-function BusSlot({ card, onDropCard, index, count, bottomCard, isDraggable }) {
+function BusSlot({
+  card,
+  onDropCard,
+  index,
+  count,
+  bottomCard,
+  isDraggable,
+  isMyself,
+}) {
   const [showBottomCard, setShowBottomCard] = useState(false);
 
   const handleDoubleClick = () => {
@@ -10,6 +18,11 @@ function BusSlot({ card, onDropCard, index, count, bottomCard, isDraggable }) {
   const doubleClick = {};
   if (bottomCard) {
     doubleClick.onDoubleClick = handleDoubleClick;
+  }
+
+  let pulse = "";
+  if (card.rank === "Jr") {
+    pulse = "animate-[pulse_2s_ease-in-out_infinite]";
   }
   return (
     <div className="relative group" {...doubleClick}>
@@ -25,9 +38,10 @@ function BusSlot({ card, onDropCard, index, count, bottomCard, isDraggable }) {
         index={index}
         isOverClass={"bg-gray-300"}
         isDropClass={"bg-white"}
-        border={""}
+        border={pulse}
         isBottomCard={!!showBottomCard}
         isDraggable={isDraggable}
+        isMyself={isMyself}
       />
     </div>
   );

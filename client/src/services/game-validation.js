@@ -1,5 +1,4 @@
 import RANK_CARD_ORDER from "../../../shared/constants/rank-card-order.json";
-import GameActions from "../../../shared/constants/game-actions.json";
 
 export function getPlayerAndValid(
   gamePlayers,
@@ -15,7 +14,17 @@ export function getPlayerAndValid(
   return gamePlayers[playerIndex];
 }
 
-export function canPlaceOnGameBoard(card, showErrorAlert) {
+export function canPlaceOnGameBoard(card, busCard, showErrorAlert) {
+  console.log(
+    "canPlaceOnGameBoard called with card:",
+    card,
+    "and busCard:",
+    busCard,
+  );
+  if (busCard?.rank === "Jr" && card.i !== busCard?.i) {
+    showErrorAlert(`Vyjeď z autobusu tim žolíkem!`);
+    return false;
+  }
   if (["Jr", "A"].includes(card.rank)) {
     return true;
   }
@@ -27,8 +36,19 @@ export function canPlaceOnGBPack(
   card,
   gameBoard,
   gameBoardIndex,
+  busCard,
   showErrorAlert,
 ) {
+  console.log(
+    "canPlaceOnGameBoard called with card:",
+    card,
+    "and busCard:",
+    busCard,
+  );
+  if (busCard?.rank === "Jr" && card.i !== busCard?.i) {
+    showErrorAlert(`Vyjeď z autobusu tim žolíkem!`);
+    return false;
+  }
   if (!gameBoard[gameBoardIndex]) {
     showErrorAlert(`Ehm, něco se pokazilo.`);
     return false;

@@ -217,7 +217,7 @@ function GameContextProvider({ children }) {
       showErrorAlert("Lízni si laskavě než začneš něco dělat, dík!");
       return;
     }
-    if (!canPlaceOnGameBoard(card, showErrorAlert)) return;
+    if (!canPlaceOnGameBoard(card, myself.bus[0], showErrorAlert)) return;
 
     const { newHand, newBus, action } = getTargetAndAction(myself, card, true);
     if (action) {
@@ -237,7 +237,16 @@ function GameContextProvider({ children }) {
       showErrorAlert("Lízni si laskavě než začneš něco dělat, dík!");
       return;
     }
-    if (!canPlaceOnGBPack(card, gameBoard, targetIndex, showErrorAlert)) return;
+    if (
+      !canPlaceOnGBPack(
+        card,
+        gameBoard,
+        targetIndex,
+        myself.bus[0],
+        showErrorAlert,
+      )
+    )
+      return;
 
     const { newHand, newBus, newBusStop, action } = getTargetAndAction(
       myself,

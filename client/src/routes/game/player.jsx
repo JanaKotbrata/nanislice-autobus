@@ -2,8 +2,6 @@ import React, { useContext, useState } from "react";
 import GameContext from "../../context/game.js";
 import Slot from "./slot.jsx";
 import BusSlot from "./bus-slot.jsx";
-import Routes from "../../../../shared/constants/routes.json";
-import Config from "../../../../shared/config/config.json";
 import { getAvatar } from "../../services/user-service.jsx";
 import Avatar from "../../components/form/visual/avatar.jsx";
 
@@ -12,6 +10,8 @@ function Player({
   isActivePlayer = false,
   expandable = false,
   isDraggable = true,
+  isMyself = false,
+  isMyselfJrInBus = false,
 }) {
   const gameContext = useContext(GameContext);
   const [expanded, setExpanded] = useState(!expandable);
@@ -78,6 +78,7 @@ function Player({
               count={player?.bus?.length}
               bottomCard={bottomCard}
               isDraggable={isDraggable}
+              isMyself={isMyself}
             />
           </div>
 
@@ -98,6 +99,8 @@ function Player({
                     index={index}
                     {...extraProps}
                     isDraggable={isDraggable}
+                    isMyself={isMyself}
+                    isMyselfJrInBus={isMyselfJrInBus}
                   />
                 </div>
               ))}

@@ -86,7 +86,7 @@ function Game() {
 
   const [myself, players] = getPlayers(gameContext.players);
   const isTooManyPlayers = players.length > 3;
-
+  const isMyselfJrInBus = myself.bus[0]?.rank === "Jr";
   return (
     <DndProvider backend={HTML5Backend}>
       <div
@@ -126,6 +126,8 @@ function Game() {
                 gameContext.players?.[gameContext.currentPlayer]?.userId ===
                 myself?.userId
               }
+              isMyself={true}
+              isMyselfJrInBus={isMyselfJrInBus}
             />
           )}
         </div>
