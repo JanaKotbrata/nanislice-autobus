@@ -22,6 +22,7 @@ import translations from "./i18n/translations.json";
 import Loading from "./components/loading.jsx";
 import GameLoading from "./components/game-loading.jsx";
 import UserContextProvider from "./components/providers/user-context-provider.jsx";
+import Users from "./routes/users.jsx";
 
 let currentLang = "cs";
 
@@ -86,6 +87,16 @@ function App() {
               <ProtectedRoute>
                 <UserContextProvider>
                   <Profile />
+                </UserContextProvider>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute>
+                <UserContextProvider>
+                  <Users />
                 </UserContextProvider>
               </ProtectedRoute>
             }

@@ -22,23 +22,22 @@ class ListGame extends GetResponseHandler {
         } else {
             result = await users.listUser(pageInfo);
         }
-        if (user.role !== "admin") {
-            result.list = this.#transformData(result.list)
-        }
+
+        result.list = this.#transformData(result.list, role)
+
         return {...result, success: true};
     }
 
-    #transformData(userList) {
+    #transformData(userList, role) {
         let transformedList = [];
         for (let user of userList) {
-            transformedList.push({
-                id: user.id,
-                name: user.name,
-                picture: user.picture,
-                level: user.level,
-                xp: user.xp,
-                sys: user.sys
-            });
+            let newUser = {...user, id: user._id};
+            delete newUser._id;
+            if (role !== "admin") {
+                transformedList.push(newUser);
+            } else {
+                transformedList.push(newUser)
+            }
         }
         return transformedList;
     }

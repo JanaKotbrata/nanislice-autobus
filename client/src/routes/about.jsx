@@ -1,12 +1,14 @@
 import React from "react";
 import BusPattern from "../components/bus-pattern.jsx";
 import { FaLinkedin } from "react-icons/fa";
+import LogOut from "./user/log-out.jsx";
 
 function About() {
   return (
     <section className="bg-gray-900 text-white min-h-screen flex items-center justify-center overflow-hidden">
       <BusPattern />
       <div className="mx-auto max-w-3xl relative z-10">
+        <LogOut />
         <div className="relative w-full p-6 sm:p-8 md:p-10 rounded-2xl bg-gray-950/90 backdrop-blur-md shadow-[0_0_40px_rgba(3,7,18,0.9)] hover:shadow-[0_0_50px_rgba(31,41,55,0.5)] transition-all duration-500">
           <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">
             O projektu

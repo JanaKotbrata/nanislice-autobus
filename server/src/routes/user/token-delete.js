@@ -17,7 +17,7 @@ class DeleteToken extends PostResponseHandler {
         const userId = req.user.id;
         const user= await authorizeUser(userId, UserErrors.UserDoesNotExist, UserErrors.UserNotAuthorized);
 
-        await token.deleteTokenByIdAndHash(user.id, req.user.loginHash);
+        await token.deleteTokenByIdAndHash(user.id, req.user.loginHash.hash);
         return {id: user.id, success: true};
 
     }

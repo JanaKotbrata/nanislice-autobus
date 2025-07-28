@@ -1,0 +1,148 @@
+import React, { useEffect, useState } from "react";
+import { listUser } from "../services/user-service.jsx";
+import { useAuth } from "../context/auth-context.jsx";
+import Avatar from "../components/form/visual/avatar.jsx";
+import Button from "../components/form/visual/button.jsx";
+import LogOut from "./user/log-out.jsx";
+
+function UsersPage() {
+  const { token, user: currentUser } = useAuth();
+  const userId = currentUser?.id;
+
+  const [users, setUsers] = useState([]);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const pageSize = 6;
+
+  useEffect(() => {
+    listUser({ pageInfo: { pageIndex, pageSize } }, token)
+      .then((res) => {
+        setUsers(res.list);
+        setTotalCount(res.pageInfo.totalCount);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, [pageIndex, token]);
+
+  const totalPages = Math.ceil(totalCount / pageSize);
+
+  const nextPage = () => {
+    if (pageIndex < totalPages - 1) setPageIndex((p) => p + 1);
+  };
+
+  const prevPage = () => {
+    if (pageIndex > 0) setPageIndex((p) => p - 1);
+  };
+  const getHiddenEmail = (email) => {
+    const splitedEmail = email.split("@");
+    return splitedEmail[0][0] + "**********@" + splitedEmail[1];
+  };
+  return (
+    <div className="bg-gray-900 min-h-screen text-white px-8 py-12">
+      <LogOut size={21} />
+      <br />
+      <ul role="list" className="divide-y divide-gray-700">
+        {users.map((user) => {
+          const isMyself = userId === user.id || currentUser.role === "admin";
+
+          return (
+            <li className="flex justify-between gap-x-6 py-5" key={user.id}>
+              <div className="flex min-w-0 gap-x-4">
+                <Avatar user={user} isMyself={isMyself} size={"h-14 w-14"} />
+                <div className="min-w-0 flex-auto">
+                  <p className="text-sm font-semibold leading-6 text-white">
+                    {user.name || "Nemo"}
+                  </p>
+                  <p className="mt-1 truncate text-xs leading-5 text-gray-400">
+                    {isMyself ? user.email : getHiddenEmail(user.email)}
+                  </p>
+                </div>
+              </div>
+              <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
+                <p className="text-sm leading-6 text-white">
+                  {user.role?.toUpperCase() || "PLEB"}
+                </p>
+                <p className="mt-1 text-xs leading-5 text-gray-400 flex items-center gap-1">
+                  <>
+                    <span className="flex h-2 w-2 rounded-full bg-yellow-400" />
+                    Level: {user.level || 0}
+                  </>
+
+                  <>
+                    <span className="flex h-2 w-2 rounded-full bg-pink-800" />{" "}
+                    XP: {user.xp || 0}
+                  </>
+                  {user.discordId && (
+                    <>
+                      <span className="flex h-2 w-2 rounded-full bg-blue-900" />{" "}
+                      Discord: {user.discordId}
+                    </>
+                  )}
+                  {user.googleId && (
+                    <>
+                      <span className="flex h-2 w-2 rounded-full bg-blue-900" />{" "}
+                      Google: {user.googleId}
+                    </>
+                  )}
+                  {user.seznamId && (
+                    <>
+                      <span className="flex h-2 w-2 rounded-full bg-blue-900" />{" "}
+                      Seznam: {user.seznamId}
+                    </>
+                  )}
+                  {user.sys && (
+                    <>
+                      <>
+                        <span className="flex h-2 w-2 rounded-full bg-green-400" />{" "}
+                        Vytvořen: {user.sys.cts}
+                      </>
+
+                      <>
+                        <span className="flex h-2 w-2 rounded-full bg-green-800" />{" "}
+                        Upraven: {user.sys.mts}
+                      </>
+                      <>
+                        <span className="flex h-2 w-2 rounded-full bg-green-900" />{" "}
+                        Revize: {user.sys.rev}
+                      </>
+                    </>
+                  )}
+                  {user.id && (
+                    <>
+                      <span className="flex h-2 w-2 rounded-full bg-red-500" />
+                      ID: {user.id}
+                    </>
+                  )}
+                </p>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+
+      {/* Pagination Controls */}
+      <div className="mt-8 flex justify-center gap-4">
+        <Button
+          onClick={prevPage}
+          disabled={pageIndex === 0}
+          className="px-4 py-2 bg-gray-700 rounded-md disabled:opacity-50"
+        >
+          ← Předchozí
+        </Button>
+        <span className="self-center text-sm text-gray-300">
+          Stránka {pageIndex + 1} / {totalPages || 1}
+        </span>
+        <Button
+          onClick={nextPage}
+          disabled={pageIndex >= totalPages - 1}
+          className="px-4 py-2 bg-gray-700 rounded-md disabled:opacity-50"
+        >
+          Další →
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+export default UsersPage;

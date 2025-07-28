@@ -1,6 +1,6 @@
 import Routes from "../../../shared/constants/routes.json";
 import Config from "../../../shared/config/config.json";
-import { post } from "./http-method-service";
+import { get, post } from "./http-method-service";
 
 export async function initAuth(token, logout) {
   let response;
@@ -24,7 +24,25 @@ export async function updateUser(data = {}, token) {
     const response = await post(Routes.User.UPDATE, data, token);
     return response.data;
   } catch (error) {
-    console.error("Error setting player:", error);
+    console.error("Error setting user:", error);
+    throw error;
+  }
+}
+export async function logOut(data = {}, token) {
+  try {
+    const response = await post(Routes.User.DELETE_TOKEN, data, token);
+    return response.data;
+  } catch (error) {
+    console.error("Error log out:", error);
+    throw error;
+  }
+}
+export async function listUser(params = {}, token) {
+  try {
+    const response = await get(Routes.User.LIST, token, params);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching users:", error);
     throw error;
   }
 }
