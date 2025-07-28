@@ -23,17 +23,29 @@ class ListGame extends GetResponseHandler {
             result = await users.listUser(pageInfo);
         }
 
-        result.list = this.#transformData(result.list, role)
+        result.list = this.#transformData(result.list, user.role, user)
 
         return {...result, success: true};
     }
 
-    #transformData(userList, role) {
+    #getHiddenEmail(email) {
+        const splitedEmail = email.split("@");
+        return splitedEmail[0][0] + "**********@" + splitedEmail[1];
+    };
+
+    #transformData(userList, role, myself) {
         let transformedList = [];
         for (let user of userList) {
-            let newUser = {...user, id: user._id};
+            let newUser = {...user, id: user._id.toString()};
             delete newUser._id;
             if (role !== "admin") {
+                delete newUser.sys;
+                delete newUser.googleId;
+                delete newUser.seznamId;
+                delete newUser.discordId;
+                if (myself.id !== newUser.id) {
+                    newUser.email = this.#getHiddenEmail(newUser.email);
+                }
                 transformedList.push(newUser);
             } else {
                 transformedList.push(newUser)

@@ -1,8 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Instructions from "../components/instructions.jsx";
 import { useAuth } from "../context/auth-context.jsx";
-import { addPlayer, createGame, getGame } from "../services/game-service.jsx";
+import {
+  addPlayer,
+  createGame,
+  getGame,
+  getGameByUser,
+} from "../services/game-service.jsx";
 import GameContext from "../context/game.js";
 import { FaSignInAlt } from "react-icons/fa";
 import BusPattern from "../components/bus-pattern.jsx";
@@ -15,6 +20,23 @@ function StartGame() {
   const navigate = useNavigate();
   const gameContext = useContext(GameContext);
   const [gameCode, setGameCode] = useState("");
+
+  useEffect(() => {
+    getGameByUser(token)
+      .then((response) => {
+        if (response) {
+          gameContext.setContextGame(response);
+          if (response.state === "active") {
+            navigate(`/game/${response.code}`);
+          } else if (response.state === "initial") {
+            navigate(`/lobby/${response.code}`);
+          }
+        }
+      })
+      .catch((error) => {
+        // do nothing
+      });
+  }, []);
 
   async function startGame() {
     try {

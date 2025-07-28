@@ -25,9 +25,8 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const token = localStorage.getItem(LOCAL_TOKEN_KEY);
     if (token) {
-      // TODO zkontrolovat platnost tokenu
       setToken(token);
-      initAuth(token)
+      initAuth(token, logout)
         .then((user) => setUser(user))
         .catch(() => logout())
         .then(() => setLoading(false));

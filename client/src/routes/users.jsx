@@ -34,10 +34,7 @@ function UsersPage() {
   const prevPage = () => {
     if (pageIndex > 0) setPageIndex((p) => p - 1);
   };
-  const getHiddenEmail = (email) => {
-    const splitedEmail = email.split("@");
-    return splitedEmail[0][0] + "**********@" + splitedEmail[1];
-  };
+
   return (
     <div className="bg-gray-900 min-h-screen text-white px-8 py-12">
       <LogOut size={21} />
@@ -55,7 +52,7 @@ function UsersPage() {
                     {user.name || "Nemo"}
                   </p>
                   <p className="mt-1 truncate text-xs leading-5 text-gray-400">
-                    {isMyself ? user.email : getHiddenEmail(user.email)}
+                    {user.email}
                   </p>
                 </div>
               </div>
