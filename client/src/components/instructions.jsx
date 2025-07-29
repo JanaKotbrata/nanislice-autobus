@@ -1,19 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
-
-const howToPlaySteps = [
-  "Cílem hry, je zbavit se všech karet v autobusu. Hráč, který jako první vyloží všechny karty z autobusu, vyhrává.",
-  "1. Každý hráč dostane 5 karet do ruky a 10 karet do autobusu. Ještě má k dispozici 4 místa v zastávce pro odložení karet.",
-  "2. Hráči se střídají a na začátku každého kola si hráč lízne kartu, dokud nemá v ruce 5 karet.",
-  "3. Do hracího pole se může jako první karta dát Eso nebo Joker (ten může nahradit jakoukoliv kartu). Na tyto karty se pokračuje v pořadí 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K. Když sloupec končí Králem, tak se uzavírá a míchá se zpět do balíčku karet, ze kterého se líže.",
-  "4. Pokud má hráč v ruce, v zastávce nebo na vrchu autobusu nějakou kartu, která se hodí na hrací pole, může ji zahrát.",
-  "5. Pokud již hráč nemá žádnou kartu, co by mohl zahrát, tak odkládá kartu do zastávky (Do zastávky se mohou odkládat jakékoliv karty kromě Joker a Esa. Pokud již v zastávce není místo, hráč může odložit stejný rank karty, co je v zastávce. Pokud nemá stejný rank, musí kartu odložit dospod autobusu.), pokud mu došly karty v ruce, doplňuje 5 karet do ruky a pokračuje dále.",
-  "6. Rady - 1) Když dvakrát klikneš na autobus, tak se podíváš, jaká je tvá poslední karta. 2) Když najedeš na jakýkoliv autobus myší, tak se ti zobrazí počet karet. 3) Když najedeš na jakýkoliv balíček v zastávce, tak se ti zobrazí počet karet.",
-];
+import React, { useContext, useEffect, useRef, useState } from "react";
+import LanguageContext from "../context/language.js";
 
 function Instructions() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const slideRef = useRef(currentSlide);
-
+  const i18n = useContext(LanguageContext);
+  const howToPlaySteps = [
+    i18n.translate("goalOfTheGame"),
+    i18n.translate("firstStep"),
+    i18n.translate("secondStep"),
+    i18n.translate("thirdStep"),
+    i18n.translate("fourthStep"),
+    i18n.translate("fifthStep"),
+    i18n.translate("sixthStep"),
+  ];
   useEffect(() => {
     slideRef.current = currentSlide;
   }, [currentSlide]);
@@ -30,7 +30,7 @@ function Instructions() {
   return (
     <div className="flex flex-col justify-center items-center text-center px-2 sm:px-4">
       <h3 className="text-base sm:text-lg font-bold text-white mb-4">
-        Jak valit hru
+        {i18n.translate("howToPlay")}
       </h3>
       <div className="bg-blue-950/50 p-4 sm:p-6 rounded-xl w-full h-64 sm:h-140 flex items-center justify-center text-sm sm:text-lg font-medium transition-all duration-300 shadow-lg text-white">
         {howToPlaySteps[currentSlide]}

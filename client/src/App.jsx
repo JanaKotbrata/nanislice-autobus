@@ -18,21 +18,11 @@ import About from "./routes/about.jsx";
 import Profile from "./routes/profile.jsx";
 import AuthCallback from "./routes/auth-callback.jsx";
 import StartGame from "./routes/start-game.jsx";
-import translations from "./i18n/translations.json";
+import LanguageProvider from "./components/providers/language-context-provider.jsx";
 import Loading from "./components/loading.jsx";
 import GameLoading from "./components/game-loading.jsx";
 import UserContextProvider from "./components/providers/user-context-provider.jsx";
 import Users from "./routes/users.jsx";
-
-let currentLang = "cs";
-
-export const setLang = (lang) => {
-  if (["cs", "en"].includes(lang)) {
-    currentLang = lang;
-  } else {
-    console.warn(`Language "${lang}" is not supported. Defaulting to 'cs'.`);
-  }
-};
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -70,62 +60,64 @@ function NotAuthenticatedRoute({ children }) {
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <Routes>
-          <Route path="/about" element={<About />} />
-          <Route
-            path="/"
-            element={
-              <NotAuthenticatedRoute>
-                <Welcome />
-              </NotAuthenticatedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <UserContextProvider>
-                  <Profile />
-                </UserContextProvider>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/users"
-            element={
-              <ProtectedRoute>
-                <UserContextProvider>
-                  <Users />
-                </UserContextProvider>
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/auth-callback" element={<AuthCallback />} />
+      <LanguageProvider>
+        <AuthProvider>
+          <Routes>
+            <Route path="/about" element={<About />} />
+            <Route
+              path="/"
+              element={
+                <NotAuthenticatedRoute>
+                  <Welcome />
+                </NotAuthenticatedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <UserContextProvider>
+                    <Profile />
+                  </UserContextProvider>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/users"
+              element={
+                <ProtectedRoute>
+                  <UserContextProvider>
+                    <Users />
+                  </UserContextProvider>
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/auth-callback" element={<AuthCallback />} />
 
-          <Route
-            element={
-              <ProtectedRoute>
-                <GameContextProvider>
-                  <Outlet />
-                </GameContextProvider>
-              </ProtectedRoute>
-            }
-          >
-            <Route path="/start-game" element={<StartGame />} />
             <Route
               element={
-                <GameLoading>
-                  <Outlet />
-                </GameLoading>
+                <ProtectedRoute>
+                  <GameContextProvider>
+                    <Outlet />
+                  </GameContextProvider>
+                </ProtectedRoute>
               }
             >
-              <Route path="/lobby/:code" element={<Lobby />} />
-              <Route path="/game/:code" element={<Game />} />
+              <Route path="/start-game" element={<StartGame />} />
+              <Route
+                element={
+                  <GameLoading>
+                    <Outlet />
+                  </GameLoading>
+                }
+              >
+                <Route path="/lobby/:code" element={<Lobby />} />
+                <Route path="/game/:code" element={<Game />} />
+              </Route>
             </Route>
-          </Route>
-        </Routes>
-      </AuthProvider>
+          </Routes>
+        </AuthProvider>
+      </LanguageProvider>
     </Router>
   );
 }

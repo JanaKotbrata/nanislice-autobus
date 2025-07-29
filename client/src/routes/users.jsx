@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { listUser } from "../services/user-service.jsx";
 import { useAuth } from "../context/auth-context.jsx";
 import Avatar from "../components/form/visual/avatar.jsx";
 import Button from "../components/form/visual/button.jsx";
 import LogOut from "./user/log-out.jsx";
+import LanguageContext from "../context/language.js";
+import LangSelector from "../components/form/visual/lang-selector.jsx";
 
 function UsersPage() {
+  const i18n = useContext(LanguageContext);
   const { token, user: currentUser } = useAuth();
   const userId = currentUser?.id;
 
@@ -37,7 +40,9 @@ function UsersPage() {
 
   return (
     <div className="bg-gray-900 min-h-screen text-white px-8 py-12">
-      <LogOut size={21} />
+      <div className="flex flex-row gap-6 justify-end">
+        <LangSelector size={21} /> <LogOut size={21} />
+      </div>
       <br />
       <ul role="list" className="divide-y divide-gray-700">
         {users.map((user) => {
@@ -49,7 +54,7 @@ function UsersPage() {
                 <Avatar user={user} isMyself={isMyself} size={"h-14 w-14"} />
                 <div className="min-w-0 flex-auto">
                   <p className="text-sm font-semibold leading-6 text-white">
-                    {user.name || "Nemo"}
+                    {user.name || i18n.translate("nemo")}
                   </p>
                   <p className="mt-1 truncate text-xs leading-5 text-gray-400">
                     {user.email}
@@ -58,7 +63,8 @@ function UsersPage() {
               </div>
               <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
                 <p className="text-sm leading-6 text-white">
-                  {user.role?.toUpperCase() || "PLEB"}
+                  {user.role?.toUpperCase() ||
+                    i18n.translate("pleb").toUpperCase()}
                 </p>
                 <p className="mt-1 text-xs leading-5 text-gray-400 flex items-center gap-1">
                   <>
@@ -117,7 +123,6 @@ function UsersPage() {
           );
         })}
       </ul>
-
       {/* Pagination Controls */}
       <div className="mt-8 flex justify-center gap-4">
         <Button
@@ -125,17 +130,17 @@ function UsersPage() {
           disabled={pageIndex === 0}
           className="px-4 py-2 bg-gray-700 rounded-md disabled:opacity-50"
         >
-          ← Předchozí
+          {i18n.translate("previous")}
         </Button>
         <span className="self-center text-sm text-gray-300">
-          Stránka {pageIndex + 1} / {totalPages || 1}
+          {i18n.translate("page")} {pageIndex + 1} / {totalPages || 1}
         </span>
         <Button
           onClick={nextPage}
           disabled={pageIndex >= totalPages - 1}
           className="px-4 py-2 bg-gray-700 rounded-md disabled:opacity-50"
         >
-          Další →
+          {i18n.translate("next")}
         </Button>
       </div>
     </div>

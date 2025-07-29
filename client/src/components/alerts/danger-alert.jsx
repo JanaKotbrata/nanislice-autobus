@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Rnd } from "react-rnd";
+import LanguageContext from "../../context/language.js";
 
 function DangerAlert({ message, onClose }) {
+  const i18n = useContext(LanguageContext);
   const [showRules, setShowRules] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -28,7 +30,7 @@ function DangerAlert({ message, onClose }) {
         >
           <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
         </svg>
-        <h3 className="text-lg font-medium">WTF ale?!</h3>
+        <h3 className="text-lg font-medium">{i18n.translate("wtf")}</h3>
       </div>
       <div className="mt-2 mb-4 text-sm">{message}</div>
       <div className="flex flex-wrap gap-2">
@@ -46,47 +48,47 @@ function DangerAlert({ message, onClose }) {
           >
             <path d="M10 0C4.612 0 0 5.336 0 7c0 1.742 3.546 7 10 7 6.454 0 10-5.258 10-7 0-1.664-4.612-7-10-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" />
           </svg>
-          Pravidla?
+          {i18n.translate("dangerAlertConfirm")}
         </button>
         <button
           type="button"
           onClick={onClose}
           className="bg-transparent border focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 !hover:bg-red-600 !border-red-600 !text-red-500 !hover:text-white !focus:ring-red-800"
         >
-          No jo furt
+          {i18n.translate("dangerAlertClose")}
         </button>
       </div>
 
       {showRules && (
         <div className="absolute inset-0 z-50 flex items-center justify-center !bg-black/60 rounded-lg">
           <div className="!bg-gray-700 p-4 rounded-lg shadow-lg max-w-xs text-sm !text-gray-100 max-h-[80vh] overflow-y-auto">
-            <h3 className="font-semibold mb-2">Rady</h3>
+            <h3 className="font-semibold mb-2">
+              {i18n.translate("dangerAlertHints")}
+            </h3>
             <ol className="list-decimal pl-5 space-y-2">
-              <li>Dvojklikem na autobus zjistíš svou poslední kartu.</li>
-              <li>Při najetí myší na autobus se zobrazí počet karet.</li>
-              <li>Totéž platí pro balíček v zastávce.</li>
+              <li>{i18n.translate("dangerAlertFirstHint")}</li>
+              <li>{i18n.translate("dangerAlertSecondHint")}</li>
+              <li>{i18n.translate("dangerAlertThirdHint")}</li>
             </ol>
 
-            <h3 className="font-semibold my-2">Pravidla</h3>
+            <h3 className="font-semibold my-2">
+              {i18n.translate("dangerAlertRules")}
+            </h3>
             <h4 className="mb-2">
-              Cílem hry je zbavit se všech karet v autobusu...
+              {i18n.translate("dangerAlertGoalOfTheGame")}
             </h4>
             <ol className="list-decimal pl-5 space-y-2">
-              <li>
-                Na začátku máš 5 karet v ruce a 10 v autobusu + 4 místa...
-              </li>
-              <li>Když jsi na řadě, lížeš karty, dokud nemáš 5 v ruce.</li>
-              <li>
-                Do hracího pole můžeš jako první kartu dát eso nebo žolíka.
-              </li>
-              <li>Pokud máš vhodnou kartu, můžeš ji zahrát.</li>
-              <li>Jinak odkládáš do zastávky nebo dospod autobusu.</li>
+              <li>{i18n.translate("dangerAlertFirstRule")}</li>
+              <li> {i18n.translate("dangerAlertSecondRule")}</li>
+              <li>{i18n.translate("dangerAlertThirdRule")}</li>
+              <li>{i18n.translate("dangerAlertFourthRule")}</li>
+              <li>{i18n.translate("dangerAlertFifthRule")}</li>
             </ol>
             <button
               onClick={() => setShowRules(false)}
               className="mt-4 text-xs px-3 py-1.5 rounded !bg-red-600 !hover:bg-red-700 !text-white"
             >
-              Zavřít
+              {i18n.translate("dangerAlertCloseRules")}
             </button>
           </div>
         </div>

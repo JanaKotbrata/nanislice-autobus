@@ -4,17 +4,18 @@ export function getPlayerAndValid(
   gamePlayers,
   currentPlayer,
   showErrorAlert,
+  translate,
   isReorderHand = false,
 ) {
   const playerIndex = gamePlayers.findIndex((player) => player.myself);
   if (playerIndex !== currentPlayer && !isReorderHand) {
-    showErrorAlert(`Kam pospícháš?! Nejsi na tahu!`);
+    showErrorAlert(translate("notYourTurn"));
     return false;
   }
   return gamePlayers[playerIndex];
 }
 
-export function canPlaceOnGameBoard(card, busCard, showErrorAlert) {
+export function canPlaceOnGameBoard(card, busCard, showErrorAlert, translate) {
   console.log(
     "canPlaceOnGameBoard called with card:",
     card,
@@ -22,13 +23,13 @@ export function canPlaceOnGameBoard(card, busCard, showErrorAlert) {
     busCard,
   );
   if (busCard?.rank === "Jr" && card.i !== busCard?.i) {
-    showErrorAlert(`Vyjeď z autobusu tim žolíkem!`);
+    showErrorAlert(translate("busJrFirst"));
     return false;
   }
   if (["Jr", "A"].includes(card.rank)) {
     return true;
   }
-  showErrorAlert("Tak hele, sem můžeš dát pouze eso nebo žolíka!");
+  showErrorAlert(translate("firstPlaceError"));
   return false;
 }
 
@@ -38,6 +39,7 @@ export function canPlaceOnGBPack(
   gameBoardIndex,
   busCard,
   showErrorAlert,
+  translate,
 ) {
   console.log(
     "canPlaceOnGameBoard called with card:",
@@ -46,11 +48,11 @@ export function canPlaceOnGBPack(
     busCard,
   );
   if (busCard?.rank === "Jr" && card.i !== busCard?.i) {
-    showErrorAlert(`Vyjeď z autobusu tim žolíkem!`);
+    showErrorAlert(translate("busJrFirst"));
     return false;
   }
   if (!gameBoard[gameBoardIndex]) {
-    showErrorAlert(`Ehm, něco se pokazilo.`);
+    showErrorAlert(translate("somethingWentWrong"));
     return false;
   }
 
@@ -58,13 +60,19 @@ export function canPlaceOnGBPack(
     card.rank !== RANK_CARD_ORDER[gameBoard[gameBoardIndex].length] &&
     card.rank !== "Jr"
   ) {
-    showErrorAlert(`Ti jebe? Sem nemůžeš dát kartu s hodnotou: ${card.rank}.`);
+    showErrorAlert(`${translate("placeRankError")}${card.rank}.`);
     return false;
   }
   return true;
 }
 
-export function canPlaceInBusStop(card, busStop, targetIndex, showErrorAlert) {
+export function canPlaceInBusStop(
+  card,
+  busStop,
+  targetIndex,
+  showErrorAlert,
+  translate,
+) {
   const existingIndexWithSameRank = busStop?.findIndex(
     (stack) => stack.length > 0 && stack[0].rank === card.rank,
   );
@@ -72,12 +80,12 @@ export function canPlaceInBusStop(card, busStop, targetIndex, showErrorAlert) {
     existingIndexWithSameRank !== -1 &&
     existingIndexWithSameRank !== targetIndex
   ) {
-    showErrorAlert(`To chceš dát asi jinam ne? Kartu: ${card.rank}`);
+    showErrorAlert(`${translate("wrongPlace")}${card.rank}`);
     return false;
   }
 
   if (["Jr", "A"].includes(card.rank)) {
-    showErrorAlert(`Nelze odložit kartu s rankem: ${card.rank}`);
+    showErrorAlert(`${translate("busStopError")} ${card.rank}`);
     return false;
   }
   const isSameCard = busStop[targetIndex]?.[0]?.rank === card.rank;
@@ -86,12 +94,8 @@ export function canPlaceInBusStop(card, busStop, targetIndex, showErrorAlert) {
     Object.keys(busStop[targetIndex]).length !== 0 &&
     !isSameCard
   ) {
-    showErrorAlert(
-      `Ti jebe? Tady je plno! Sem nemůžeš dát kartu s hodnotou: ${card.rank}. Hoď sem stejnou, co tu leží, najdi volné místo, anebo si nastup!`,
-    );
+    showErrorAlert(`${translate("wrongPlaceInBusStop")} ${card.rank}`);
     return false;
   }
   return busStop[targetIndex]?.[busStop[targetIndex].length - 1]?.i !== card.i;
 }
-
-export function canDraw() {}

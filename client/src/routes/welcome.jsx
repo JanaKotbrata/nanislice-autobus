@@ -1,14 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
 import nanislice from "../assets/nanislice.svg";
 import DiscordLogin from "./welcome/discord-login.jsx";
 import GoogleLogin from "./welcome/google-login.jsx";
 import SeznamLogin from "./welcome/seznam-login.jsx";
 import BusPattern from "../components/bus-pattern.jsx";
+import LangSelector from "../components/form/visual/lang-selector.jsx";
+import LanguageContext from "../context/language.js";
 function Welcome() {
+  const i18n = useContext(LanguageContext);
   return (
     <section className="bg-gray-900 text-white min-h-screen flex items-center justify-center overflow-hidden">
       <BusPattern />
       <div className="mx-auto max-w-sm md:max-w-md lg:max-w-lg relative z-10">
+        <LangSelector size={32} />
         <div className="!bg-gray-950/90 !border-blackbg-gray-800  rounded-lg w-full">
           <div className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-5 md:space-y-6">
             <a
@@ -19,20 +23,19 @@ function Welcome() {
               nanislice-autobus
             </a>
             <h1 className="text-xl sm:text-lg md:text-2xl font-bold leading-tight tracking-tight text-white">
-              Přihlaš se
+              {i18n.translate("signIn")}
             </h1>
             <form className="space-y-4 sm:space-y-5 md:space-y-6" action="#">
               <p className="text-sm sm:text-xs md:text-base text-gray-400">
-                Vzniklo pro procvičení kódění, z lásky ke kartám a vzpomínkám na
-                babi.
+                {i18n.translate("welcomeTitle")}
               </p>
               <hr className="h-px my-6 sm:my-4 md:my-8 bg-cyan-400/50 border-cyan-400/50 border-1" />
               <div className="flex items-center justify-center">
-                <SeznamLogin />
+                <SeznamLogin message={i18n.translate("continueSeznam")} />
               </div>
               <div className="flex items-center justify-center gap-x-6">
-                <GoogleLogin />
-                <DiscordLogin />
+                <GoogleLogin message={i18n.translate("continueGoogle")} />
+                <DiscordLogin message={i18n.translate("continueDiscord")} />
               </div>
             </form>
           </div>

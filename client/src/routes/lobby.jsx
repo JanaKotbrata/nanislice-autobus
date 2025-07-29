@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
 import Member from "../components/form/visual/member.jsx";
@@ -16,8 +16,11 @@ import { getAvatar } from "../services/user-service.jsx";
 import Button from "../components/form/visual/button.jsx";
 import InfoAlert from "../components/alerts/info-alert.jsx";
 import LogOut from "./user/log-out.jsx";
+import LanguageContext from "../context/language.js";
+import LangSelector from "../components/form/visual/lang-selector.jsx";
 
 function Lobby() {
+  const i18n = useContext(LanguageContext);
   const navigate = useNavigate();
   const gameContext = useContext(GameContext);
   const { user, token } = useAuth();
@@ -76,7 +79,10 @@ function Lobby() {
     <section className="!bg-gray-900 min-h-screen flex items-center justify-center px-4">
       <BusPattern />
       <div className="w-full max-w-4xl z-10">
-        <LogOut />
+        <div className="flex flex-row gap-6 justify-end">
+          <LangSelector size={32} />
+          <LogOut />
+        </div>
         <div className="!bg-gray-950/80 !border-black rounded-2xl shadow-2xl p-6">
           {/* Header */}
           <div className="h-12 flex justify-between items-center border-b border-cyan-400/50 mb-10">
@@ -85,7 +91,7 @@ function Lobby() {
                 Lobby {gameContext.gameCode}
               </div>
               <div className="text-sm font-base text-gray-500">
-                Čekání na další autobusáky...
+                {i18n.translate("waitForPlayers")}
               </div>
             </div>
             <div className="flex items-center justify-center w-full shadow-md rounded-full max-w-[3rem]">
@@ -123,14 +129,14 @@ function Lobby() {
                           onClick={async () =>
                             await handleRemovePlayer(player.userId)
                           }
-                          title="Vystup ze hry"
+                          title={i18n.translate("leaveGame")}
                           size={18}
                         />
                       )}
                       {player.ready && (
                         <FaCheck
                           className="text-green-300/50"
-                          title="Hráč je připraven"
+                          title={i18n.translate("playerIsReady")}
                           size={18}
                         />
                       )}
@@ -150,7 +156,7 @@ function Lobby() {
               {gameContext.startAlert && (
                 <InfoAlert
                   onClose={() => gameContext.setStartAlert(false)}
-                  message={`Nedostatek autobusáků. Pozvi někoho.`}
+                  message={i18n.translate("lackOfPlayers")}
                 />
               )}
               {!shouldRender && (
@@ -159,7 +165,7 @@ function Lobby() {
                     {gameContext?.ready || myself?.ready ? (
                       <FaCheck className="w-5 h-5 mx-auto" />
                     ) : (
-                      "Už můžu hrát"
+                      i18n.translate("iCanPlay")
                     )}
                   </Button>
                 </div>

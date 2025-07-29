@@ -2,7 +2,7 @@ import Config from "../../../../shared/config/config.json";
 import google from "../../assets/google.svg";
 import Button from "../../components/form/visual/button.jsx";
 
-const GoogleLogin = () => {
+const GoogleLogin = ({ message = "" }) => {
   function handleGoogleLogin(e) {
     e.preventDefault();
     const redirectUrl = encodeURIComponent(
@@ -14,7 +14,7 @@ const GoogleLogin = () => {
   return (
     <Button onClick={handleGoogleLogin}>
       <img className="mr-2" src={google || ""} alt="logo" />
-      <span>Continue with Google</span>
+      <span>{message}</span>
     </Button>
   );
 };

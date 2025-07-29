@@ -4,11 +4,12 @@ import { startGame } from "../../../services/game-service.jsx";
 import { useAuth } from "../../../context/auth-context.jsx";
 import GameContext from "../../../context/game.js";
 import Button from "./button.jsx";
+import LanguageContext from "../../../context/language.js";
 function Start({ gameCode, playerList }) {
+  const i18n = useContext(LanguageContext);
   const navigate = useNavigate();
   const gameContext = useContext(GameContext);
   const { token } = useAuth();
-  console.log("token", token);
   const handleStartClick = async () => {
     if (playerList.length > 1) {
       let isEveryOneReady = true;
@@ -16,7 +17,7 @@ function Start({ gameCode, playerList }) {
         if (!player.creator) {
           if (!player.ready) {
             isEveryOneReady = false;
-            alert("Všichni musí být připraveni, aby bylo možné začít hru.");
+            alert(i18n.translate("everyoneHasBeReady")); //TODO customize
             break;
           }
         }
@@ -33,7 +34,9 @@ function Start({ gameCode, playerList }) {
 
   return (
     <div className="p-6 bg-gray-500/40 animate-[pulse_5s_ease-in-out_infinite] rounded-lg">
-      <Button onClick={() => handleStartClick()}>Nechť hra započne</Button>
+      <Button onClick={() => handleStartClick()}>
+        {i18n.translate("startGame")}
+      </Button>
     </div>
   );
 }

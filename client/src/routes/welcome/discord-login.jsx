@@ -2,7 +2,7 @@ import React from "react";
 import Button from "../../components/form/visual/button.jsx";
 import discord from "../../assets/discord.svg";
 import Config from "../../../../shared/config/config.json";
-const DiscordLogin = () => {
+const DiscordLogin = ({ message = "" }) => {
   const discordAuthUrl = `${Config.SERVER_URI}/auth/discord`;
 
   const handleDiscordLogin = () => {
@@ -15,7 +15,7 @@ const DiscordLogin = () => {
   return (
     <Button onClick={() => handleDiscordLogin()}>
       <img className="mr-2" src={discord} alt="logo" />
-      <span>Continue with Discord</span>{" "}
+      <span>{message}</span>{" "}
     </Button>
   );
 };

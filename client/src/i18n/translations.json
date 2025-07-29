@@ -1,38 +1,513 @@
 {
-  "busTitle": {
-    "cs": "Autobusácí",
-    "en": "Bus Drivers"
-  },
-  "drawCard": {
-    "cs": "Lízní kartu"
-  },
-  "gameBoard": {
-    "cs": "Hrací pole"
-  },
-  "lackOfPlayers": {
-    "cs": "Není dostatek hráčů pro spuštění hry.",
-    "en": "Not enough players to start the game."
-  },
-  "wtf": {
-    "cs": "WTF ale?",
-    "en": "WTF?"
-  },
-  "placeError": {
-    "cs": "O co se teď snažíš jako? To fakt ne..."
-  },
-  "placeInHandError": {
-    "cs": "Tak co chceš, cheatovat nebo co? No nemůžeš si tu kartu dát do ruky, že jo..."
-  },
-  "firstPlaceError": {
-    "cs": "Tak hele, sem můžeš dát pouze eso nebo žolíka!"
-  },
-  "somethingWentWrong": {
-    "cs": "Ehm, něco se pokazilo."
-  },
-  "placeRankError": {
-    "cs": "Ti jebe? Sem nemůžeš dát kartu s hodnotou: "
-  },
-  "busStopError": {
-    "cs": "Nelze odložit kartu s rankem: "
+  "languages": [
+    {
+      "name": "Česky",
+      "code": "cs"
+    },
+    {
+      "name": "English",
+      "code": "en"
+    },
+    {
+      "name": "Slovensky",
+      "code": "sk"
+    }
+  ],
+  "translations": {
+    "busTitle": {
+      "cs": "Autobusácí",
+      "en": "Bus Crew",
+      "sk": "Autobusáci"
+    },
+    "drawCard": {
+      "cs": "Lízni kartu",
+      "en": "Draw a card",
+      "sk": "Potiahni si!"
+    },
+    "lackOfPlayers": {
+      "cs": "Nedostatek autobusáků. Pozvi někoho.",
+      "en": "Too few bus crew. Call in reinforcements!",
+      "sk": "Chýba nám posádka. Zavolaj niekoho!"
+    },
+    "wtf": {
+      "cs": "WTF ale?",
+      "en": "WTF was that?",
+      "sk": "Čo to do...?"
+    },
+    "iCanPlay": {
+      "cs": "Už můžu hrát!",
+      "en": "I’m in! Let’s roll!",
+      "sk": "Idem na to!"
+    },
+    "playerIsReady": {
+      "cs": "Hráč je připraven",
+      "en": "Player’s all set!",
+      "sk": "Hráč pripravený"
+    },
+    "everyoneHasBeReady": {
+      "cs": "Hele, too... no... všichni musí být připraveni, aby bylo možné začít hru.",
+      "en": "So... eem... everyone’s gotta be ready to kick off the game.",
+      "sk": "Takže... no... všetci musia byť pripravení, aby sa mohla hra začať."
+    },
+    "leaveGame": {
+      "cs": "Vystup ze hry",
+      "en": "Hop off the game",
+      "sk": "Vystúp z hry"
+    },
+    "hintToStart": {
+      "cs": "Jakobyyy musíš zadat kód hry, víš. Anebo si vytvoř svojí, jo?",
+      "en": "Sooo… just pop in a game code. Or start your own, why not?",
+      "sk": "Nooo… napíš kód hry, alebo si sprav svoju, okej?"
+    },
+    "titleStartGame": {
+      "cs": "Pokud již v nějaké jsi, tak tě to nasměruje na ní.",
+      "en": "Already joined a game? We’ll take you straight there.",
+      "sk": "Ak už si v hre, hodíme ťa tam rovno."
+    },
+    "enterGameCode": {
+      "cs": "Vlož kódík existující hry",
+      "en": "Enter that funky game code",
+      "sk": "Zadaj kódik existujúcej hry"
+    },
+    "joinGame": {
+      "cs": "Nastup do hry",
+      "en": "Jump on board",
+      "sk": "Nastúp do hry"
+    },
+    "createNewGame": {
+      "cs": "Vytvoř novou partičku",
+      "en": "Start a fresh ride",
+      "sk": "Spusti novú partičku"
+    },
+    "waitForPlayers": {
+      "cs": " Čekání na další autobusáky...",
+      "en": " Waiting for more bus legends...",
+      "sk": " Čakáme na ďalších autobusákov..."
+    },
+    "placeError": {
+      "cs": "O co se teď snažíš jako? To fakt ne...",
+      "en": "Umm... what exactly are you trying here?",
+      "sk": "Čo to akože skúšaš? No nie..."
+    },
+    "placeInHandError": {
+      "cs": "Tak co chceš, cheatovat nebo co? No nemůžeš si tu kartu dát do ruky, že jo...",
+      "en": "Hold up! You can't just sneak that card into your hand...",
+      "sk": "Stop! Nemôžeš si tú kartu len tak dať do ruky..."
+    },
+    "dontCheatInBus": {
+      "cs": "Necheatuj! Nemůžeš si vyndatavat karty z autobusu.",
+      "en": "No cheating! You can’t yank cards from the bus.",
+      "sk": "Nepodvádzaj! Karty z autobusu neberieme!"
+    },
+    "firstPlaceError": {
+      "cs": "Tak hele, sem můžeš dát pouze eso nebo žolíka!",
+      "en": "Whoa there! Only an Ace or a Joker can start the party!",
+      "sk": "Sem môže ísť len eso alebo žolík, kamo!"
+    },
+    "somethingWentWrong": {
+      "cs": "Ehm, něco se pokazilo.",
+      "en": "Uhh... something went bonkers.",
+      "sk": "Ouha... niečo sa domrvilo."
+    },
+    "placeRankError": {
+      "cs": "Ti jebe? Sem nemůžeš dát kartu s hodnotou: ",
+      "en": "You nuts? You can't slap down a card with rank: ",
+      "sk": "Čo si?! Sem nemôžeš hodiť kartu s hodnotou: "
+    },
+    "busStopError": {
+      "cs": "Nelze odložit kartu s rankem: ",
+      "en": "Can't park a card with rank: ",
+      "sk": "Túto kartu sem teda neodložíš: "
+    },
+    "wrongPlaceInBusStop": {
+      "cs": "Ti jebe? Tady je plno! Hoď sem stejnou, co tu leží, najdi volné místo, anebo si nastup! Sem nemůžeš dát kartu s hodnotou: ",
+      "en": "Yo, this spot's packed! Match the one here, find another stop, or hop on the bus! No room for a card with rank: ",
+      "sk": "Tu je natrieskané! Daj rovnakú kartu, nájdi iné miesto, alebo nastúp! S kartou s hodnotou: sem nechoď. "
+    },
+    "drawFirst": {
+      "cs": "Lízni si laskavě než začneš něco dělat, dík!",
+      "en": "Draw a card before doing anything fancy, thanks!",
+      "sk": "Najprv si potiahni, až potom rob cirkus, díky!"
+    },
+    "notPossibleDraw": {
+      "cs": "Teď si nemůžeš líznout kartu.",
+      "en": "Nope, can’t draw a card right now.",
+      "sk": "Teraz si kartu nevezmeš, kámo."
+    },
+    "winner": {
+      "cs": "No to je dost, že si vyhrál: ",
+      "en": "Well, look who finally won: ",
+      "sk": "Aha ho, víťaza: "
+    },
+    "tryToLeave": {
+      "cs": "se pokouší opustit hru.",
+      "en": "is trying to ditch the game.",
+      "sk": "sa pokúša zdrhnúť z hry."
+    },
+    "busJrFirst": {
+      "cs": "Vyjeď z autobusu tim žolíkem!",
+      "en": "Kick off with that Joker, bus driver!",
+      "sk": "Naštartuj to žolíkom, šofér!"
+    },
+    "notYourTurn": {
+      "cs": "Kam pospícháš?! Nejsi na tahu!",
+      "en": "Hold your horses! It ain’t your turn!",
+      "sk": "Zadrž! Ešte nie si na rade!"
+    },
+    "wrongPlace": {
+      "cs": "To chceš dát asi jinam ne? Kartu: ",
+      "en": "Pretty sure that card belongs somewhere else: ",
+      "sk": "Táto karta sem fakt nepatrí: "
+    },
+    "goalOfTheGame": {
+      "cs": "Cílem hry, je zbavit se všech karet v autobusu. Hráč, který jako první vyloží všechny karty z autobusu, vyhrává.",
+      "en": "Goal? Ditch all your cards from the bus. First to empty their bus wins!",
+      "sk": "Cieľ? Vylož všetky karty z autobusu. Kto je prvý bez kariet, vyhráva!"
+    },
+    "firstStep": {
+      "cs": "1. Každý hráč dostane 5 karet do ruky a 10 karet do autobusu. Ještě má k dispozici 4 místa v zastávce pro odložení karet.",
+      "en": "1. Everyone gets 5 cards in hand and 10 in the bus. You've also got 4 bus stop spots to park some cards.",
+      "sk": "1. Každý dostane 5 kariet do ruky, 10 do autobusu a má 4 miesta na zastávke pre odkladanie."
+    },
+    "secondStep": {
+      "cs": "2. Hráči se střídají a na začátku každého kola si hráč lízne kartu, dokud nemá v ruce 5 karet.",
+      "en": "2. Players take turns. At the start of each round, draw cards until you’ve got 5 in hand.",
+      "sk": "2. Hráči sa striedajú. Na začiatku ťahu si doberieš, kým nemáš 5 kariet v ruke."
+    },
+    "thirdStep": {
+      "cs": "3. Do hracího pole se může jako první karta dát Eso nebo Joker (ten může nahradit jakoukoliv kartu). Na tyto karty se pokračuje v pořadí 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K. Když sloupec končí Králem, tak se uzavírá a míchá se zpět do balíčku karet, ze kterého se líže.",
+      "en": "3. First card down must be an Ace or a Joker (Joker’s wild, baby!). Continue the sequence: 2 → K. When a pack is completed with a King, it’s closed and reshuffled back into the draw pile.",
+      "sk": "3. Prvá karta na stole musí byť eso alebo žolík. Potom pokračuješ 2, 3... až po kráľa. Keď stĺpec končí kráľom, ide naspäť do balíka."
+    },
+    "fourthStep": {
+      "cs": "4. Pokud má hráč v ruce, v zastávce nebo na vrchu autobusu nějakou kartu, která se hodí na hrací pole, může ji zahrát.",
+      "en": "4. Got a card in hand, in your stop, or on top of your bus that fits the board? Slam it down!",
+      "sk": "4. Máš kartu v ruke, na zastávke alebo v autobuse, čo sa hodí? Tak ju hoď na stôl!"
+    },
+    "fifthStep": {
+      "cs": "5. Pokud již hráč nemá žádnou kartu, co by mohl zahrát, tak odkládá kartu do zastávky (Do zastávky se mohou odkládat jakékoliv karty kromě Joker a Esa. Pokud již v zastávce není místo, hráč může odložit stejný rank karty, co je v zastávce. Pokud nemá stejný rank, musí kartu odložit dospod autobusu.), pokud mu došly karty v ruce, doplňuje 5 karet do ruky a pokračuje dále.",
+      "en": "5. Can’t play anything? Drop a card at your stop (no Jokers or Aces allowed!). If it’s full, you can only stack a same-ranked card. No match? Shove it to the bottom of your bus. Then refill to 5 cards if needed and roll on.",
+      "sk": "5. Nemáš čo hodiť? Odlož kartu na zastávku (nie žolíka ani eso). Keď je plná, môžeš hodiť len rovnakú hodnotu. Inak ide karta pod autobus. Potom si doplň 5 kariet."
+    },
+    "sixthStep": {
+      "cs": "6. Rady - 1) Když dvakrát klikneš na autobus, tak se podíváš, jaká je tvá poslední karta. 2) Když najedeš na jakýkoliv autobus myší, tak se ti zobrazí počet karet. 3) Když najedeš na jakýkoliv balíček v zastávce, tak se ti zobrazí počet karet.",
+      "en": "6. Tips – 1) Double-click your bus to peek at your last card. 2) Hover over any bus to see how many cards are left. 3) Hover over any stop pile to see card count.",
+      "sk": "6. Tipy – 1) Dvojklik na autobus ti ukáže poslednú kartu. 2) Prejdi myšou cez autobus a uvidíš počet kariet. 3) To isté platí aj pre balíky na zastávkach."
+    },
+    "howToPlay": {
+      "cs": "Jak valit hru",
+      "en": "How to ride",
+      "sk": "Ako to rozbehnúť"
+    },
+    "logOutTitle": {
+      "cs": "Odhlásit se",
+      "en": "Log out",
+      "sk": "Odhlásiť sa"
+    },
+    "logOutMessage": {
+      "cs": "A ty už jako nepřijdeš? Opravdu chceš odejít?",
+      "en": "So you’re ghosting us? Really wanna leave?",
+      "sk": "Fakt ideš preč? Už sa nevrátiš?"
+    },
+    "logOutAlertConfirm": {
+      "cs": "Jo jdu!",
+      "en": "Yeah, I'm out!",
+      "sk": "Hej, padám!"
+    },
+    "logOutAlertClose": {
+      "cs": "Ne, zůstávám!",
+      "en": "Nah, I’m stayin’!",
+      "sk": "Nie, zostávam!"
+    },
+    "logOutAlertTitle": {
+      "cs": "A ty už jako jdeš?",
+      "en": "You takin’ off already?",
+      "sk": "Už zdrháš?"
+    },
+    "copied": {
+      "cs": "Zkopírováno!",
+      "en": "Copied!",
+      "sk": "Skopírované!"
+    },
+    "copyAndSend": {
+      "cs": "Zkopči a pošli kámošovi!",
+      "en": "Copy it and send to your buddy!",
+      "sk": "Skopči a pošli kámošovi!"
+    },
+    "codeForConnect": {
+      "cs": "kódík pro připojení:",
+      "en": "connect-o-code:",
+      "sk": "kód na pripojenie:"
+    },
+    "comeToPlay": {
+      "cs": "Pojď odvézt autobus do depa:",
+      "en": "Come drive this bus to the depot:",
+      "sk": "Poď odviezť autobus do depa:"
+    },
+    "startGame": {
+      "cs": "Nechť hra započne",
+      "en": "Let the chaos begin!",
+      "sk": "Nech sa hra začne!"
+    },
+    "leaveGameAlertTitle": {
+      "cs": "Ehm, ehm",
+      "en": "Uhh, uhh",
+      "sk": "Ouha, ouha"
+    },
+    "leaveGameAlertMessage": {
+      "cs": "Opravdu chceš odejít? Odstraníš se úplně ze hry a nebudeš ji mít v historii. Jestli tam necháváš ostatní, tak je to od tebe ošklivé.",
+      "en": "So you really wanna leave? You’ll be gone from the game and it won’t show up in your history. If you’re leaving others behind, that’s just mean.",
+      "sk": "Fakt chceš odísť? Odstrániš sa z hry a nebudeš ju mať v histórii. Ak tam nechávaš ostatných, tak to nie je pekné."
+    },
+    "leaveGameTitle": {
+      "cs": "Odchod ze hry",
+      "en": "Leaving the game",
+      "sk": "Odchod z hry"
+    },
+    "leaveGameAlertConfirm": {
+      "cs": "Jasně, že chci odejít a nesu následky za své činy!",
+      "en": "Of course I wanna leave and face the consequences of my actions!",
+      "sk": "Jasné, že chcem odísť a niesť následky svojich činov!"
+    },
+    "leaveGameAlertClose": {
+      "cs": "Ne, tak já teda zůstanu ve hře!",
+      "en": "Nah, I’ll stick around in the game!",
+      "sk": "Nie, tak ja teda zostanem v hre!"
+    },
+    "dangerAlertConfirm": {
+      "cs": "Pravidla?",
+      "en": "Rules?",
+      "sk": "Pravidlá?"
+    },
+    "dangerAlertClose": {
+      "cs": "No jo furt",
+      "en": "Oh, come on",
+      "sk": "No tak, no tak"
+    },
+    "dangerAlertHints": {
+      "cs": "Rady",
+      "en": "Hints",
+      "sk": "Pravidlá"
+    },
+    "dangerAlertRules": {
+      "cs": "Pravidla",
+      "en": "Rules",
+      "sk": "Pravidlá"
+    },
+    "dangerAlertRulesClose": {
+      "cs": "Zavřít",
+      "en": "Close",
+      "sk": "Zavrieť"
+    },
+    "dangerAlertGoalOfTheGame": {
+      "cs": "Cílem hry je zbavit se všech karet v autobusu...",
+      "en": "The goal of the game is to ditch all your cards from the bus...",
+      "sk": "Cieľom hry je zbaviť sa všetkých kariet z autobusu..."
+    },
+    "dangerAlertFirstHint": {
+      "cs": "Dvojklikem na autobus zjistíš svou poslední kartu.",
+      "en": "Double-click your bus to peek at your last card.",
+      "sk": "Dvojklikom na autobus zistíš svoju poslednú kartu."
+    },
+    "dangerAlertSecondHint": {
+      "cs": "Při najetí myší na autobus se zobrazí počet karet.",
+      "en": "Hover over any bus to see how many cards are left.",
+      "sk": "Keď prejdeš myšou cez autobus, uvidíš počet kariet."
+    },
+    "dangerAlertThirdHint": {
+      "cs": "Totéž platí pro balíček v zastávce.",
+      "en": "Same goes for the stop pile.",
+      "sk": "To isté platí pre balíček na zastávke."
+    },
+    "dangerAlertFirstRule": {
+      "cs": "Na začátku máš 5 karet v ruce a 10 v autobusu + 4 místa...",
+      "en": "At the start, you have 5 cards in hand and 10 in the bus + 4 spots...",
+      "sk": "Na začiatku máš 5 kariet v ruke a 10 v autobuse + 4 miesta..."
+    },
+    "dangerAlertSecondRule": {
+      "cs": "Když jsi na řadě, lížeš karty, dokud nemáš 5 v ruce.",
+      "en": "When it’s your turn, draw cards until you have 5 in hand.",
+      "sk": "Keď si na rade, doberieš karty, kým nemáš 5 v ruke."
+    },
+    "dangerAlertThirdRule": {
+      "cs": "Do hracího pole můžeš jako první kartu dát eso nebo žolíka.",
+      "en": "You can start the board with an Ace or a Joker.",
+      "sk": "Do hracieho poľa môžeš dať ako prvú kartu eso alebo žolíka."
+    },
+    "dangerAlertFourthRule": {
+      "cs": "Pokud máš vhodnou kartu, můžeš ji zahrát.",
+      "en": "If you have a fitting card, you can play it.",
+      "sk": "Ak máš vhodnú kartu, môžeš ju zahrať."
+    },
+    "dangerAlertFifthRule": {
+      "cs": "Jinak odkládáš do zastávky nebo dospod autobusu.",
+      "en": "Otherwise, you park it at your stop or shove it to the bottom of your bus.",
+      "sk": "Inak ju odložíš na zastávku alebo pod autobus."
+    },
+    "olala": {
+      "cs": "Olalá",
+      "en": "Olala",
+      "sk": "Olalá"
+    },
+    "creator": {
+      "cs": "Zakladatel",
+      "en": "Creator",
+      "sk": "Zakladateľ"
+    },
+    "pleb": {
+      "cs": "Pleb",
+      "en": "Pleb",
+      "sk": "Pleb"
+    },
+    "role": {
+      "cs": "Role:",
+      "en": "Role:",
+      "sk": "Rola:"
+    },
+    "level": {
+      "cs": "Levlík:",
+      "en": "Leveel:",
+      "sk": "Úroveň:"
+    },
+    "earnedXp": {
+      "cs": "Získané XP",
+      "en": "XP gained",
+      "sk": "Nazbierané XP"
+    },
+    "change": {
+      "cs": "Změnit",
+      "en": "Change it up",
+      "sk": "Zmeniť"
+    },
+    "saving": {
+      "cs": "Ukládám...",
+      "en": "Saving it...",
+      "sk": "Ukladám..."
+    },
+    "nemo": {
+      "cs": "Nemo",
+      "en": "Nemo",
+      "sk": "Nemo"
+    },
+    "page": {
+      "cs": "Stránka",
+      "en": "Page",
+      "sk": "Stránka"
+    },
+    "previous": {
+      "cs": "← Předchozí",
+      "en": "← Previous",
+      "sk": "← Predošlá"
+    },
+    "next": {
+      "cs": "Další →",
+      "en": "Next →",
+      "sk": "Ďalšia →"
+    },
+    "editProfile": {
+      "cs": "Upravit profil",
+      "en": "Edit profile",
+      "sk": "Upraviť profil"
+    },
+    "aboutTitle": {
+      "cs": "O projektu",
+      "en": "About the project",
+      "sk": "O projekte"
+    },
+    "aboutSecondTitle": {
+      "cs": "Použité technologie",
+      "en": "Technologies used",
+      "sk": "Použité technológie"
+    },
+    "aboutFooter": {
+      "cs": "Poprvé spatřilo světlo světa: 3. července 2025",
+      "en": "First saw the light of day: July 3, 2025",
+      "sk": "Prvýkrát uzrelo svetlo sveta: 3. júla 2025"
+    },
+    "aboutFirstParagraph": {
+      "cs": "Tento sebevzdělávací projekt vznikl jako cvičení programování, inspirovaný láskou ke karetním hrám a vzpomínkami na babičku. Cílem bylo nahlédnout mimo svět korporátních technologií – prostě zjistit, jak se věci dají dělat jinak – a vytvořit interaktivní aplikaci, která propojuje moderní technologie se zábavou. A hlavně: hodí se skvěle na večerní session na Discordu, kdy se nemůžeme dohodnout, co si zahrát, a chceme si jen v klidu odpočinout u sklenky něčeho dobrého.",
+      "en": "This self-educational project was born as a programming exercise, inspired by a love for card games and fond memories of my grandmother. The goal was to look beyond the corporate tech world – just to see how things can be done differently – and create an interactive app that blends modern technology with fun. And most importantly: it’s perfect for those evening Discord sessions when we can’t agree on what to play and just want to chill with a drink in hand.",
+      "sk": "Tento seba-vzdelávací projekt vznikol ako cvičenie programovania, inšpirované láskou ku kartovým hrám a spomienkami na babičku. Cieľom bolo nahliadnuť mimo svet korporátnych technológií – proste zistiť, ako sa dajú veci robiť inak – a vytvoriť interaktívnu aplikáciu, ktorá spája moderné technológie so zábavou. A hlavne: hodí sa skvele na večerné session na Discorde, keď sa nemôžeme dohodnúť, čo si zahrať, a chceme si len v kľude oddýchnuť pri poháriku niečoho dobrého."
+    },
+    "aboutSecondParagraph": {
+      "cs": "Nejsem frontend specialista, proto prosím omluvte případné vizuální nedokonalosti. Děkuji za pochopení.",
+      "en": "I’m not a frontend specialist, so please excuse any visual imperfections. Thanks for understanding.",
+      "sk": "Nie som frontend špecialista, takže prosím ospravedlňte prípadné vizuálne nedokonalosti. Ďakujem za pochopenie."
+    },
+    "firstTechnology": {
+      "cs": "React (včetně knihoven jako React Router a React DnD)",
+      "en": "React (including libraries like React Router and React DnD)",
+      "sk": "React (vrátane knižníc ako React Router a React DnD)"
+    },
+    "secondTechnology": {
+      "cs": "TailwindCSS pro stylování",
+      "en": "TailwindCSS for styling",
+      "sk": "TailwindCSS pre štýlovanie"
+    },
+    "thirdTechnology": {
+      "cs": "Socket.IO pro real-time komunikaci",
+      "en": "Socket.IO for real-time communication",
+      "sk": "Socket.IO pre real-time komunikáciu"
+    },
+    "fourthTechnology": {
+      "cs": "Express.js pro backend",
+      "en": "Express.js for the backend",
+      "sk": "Express.js pre backend"
+    },
+    "fifthTechnology": {
+      "cs": "MongoDB pro databázi",
+      "en": "MongoDB for the database",
+      "sk": "MongoDB pre databázu"
+    },
+    "sixthTechnology": {
+      "cs": "Passport.js pro autentizaci",
+      "en": "Passport.js for authentication",
+      "sk": "Passport.js pre autentifikáciu"
+    },
+    "seventhTechnology": {
+      "cs": "Axios pro HTTP požadavky",
+      "en": "Axios for HTTP requests",
+      "sk": "Axios pre HTTP požiadavky"
+    },
+    "eighthTechnology": {
+      "cs": "Jest pro testování backendu",
+      "en": "Jest for backend testing",
+      "sk": "Jest pre testovanie backendu"
+    },
+    "signIn": {
+      "cs": "Přihlaš se",
+      "en": "Sign in",
+      "sk": "Prihlásiť sa"
+    },
+    "welcomeTitle": {
+      "cs": "Vzniklo pro procvičení kódění, z lásky ke kartám a vzpomínkám na babi.",
+      "en": "Born from a love for cards and fond memories of grandma, this is a coding exercise.",
+      "sk": "Vzniklo z lásky ku kartám a spomienkam na babičku, toto je cvičenie programovania."
+    },
+    "continueSeznam": {
+      "cs": "Pokračovat přes Seznam",
+      "en": "Continue with Seznam",
+      "sk": "Pokračovať cez Seznam"
+    },
+    "continueGoogle": {
+      "cs": "Pokračovat přes Google",
+      "en": "Continue with Google",
+      "sk": "Pokračovať cez Google"
+    },
+    "continueDiscord": {
+      "cs": "Pokračovat přes Discord",
+      "en": "Continue with Discord",
+      "sk": "Pokračovať cez Discord"
+    },
+    "dangerAlertCloseRules": {
+      "cs": "Už dobrý, zavřít",
+      "en": "Close rules",
+      "sk": "Zavrieť pravidlá"
+    },
+    "changeLanguage": {
+      "cs": "Změnit jazyk",
+      "en": "Change language",
+      "sk": "Zmeniť jazyk"
+    }
   }
 }

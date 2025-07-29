@@ -5,8 +5,10 @@ import Slot from "./slot.jsx";
 import GameContext from "../../context/game.js";
 import DangerAlert from "../../components/alerts/danger-alert.jsx";
 import GameBoardSlot from "./game-board-slot.jsx";
+import LanguageContext from "../../context/language.js";
 
 function GameBoard({ player }) {
+  const i18n = useContext(LanguageContext);
   const gameContext = useContext(GameContext);
   const boardRef = useRef(null);
   const slotRefs = useRef({});
@@ -15,7 +17,7 @@ function GameBoard({ player }) {
   const isCurrentPlayer =
     gameContext.players?.[gameContext.currentPlayer]?.myself;
   const isDrawedCard = isCurrentPlayer && !player.isCardDrawed;
-  const drawCardText = isDrawedCard ? "Lízní kartu!" : "";
+  const drawCardText = isDrawedCard ? i18n.translate("drawCard") : "";
 
   const [shouldPulse, setShouldPulse] = useState(false);
   const [animatingCard, setAnimatingCard] = useState(null);

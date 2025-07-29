@@ -62,7 +62,7 @@ function Player({
       </div>
 
       <div
-        className={`flex flex-col w-full overflow-hidden transition-all duration-500 ease-in-out
+        className={`flex flex-col w-full relative z-0 overflow-hidden transition-all duration-500 ease-in-out
           ${expanded ? "max-h-[500px]" : "max-h-[65px]"}
           p-2 sm:p-4`}
       >

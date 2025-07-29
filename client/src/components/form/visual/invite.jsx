@@ -1,8 +1,10 @@
 import React, { useContext, useState } from "react";
 import GameContext from "../../../context/game.js";
 import Button from "./button.jsx";
+import LanguageContext from "../../../context/language.js";
 
 function Invite() {
+  const i18n = useContext(LanguageContext);
   const [copied, setCopied] = useState(null);
   const gameContext = useContext(GameContext);
   const pulsing = gameContext.startAlert
@@ -10,7 +12,7 @@ function Invite() {
     : "";
   const handleCopy = async () => {
     try {
-      const url = `Pojď odvézt autobus do depa: ${window.location.origin}/lobby/${gameContext.gameCode} \nkódík pro připojení: ${gameContext.gameCode}`;
+      const url = `${i18n.translate("comeToPlay")} ${window.location.origin}/lobby/${gameContext.gameCode} \n${i18n.translate("codeForConnect")} ${gameContext.gameCode}`;
       await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -25,7 +27,7 @@ function Invite() {
     >
       <Button onClick={handleCopy}>
         <div className="!text-cyan-300/50 font-medium text-sm sm:text-base break-words text-left">
-          {copied ? "Zkopírováno!" : "Zkopči a pošli kámošovi"}
+          {copied ? i18n.translate("copied") : i18n.translate("copyAndSend")}
         </div>
       </Button>
     </div>

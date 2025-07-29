@@ -41,7 +41,7 @@ function CardPack({
         variants={isInteractive ? mainCardVariants : undefined}
         transition={{ type: "spring", stiffness: 200, damping: 20 }}
       >
-        {text}
+        <p className={`!bg-gray-600/50 rounded-md border-1`}>{text}</p>
       </motion.button>
 
       {isInteractive &&

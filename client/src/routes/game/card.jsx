@@ -2,6 +2,7 @@ import React, { useContext, useRef } from "react";
 import { useDrag } from "react-dnd";
 import RANK_CARD_ORDER from "../../../../shared/constants/rank-card-order.json";
 import GameContext from "../../context/game.js";
+import LanguageContext from "../../context/language.js";
 
 function getEmoji(rank) {
   switch (rank) {
@@ -51,6 +52,7 @@ function Card({
   isMyself = false,
   isMyselfJrInBus = false,
 }) {
+  const i18n = useContext(LanguageContext);
   const gameContext = useContext(GameContext);
   const [{ isDragging }, drag] = useDrag(
     () => ({
@@ -80,10 +82,10 @@ function Card({
 
     clickTimeout.current = setTimeout(() => {
       if (isMyself && !isDraggable) {
-        showErrorAlert(`Kam pospícháš?! Nejsi na tahu!`);
+        showErrorAlert(i18n.translate("notYourTurn"));
       }
       if (isMyself && isMyselfJrInBus) {
-        showErrorAlert(`Vyjeď z autobusu tim žolíkem!`);
+        showErrorAlert(i18n.translate("busJrFirst"));
       }
       clickTimeout.current = null;
     }, 250);

@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import Avatar from "./avatar.jsx";
+import LanguageContext from "../../../context/language.js";
 
 function Member({ children, picture, isCreator, isMyself, role }) {
-  const label = role || (isCreator ? "Zakladatel" : "Pleb");
+  const i18n = useContext(LanguageContext);
+  const label =
+    role || (isCreator ? i18n.translate("creator") : i18n.translate("pleb"));
 
   return (
     <div className="flex justify-between items-center h-16 p-4 my-6  rounded-lg border border-gray-100 shadow-md flex-grow">

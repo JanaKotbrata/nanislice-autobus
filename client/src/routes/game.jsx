@@ -11,7 +11,8 @@ import SuccessAlert from "../components/alerts/success-alert.jsx";
 import { closeGame } from "../services/game-service";
 import Leave from "../components/form/visual/leave.jsx";
 import InfoAlert from "../components/alerts/info-alert.jsx";
-import gameContextProvider from "../components/providers/game-context-provider.jsx";
+import LangSelector from "../components/form/visual/lang-selector.jsx";
+import LanguageContext from "../context/language.js";
 
 function Game() {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ function Game() {
   const [leftWidth, setLeftWidth] = useState(400);
   const [dragging, setDragging] = useState(false);
   const [showEndGame, setShowEndGame] = useState(false);
+  const i18n = useContext(LanguageContext);
   const dragRef = useRef(null);
   const { user, token } = useAuth();
 
@@ -99,7 +101,9 @@ function Game() {
           className="bg-gray-800 text-white p-4 flex flex-col"
           style={{ width: leftWidth }}
         >
-          <h2 className="text-xl font-bold mb-4">Autobusácí</h2>
+          <h2 className="text-xl font-bold mb-4">
+            {i18n.translate("busTitle")}
+          </h2>
           <div className="flex-grow">
             {players.map((player, index) => (
               <Player
@@ -141,8 +145,11 @@ function Game() {
 
         {/* Pravá sekce - Hrací pole */}
         <div className="flex-grow bg-gray-900 p-6 flex flex-col relative">
-          {/* Tlačítko nahoře nad GameBoard */}
-          <Leave userId={myself.userId} />
+          <div className="flex flex-row gap-6 justify-end">
+            {/* Tlačítko nahoře nad GameBoard */}
+            <LangSelector />
+            <Leave userId={myself.userId} />
+          </div>
           {/* GameBoard samotný */}
           <div className="flex-grow">
             <GameBoard player={myself} cardPack={gameContext.deck} />
@@ -154,7 +161,7 @@ function Game() {
       {showEndGame && (
         <SuccessAlert
           message={
-            "No to je dost, že si vyhrál: " +
+            i18n.translate("winner") +
             gameContext.players.find((player) => !player.bus.length)?.name
           }
         />
@@ -163,7 +170,7 @@ function Game() {
       {gameContext.leavingPlayer && (
         <InfoAlert
           onClose={() => gameContext.setLeavingPlayer(false)}
-          message={`${gameContext.leavingPlayer} se pokouší opustit hru.`}
+          message={`${gameContext.leavingPlayer} ${i18n.translate("tryToLeave")}`}
         />
       )}
     </DndProvider>

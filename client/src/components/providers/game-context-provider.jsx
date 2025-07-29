@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import GameContext from "../../context/game";
 import GameActions from "../../../../shared/constants/game-actions.json";
 import { getGame, processAction, setPlayer } from "../../services/game-service";
@@ -10,6 +10,7 @@ import {
 } from "../../services/game-validation";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/auth-context.jsx";
+import LanguageContext from "../../context/language.js";
 
 const maxHandSize = 5;
 
@@ -29,6 +30,7 @@ function GameContextProvider({ children }) {
   const currentPlayer = game?.currentPlayer;
   const gameBoard = game?.gameBoard || [];
   const gameState = game?.state;
+  const i18n = useContext(LanguageContext);
   const { token } = useAuth();
 
   useEffect(() => {
@@ -192,10 +194,15 @@ function GameContextProvider({ children }) {
   }
 
   function drawCard() {
-    const myself = getPlayerAndValid(players, currentPlayer, showErrorAlert);
+    const myself = getPlayerAndValid(
+      players,
+      currentPlayer,
+      showErrorAlert,
+      i18n.translate,
+    );
     if (!myself) return;
     if (myself.isCardDrawed) {
-      return showErrorAlert("Teď si nemůžeš líznout kartu.");
+      return showErrorAlert(i18n.translate("notPossibleDraw"));
     }
     const handLength = myself.hand.filter((c) => c.rank).length;
     if (handLength >= maxHandSize) return;
@@ -211,13 +218,21 @@ function GameContextProvider({ children }) {
   }
 
   function startNewPack(card) {
-    const myself = getPlayerAndValid(players, currentPlayer, showErrorAlert);
+    const myself = getPlayerAndValid(
+      players,
+      currentPlayer,
+      showErrorAlert,
+      i18n.translate,
+    );
     if (!myself) return;
     if (!myself.isCardDrawed) {
-      showErrorAlert("Lízni si laskavě než začneš něco dělat, dík!");
+      showErrorAlert(i18n.translate("drawFirst"));
       return;
     }
-    if (!canPlaceOnGameBoard(card, myself.bus[0], showErrorAlert)) return;
+    if (
+      !canPlaceOnGameBoard(card, myself.bus[0], showErrorAlert, i18n.translate)
+    )
+      return;
 
     const { newHand, newBus, action } = getTargetAndAction(myself, card, true);
     if (action) {
@@ -231,10 +246,15 @@ function GameContextProvider({ children }) {
   }
 
   function addToPack(card, targetIndex) {
-    const myself = getPlayerAndValid(players, currentPlayer, showErrorAlert);
+    const myself = getPlayerAndValid(
+      players,
+      currentPlayer,
+      showErrorAlert,
+      i18n.translate,
+    );
     if (!myself) return;
     if (!myself.isCardDrawed) {
-      showErrorAlert("Lízni si laskavě než začneš něco dělat, dík!");
+      showErrorAlert(i18n.translate("drawFirst"));
       return;
     }
     if (
@@ -244,6 +264,7 @@ function GameContextProvider({ children }) {
         targetIndex,
         myself.bus[0],
         showErrorAlert,
+        i18n.translate,
       )
     )
       return;
@@ -266,15 +287,14 @@ function GameContextProvider({ children }) {
       players,
       currentPlayer,
       showErrorAlert,
+      i18n.translate,
       true,
     );
     if (!myself) return;
 
     const oldIndex = myself.hand.findIndex((c) => c.i === card.i);
     if (oldIndex === -1 || newIndex < 0 || newIndex >= myself.hand.length) {
-      showErrorAlert(
-        "Tak co chceš, cheatovat nebo co? No nemůžeš si tu kartu dát do ruky, že jo...",
-      );
+      showErrorAlert(i18n.translate("placeInHandError"));
       return;
     }
 
@@ -291,11 +311,16 @@ function GameContextProvider({ children }) {
   }
 
   function moveCardToSlot(card, targetIndex, destination) {
-    const myself = getPlayerAndValid(players, currentPlayer, showErrorAlert);
+    const myself = getPlayerAndValid(
+      players,
+      currentPlayer,
+      showErrorAlert,
+      i18n.translate,
+    );
     if (!myself) return;
 
     if (myself.bus.some((c) => c?.i === card.i)) {
-      showErrorAlert("Necheatuj! Nemůžeš si vyndatavat karty z autobusu.");
+      showErrorAlert(i18n.translate("dontCheatInBus"));
       return;
     }
 
@@ -304,14 +329,20 @@ function GameContextProvider({ children }) {
     let newBus = myself.bus;
 
     if (destination === "hand") {
-      showErrorAlert(
-        "Tak co chceš, cheatovat nebo co? No nemůžeš si tu kartu dát do ruky, že jo...",
-      );
+      showErrorAlert(i18n.translate("placeInHandError"));
       return;
     }
 
     if (destination === "busStop") {
-      if (!canPlaceInBusStop(card, myself.busStop, targetIndex, showErrorAlert))
+      if (
+        !canPlaceInBusStop(
+          card,
+          myself.busStop,
+          targetIndex,
+          showErrorAlert,
+          i18n.translate,
+        )
+      )
         return;
       const newStop = [...myself.busStop];
       newStop[targetIndex] = card;
