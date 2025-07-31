@@ -83,7 +83,7 @@ describe('POST /game/action/process', () => {
 
     });
 
-    it.skip('Update deck - from completedList', async () => {//TODO: fix this test
+    it('Update deck - from completedList', async () => {
         const user = await usersCollection.insertOne(userMock());
         const id = user.insertedId.toString();
         testUserId = id;
@@ -105,7 +105,7 @@ describe('POST /game/action/process', () => {
         const id = user.insertedId.toString();
         testUserId = id;
         const mockGame = activeGame({user: basicUser({...user, userId: id})});
-        mockGame.gameBoard =splitCardsIntoGroups(mockGame.deck.splice(0, mockGame.deck.length - 5));
+        mockGame.gameBoard = splitCardsIntoGroups(mockGame.deck.splice(0, mockGame.deck.length - 5));
         mockGame.completedCardList = [];
         await gamesCollection.insertOne(mockGame);
         const oldHand = mockGame.playerList[1].hand;
@@ -116,12 +116,14 @@ describe('POST /game/action/process', () => {
 
         expect(response.status).toBe(200);
         expect(mockGame.deck.length).toBeLessThan(response.body.newGame.deck.length);
+        expect(response.body.newGame.gameBoard[0][response.body.newGame.gameBoard[0].length -1].i).toBe(mockGame.gameBoard[0][mockGame.gameBoard[0].length-1].i);
+        expect(response.body.newGame.gameBoard[0][0]).toBe(null);
     });
     it('Dont need to have drawed cards ', async () => {
         const user = await usersCollection.insertOne(userMock());
         const id = user.insertedId.toString();
         testUserId = id;
-        const mockGame = activeGame({user: basicUser({...user, userId: id, },{isCardDrawed: false})});
+        const mockGame = activeGame({user: basicUser({...user, userId: id,}, {isCardDrawed: false})});
         await gamesCollection.insertOne(mockGame);
         const oldHand = mockGame.playerList[1].hand;
         const response = await request(app)
@@ -152,13 +154,13 @@ describe('POST /game/action/process', () => {
         const user = await usersCollection.insertOne(userMock());
         const id = user.insertedId.toString();
         testUserId = id;
-        const mockGame = activeGame({user: basicUser({...user, userId: id, },{isCardDrawed: false})});
+        const mockGame = activeGame({user: basicUser({...user, userId: id,}, {isCardDrawed: false})});
         await gamesCollection.insertOne(mockGame);
         const oldHand = mockGame.playerList[1].hand;
         const response = await request(app)
             .post(Routes.Game.ACTION_PROCESS)
             .set("Authorization", `Bearer ${await getToken(testUserId)}`)
-            .send({gameCode: mockGame.code, action: GameActions.MOVE_CARD_TO_BOARD, targetIndex:0, card: oldHand[0]});
+            .send({gameCode: mockGame.code, action: GameActions.MOVE_CARD_TO_BOARD, targetIndex: 0, card: oldHand[0]});
 
         expect(response.status).toBe(400);
         expect(response.body.name).toBe("PlayerMustDrawCardFirst");

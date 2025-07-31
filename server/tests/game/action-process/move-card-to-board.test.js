@@ -126,15 +126,18 @@ describe('POST /game/action/process move card to board', () => {
         const gameBoard = [[{i: 0, rank: "A", suit: "H"}, {i: 1, rank: "2", suit: "H"}, {i: 2, rank: "3", suit: "H"}, {
             i: 3,
             rank: "4",
-            suit: "H"
+            suit: "H",
+            bg: "red"
         }, {i: 4, rank: "5", suit: "H"}, {i: 5, rank: "6", suit: "H"}, {i: 6, rank: "7", suit: "H"}, {
             i: 7,
             rank: "8",
-            suit: "H"
+            suit: "H",
+            bg: "red"
         }, {i: 8, rank: "9", suit: "H"}, {i: 9, rank: "10", suit: "H"}, {i: 10, rank: "J", suit: "H"}, {
             i: 11,
             rank: "Q",
-            suit: "H"
+            suit: "H",
+            bg: "red"
         }]];
         const mockGame = activeGame({handNumber: 4, preferredRank, gameBoard, user: basicUser({...user, userId: id})});
         await gamesCollection.insertOne(mockGame);
@@ -156,5 +159,40 @@ describe('POST /game/action/process move card to board', () => {
         expect(response.body.newGame.completedCardList[12].suit).toBe(card.suit);
         expect(response.body.newGame.completedCardList[12].rank).toBe(card.rank);
     })
+    it('Move card to board - full destination with empty previous cards', async () => {
+        const preferredRank = "K";
+        const user = await usersCollection.insertOne(userMock());
+        const id = user.insertedId.toString();
+        const targetIndex = 0;
+        testUserId = id;
+        let gameBoard = [new Array(10).fill(null)];
+        gameBoard[0][11] = {
+            i: 11,
+            rank: "Q",
+            suit: "H",
+            bg: "red"
+        }
 
+        const mockGame = activeGame({handNumber: 4, preferredRank, gameBoard, user: basicUser({...user, userId: id})});
+        await gamesCollection.insertOne(mockGame);
+        const card = mockGame.playerList[1].hand.find((card) => card.rank === preferredRank)
+        const response = await request(app)
+            .post(Routes.Game.ACTION_PROCESS)
+            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
+            .send({
+                gameCode: mockGame.code,
+                targetIndex,
+                action: GameActions.MOVE_CARD_TO_BOARD,
+                card
+            });
+
+        expect(response.status).toBe(200);
+        expect(response.body.newGame.gameBoard).toHaveLength(gameBoard.length - 1);
+        const completedCardList = response.body.newGame.completedCardList.filter(Boolean);
+        expect(completedCardList).toHaveLength(2);
+        expect(response.body.newGame.completedCardList[0]).toBe(null);
+        expect(response.body.newGame.completedCardList[12].i).toBe(card.i);
+        expect(response.body.newGame.completedCardList[12].suit).toBe(card.suit);
+        expect(response.body.newGame.completedCardList[12].rank).toBe(card.rank);
+    })
 });

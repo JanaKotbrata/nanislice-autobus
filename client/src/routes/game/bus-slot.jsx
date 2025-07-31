@@ -21,7 +21,7 @@ function BusSlot({
   }
 
   let pulse = "";
-  if (card.rank === "Jr") {
+  if (card?.rank === "Jr") {
     pulse = "animate-[pulse_2s_ease-in-out_infinite]";
   }
   return (

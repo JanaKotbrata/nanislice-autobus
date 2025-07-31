@@ -226,13 +226,17 @@ class ProcessAction extends PostResponseHandler {
             if (game.completedCardList.length === 0) {
                 let unusedCards = [];
                 for (let destination of game.gameBoard) {
-                    let cardList = destination.slice(1);
-                    destination = [destination[0]];
+                    let lastCard = destination.pop();
+                    let cardList = destination.filter(Boolean);
+                    destination.fill(null);
+                    destination.push(lastCard);
                     unusedCards.push(...cardList);
                 }
                 unusedCards = shuffleDeck(unusedCards);
-                game.deck = [...unusedCards, ...game.deck];
-                const completedCardList = shuffleDeck(game.completedCardList);
+                game.deck = [...unusedCards, ...game.deck]; //FIXME podívej se jak se líže a zamysli se
+            } else {
+                const filteredCardList = game.completedCardList.filter(Boolean);
+                const completedCardList = shuffleDeck(filteredCardList);
                 game.deck = [...completedCardList, ...game.deck];
                 game.completedCardList = [];
             }

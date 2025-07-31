@@ -59,7 +59,7 @@ describe('GET /game/get', () => {
 
     });
     it('should not return a game by CODE - UserNotAuthorized', async () => {
-        const user = await usersCollection.insertOne(userMock({role:"pleb"}));
+        const user = await usersCollection.insertOne(userMock({role:"undefined"}));
         testUserId = user.insertedId.toString();
         const mockGame = initialGame({user: basicUser({...user, userId: testUserId})});
         await gamesCollection.insertOne(mockGame);
