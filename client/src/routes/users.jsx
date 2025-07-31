@@ -41,7 +41,10 @@ function UsersPage() {
   return (
     <div className="bg-gray-900 min-h-screen text-white px-8 py-12">
       <div className="flex flex-row gap-6 justify-end">
-        <LangSelector size={21} /> <LogOut size={21} />
+        <div className={"p-2"}>
+          <LangSelector size={21} />
+        </div>
+        <LogOut size={21} />
       </div>
       <br />
       <ul role="list" className="divide-y divide-gray-700">

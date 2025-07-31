@@ -12,7 +12,9 @@ function About() {
       <BusPattern />
       <div className="mx-auto max-w-3xl relative z-10">
         <div className="flex flex-row gap-6 justify-end">
-          <LangSelector size={32} />
+          <div className="p-2">
+            <LangSelector size={32} />
+          </div>
           <LogOut />
         </div>
         <div className="relative w-full p-6 sm:p-8 md:p-10 rounded-2xl bg-gray-950/90 backdrop-blur-md shadow-[0_0_40px_rgba(3,7,18,0.9)] hover:shadow-[0_0_50px_rgba(31,41,55,0.5)] transition-all duration-500">

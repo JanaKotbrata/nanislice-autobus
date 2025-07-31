@@ -82,10 +82,10 @@ function Card({
 
     clickTimeout.current = setTimeout(() => {
       if (isMyself && !isDraggable) {
-        showErrorAlert(i18n.translate("notYourTurn"));
+        showErrorAlert("notYourTurn");
       }
       if (isMyself && isMyselfJrInBus) {
-        showErrorAlert(i18n.translate("busJrFirst"));
+        showErrorAlert("busJrFirst");
       }
       clickTimeout.current = null;
     }, 250);

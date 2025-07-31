@@ -508,6 +508,11 @@
       "cs": "Změnit jazyk",
       "en": "Change language",
       "sk": "Zmeniť jazyk"
+    },
+    "weirdAlert": {
+      "cs": "Tady se dějou nějký divný věci...",
+      "en": "Something went wwwwrong...",
+      "sk": "Čo ti jebe, čo ti jebe? Něčo čudného: "
     }
   }
 }

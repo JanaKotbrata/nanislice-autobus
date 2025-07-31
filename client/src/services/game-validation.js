@@ -4,18 +4,17 @@ export function getPlayerAndValid(
   gamePlayers,
   currentPlayer,
   showErrorAlert,
-  translate,
   isReorderHand = false,
 ) {
   const playerIndex = gamePlayers.findIndex((player) => player.myself);
   if (playerIndex !== currentPlayer && !isReorderHand) {
-    showErrorAlert(translate("notYourTurn"));
+    showErrorAlert("notYourTurn");
     return false;
   }
   return gamePlayers[playerIndex];
 }
 
-export function canPlaceOnGameBoard(card, busCard, showErrorAlert, translate) {
+export function canPlaceOnGameBoard(card, busCard, showErrorAlert) {
   console.log(
     "canPlaceOnGameBoard called with card:",
     card,
@@ -23,13 +22,13 @@ export function canPlaceOnGameBoard(card, busCard, showErrorAlert, translate) {
     busCard,
   );
   if (busCard?.rank === "Jr" && card.i !== busCard?.i) {
-    showErrorAlert(translate("busJrFirst"));
+    showErrorAlert("busJrFirst");
     return false;
   }
   if (["Jr", "A"].includes(card.rank)) {
     return true;
   }
-  showErrorAlert(translate("firstPlaceError"));
+  showErrorAlert("firstPlaceError");
   return false;
 }
 
@@ -39,7 +38,6 @@ export function canPlaceOnGBPack(
   gameBoardIndex,
   busCard,
   showErrorAlert,
-  translate,
 ) {
   console.log(
     "canPlaceOnGameBoard called with card:",
@@ -48,11 +46,11 @@ export function canPlaceOnGBPack(
     busCard,
   );
   if (busCard?.rank === "Jr" && card.i !== busCard?.i) {
-    showErrorAlert(translate("busJrFirst"));
+    showErrorAlert("busJrFirst");
     return false;
   }
   if (!gameBoard[gameBoardIndex]) {
-    showErrorAlert(translate("somethingWentWrong"));
+    showErrorAlert("somethingWentWrong");
     return false;
   }
 
@@ -60,19 +58,13 @@ export function canPlaceOnGBPack(
     card.rank !== RANK_CARD_ORDER[gameBoard[gameBoardIndex].length] &&
     card.rank !== "Jr"
   ) {
-    showErrorAlert(`${translate("placeRankError")}${card.rank}.`);
+    showErrorAlert("placeRankError", card.rank);
     return false;
   }
   return true;
 }
 
-export function canPlaceInBusStop(
-  card,
-  busStop,
-  targetIndex,
-  showErrorAlert,
-  translate,
-) {
+export function canPlaceInBusStop(card, busStop, targetIndex, showErrorAlert) {
   const existingIndexWithSameRank = busStop?.findIndex(
     (stack) => stack.length > 0 && stack[0].rank === card.rank,
   );
@@ -80,12 +72,12 @@ export function canPlaceInBusStop(
     existingIndexWithSameRank !== -1 &&
     existingIndexWithSameRank !== targetIndex
   ) {
-    showErrorAlert(`${translate("wrongPlace")}${card.rank}`);
+    showErrorAlert("wrongPlace", card.rank);
     return false;
   }
 
   if (["Jr", "A"].includes(card.rank)) {
-    showErrorAlert(`${translate("busStopError")} ${card.rank}`);
+    showErrorAlert("busStopError", card.rank);
     return false;
   }
   const isSameCard = busStop[targetIndex]?.[0]?.rank === card.rank;
@@ -94,7 +86,7 @@ export function canPlaceInBusStop(
     Object.keys(busStop[targetIndex]).length !== 0 &&
     !isSameCard
   ) {
-    showErrorAlert(`${translate("wrongPlaceInBusStop")} ${card.rank}`);
+    showErrorAlert("wrongPlaceInBusStop", card.rank);
     return false;
   }
   return busStop[targetIndex]?.[busStop[targetIndex].length - 1]?.i !== card.i;

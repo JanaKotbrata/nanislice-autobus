@@ -71,7 +71,9 @@ function Profile() {
       <BusPattern />
       <div className="relative z-10 w-full max-w-2xl">
         <div className="flex flex-row gap-6 justify-end">
-          <LangSelector size={32} />
+          <div className="p-2">
+            <LangSelector size={32} />
+          </div>
           <LogOut />
         </div>
         <div className="bg-gray-950/90 border border-black rounded-2xl shadow-xl p-8 flex flex-col items-center gap-6 text-white">

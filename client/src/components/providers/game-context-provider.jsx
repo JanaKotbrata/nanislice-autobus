@@ -90,7 +90,8 @@ function GameContextProvider({ children }) {
       });
   }
 
-  function showErrorAlert(message) {
+  function showErrorAlert(messageKey, message = "") {
+    message = i18n.translate(messageKey) + message;
     setErrorMessage(message);
     setShowDangerAlert(true);
   }
@@ -182,27 +183,22 @@ function GameContextProvider({ children }) {
     }
 
     showErrorAlert(
-      "Tady se dějou nějký divný věci..." +
-        JSON.stringify({
-          newHand: player.hand,
-          newBus: player.bus,
-          newBusStop: player.busStop,
-          action: null,
-        }),
+      "weirdAlert",
+      JSON.stringify({
+        newHand: player.hand,
+        newBus: player.bus,
+        newBusStop: player.busStop,
+        action: null,
+      }),
     );
     return {};
   }
 
   function drawCard() {
-    const myself = getPlayerAndValid(
-      players,
-      currentPlayer,
-      showErrorAlert,
-      i18n.translate,
-    );
+    const myself = getPlayerAndValid(players, currentPlayer, showErrorAlert);
     if (!myself) return;
     if (myself.isCardDrawed) {
-      return showErrorAlert(i18n.translate("notPossibleDraw"));
+      return showErrorAlert("notPossibleDraw");
     }
     const handLength = myself.hand.filter((c) => c.rank).length;
     if (handLength >= maxHandSize) return;
@@ -218,21 +214,13 @@ function GameContextProvider({ children }) {
   }
 
   function startNewPack(card) {
-    const myself = getPlayerAndValid(
-      players,
-      currentPlayer,
-      showErrorAlert,
-      i18n.translate,
-    );
+    const myself = getPlayerAndValid(players, currentPlayer, showErrorAlert);
     if (!myself) return;
     if (!myself.isCardDrawed) {
-      showErrorAlert(i18n.translate("drawFirst"));
+      showErrorAlert("drawFirst");
       return;
     }
-    if (
-      !canPlaceOnGameBoard(card, myself.bus[0], showErrorAlert, i18n.translate)
-    )
-      return;
+    if (!canPlaceOnGameBoard(card, myself.bus[0], showErrorAlert)) return;
 
     const { newHand, newBus, action } = getTargetAndAction(myself, card, true);
     if (action) {
@@ -246,15 +234,10 @@ function GameContextProvider({ children }) {
   }
 
   function addToPack(card, targetIndex) {
-    const myself = getPlayerAndValid(
-      players,
-      currentPlayer,
-      showErrorAlert,
-      i18n.translate,
-    );
+    const myself = getPlayerAndValid(players, currentPlayer, showErrorAlert);
     if (!myself) return;
     if (!myself.isCardDrawed) {
-      showErrorAlert(i18n.translate("drawFirst"));
+      showErrorAlert("drawFirst");
       return;
     }
     if (
@@ -264,7 +247,6 @@ function GameContextProvider({ children }) {
         targetIndex,
         myself.bus[0],
         showErrorAlert,
-        i18n.translate,
       )
     )
       return;
@@ -287,14 +269,13 @@ function GameContextProvider({ children }) {
       players,
       currentPlayer,
       showErrorAlert,
-      i18n.translate,
       true,
     );
     if (!myself) return;
 
     const oldIndex = myself.hand.findIndex((c) => c.i === card.i);
     if (oldIndex === -1 || newIndex < 0 || newIndex >= myself.hand.length) {
-      showErrorAlert(i18n.translate("placeInHandError"));
+      showErrorAlert("placeInHandError");
       return;
     }
 
@@ -311,16 +292,14 @@ function GameContextProvider({ children }) {
   }
 
   function moveCardToSlot(card, targetIndex, destination) {
-    const myself = getPlayerAndValid(
-      players,
-      currentPlayer,
-      showErrorAlert,
-      i18n.translate,
-    );
+    const myself = getPlayerAndValid(players, currentPlayer, showErrorAlert);
     if (!myself) return;
-
+    if (!myself.isCardDrawed) {
+      showErrorAlert("drawFirst");
+      return;
+    }
     if (myself.bus.some((c) => c?.i === card.i)) {
-      showErrorAlert(i18n.translate("dontCheatInBus"));
+      showErrorAlert("dontCheatInBus");
       return;
     }
 
@@ -329,20 +308,12 @@ function GameContextProvider({ children }) {
     let newBus = myself.bus;
 
     if (destination === "hand") {
-      showErrorAlert(i18n.translate("placeInHandError"));
+      showErrorAlert("placeInHandError");
       return;
     }
 
     if (destination === "busStop") {
-      if (
-        !canPlaceInBusStop(
-          card,
-          myself.busStop,
-          targetIndex,
-          showErrorAlert,
-          i18n.translate,
-        )
-      )
+      if (!canPlaceInBusStop(card, myself.busStop, targetIndex, showErrorAlert))
         return;
       const newStop = [...myself.busStop];
       newStop[targetIndex] = card;

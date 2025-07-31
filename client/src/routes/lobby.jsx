@@ -80,7 +80,9 @@ function Lobby() {
       <BusPattern />
       <div className="w-full max-w-4xl z-10">
         <div className="flex flex-row gap-6 justify-end">
-          <LangSelector size={32} />
+          <div className="p-2">
+            <LangSelector size={32} />
+          </div>
           <LogOut />
         </div>
         <div className="!bg-gray-950/80 !border-black rounded-2xl shadow-2xl p-6">

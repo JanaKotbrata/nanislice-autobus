@@ -86,7 +86,9 @@ function StartGame() {
       <BusPattern />
       <div className="w-full max-w-5xl z-10">
         <div className="flex flex-row gap-6 justify-end">
-          <LangSelector size={32} />
+          <div className="p-2">
+            <LangSelector size={32} />
+          </div>
           <LogOut />
         </div>
         <div className="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-6 !bg-gray-950/80 !border-black rounded-2xl shadow-2xl">
