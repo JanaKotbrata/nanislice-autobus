@@ -104,48 +104,54 @@ function Lobby() {
           {/* Responsive grid layout */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {/* Left box - Players */}
-            <div className="flex flex-col items-center border-b sm:border-b-0 sm:border-r-2 border-cyan-400/50 sm:pr-4 gap-4 w-full">
-              {gameContext.players.map((player) => {
-                const avatarUri = getAvatar(
-                  player.userId,
-                  player.rev || gameContext.gameCode,
-                );
-                return (
-                  <div
-                    key={player.userId}
-                    className="flex items-center justify-between w-full max-w-[280px] gap-2"
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <Member
-                        isCreator={!!player.creator}
-                        isMyself={!!player.myself}
-                        picture={avatarUri}
-                      >
-                        <span className="truncate">{player.name}</span>
-                      </Member>
+            <div className="flex flex-col items-center border-b sm:border-b-0 sm:border-r-2 border-cyan-400/50 sm:pr-4 gap-4 w-full ">
+              <div
+                className={
+                  "flex flex-col sm:max-h-[50vh] max-h-[25vh] overflow-y-auto pr-0 -mr-0 sm:pr-10 sm:-mr-20"
+                }
+              >
+                {gameContext.players.map((player) => {
+                  const avatarUri = getAvatar(
+                    player.userId,
+                    player.rev || gameContext.gameCode,
+                  );
+                  return (
+                    <div
+                      key={player.userId}
+                      className="flex items-center justify-between w-full max-w-[280px] gap-2"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Member
+                          isCreator={!!player.creator}
+                          isMyself={!!player.myself}
+                          picture={avatarUri}
+                        >
+                          <span className="truncate">{player.name}</span>
+                        </Member>
+                      </div>
+                      <div className="shrink-0 flex items-center gap-2">
+                        {player.myself && (
+                          <FaSignOutAlt
+                            className="text-gray-500 hover:text-red-500 cursor-pointer"
+                            onClick={async () =>
+                              await handleRemovePlayer(player.userId)
+                            }
+                            title={i18n.translate("leaveGame")}
+                            size={18}
+                          />
+                        )}
+                        {player.ready && (
+                          <FaCheck
+                            className="text-green-300/50"
+                            title={i18n.translate("playerIsReady")}
+                            size={18}
+                          />
+                        )}
+                      </div>
                     </div>
-                    <div className="shrink-0 flex items-center gap-2">
-                      {player.myself && (
-                        <FaSignOutAlt
-                          className="text-gray-500 hover:text-red-500 cursor-pointer"
-                          onClick={async () =>
-                            await handleRemovePlayer(player.userId)
-                          }
-                          title={i18n.translate("leaveGame")}
-                          size={18}
-                        />
-                      )}
-                      {player.ready && (
-                        <FaCheck
-                          className="text-green-300/50"
-                          title={i18n.translate("playerIsReady")}
-                          size={18}
-                        />
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
 
               <Invite />
 

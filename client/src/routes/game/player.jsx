@@ -63,12 +63,12 @@ function Player({
 
       <div
         className={`flex flex-col w-full relative z-0 overflow-hidden transition-all duration-500 ease-in-out
-          ${expanded ? "max-h-[500px]" : "max-h-[65px]"}
-          p-2 sm:p-4`}
+          ${expanded ? "max-h-[500px]" : "max-h-[6vh]"}
+          p-2 ${expanded ? "sm:p-4" : "sm:p-2"}`}
       >
         <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-[clamp(0.75rem,1vw,1rem)]">
           <div>
-            <span className="select-none">🚌</span>
+            <span className="select-none text-[0.8rem]">🚌</span>
             <BusSlot
               index={0}
               card={player?.bus?.[0]}
@@ -83,7 +83,7 @@ function Player({
           </div>
 
           <div>
-            <span className="select-none">🚏</span>
+            <span className="select-none text-[0.8rem]">🚏</span>
             <div className="flex flex-wrap items-center gap-1 sm:gap-2">
               {player?.busStop?.map((slot, index) => (
                 <div className="relative group" key={`player_slot_${index}`}>

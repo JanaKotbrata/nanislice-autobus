@@ -104,7 +104,9 @@ function Game() {
           <h2 className="text-xl font-bold mb-4">
             {i18n.translate("busTitle")}
           </h2>
-          <div className="flex-grow">
+          <div className="flex-grow overflow-y-auto sm:max-h-full max-h-[20vh] scrollbar-thin pr-2 -mr-2">
+            {" "}
+            {/*TODO scrollbar-thin*/}
             {players.map((player, index) => (
               <Player
                 key={"player_" + index}
