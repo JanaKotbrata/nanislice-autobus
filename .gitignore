@@ -4,6 +4,7 @@ client/dist
 server/node_modules
 server/avatars/*.png
 server/avatars/*.jpg
+!server/avatars/pig-face.png
 server/coverage
 node_modules
 
