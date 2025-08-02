@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import BusPattern from "../components/bus-pattern.jsx";
 import { getAvatar } from "../services/user-service.jsx";
 import UserContext from "../context/user.js";
 import { FaPencilAlt } from "react-icons/fa";
@@ -67,8 +66,7 @@ function Profile() {
   const role = userContext.user.role || i18n.translate("pleb");
 
   return (
-    <section className="relative bg-gray-900 min-h-screen flex items-center justify-center px-4">
-      <BusPattern />
+    <section className="relative min-h-screen flex items-center justify-center px-4">
       <div className="relative z-10 w-full max-w-2xl">
         <div className="flex flex-row gap-6 justify-end">
           <div className="p-2">

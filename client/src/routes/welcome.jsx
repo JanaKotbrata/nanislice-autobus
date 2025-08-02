@@ -3,14 +3,12 @@ import nanislice from "../assets/nanislice.svg";
 import DiscordLogin from "./welcome/discord-login.jsx";
 import GoogleLogin from "./welcome/google-login.jsx";
 import SeznamLogin from "./welcome/seznam-login.jsx";
-import BusPattern from "../components/bus-pattern.jsx";
 import LangSelector from "../components/form/visual/lang-selector.jsx";
 import LanguageContext from "../context/language.js";
 function Welcome() {
   const i18n = useContext(LanguageContext);
   return (
     <section className="bg-gray-900 text-white min-h-screen flex items-center justify-center overflow-hidden">
-      <BusPattern />
       <div className="mx-auto max-w-sm md:max-w-md lg:max-w-lg relative z-10">
         <LangSelector size={32} />
         <div className="!bg-gray-950/90 !border-blackbg-gray-800  rounded-lg w-full">

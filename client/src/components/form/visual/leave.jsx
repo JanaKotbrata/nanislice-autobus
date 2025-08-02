@@ -3,12 +3,9 @@ import React, { useContext } from "react";
 import LeaveAlert from "../../alerts/leave-alert.jsx";
 import GameContext from "../../../context/game.js";
 import { removePlayer } from "../../../services/game-service.jsx";
-import { io } from "socket.io-client";
-import Config from "../../../../../shared/config/config.json";
 import { useAuth } from "../../../context/auth-context.jsx";
 import LanguageContext from "../../../context/language.js";
-
-const socket = io(Config.SERVER_URI);
+import { socket } from "../../../services/create-socket.js";
 
 function Leave({ userId }) {
   const i18n = useContext(LanguageContext);

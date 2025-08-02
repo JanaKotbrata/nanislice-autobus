@@ -1,5 +1,4 @@
 import React from "react";
-import BusPattern from "../components/bus-pattern.jsx";
 import { FaLinkedin } from "react-icons/fa";
 import LogOut from "./user/log-out.jsx";
 import LangSelector from "../components/form/visual/lang-selector.jsx";
@@ -9,7 +8,6 @@ function About() {
   const i18n = React.useContext(LanguageContext);
   return (
     <section className="bg-gray-900 text-white min-h-screen flex items-center justify-center overflow-hidden">
-      <BusPattern />
       <div className="mx-auto max-w-3xl relative z-10">
         <div className="flex flex-row gap-6 justify-end">
           <div className="p-2">

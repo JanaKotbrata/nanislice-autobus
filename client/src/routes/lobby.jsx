@@ -11,7 +11,6 @@ import { useLobbySocket } from "../hooks/use-lobby-socket.js";
 import { addPlayer, removePlayer } from "../services/game-service.jsx";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth-context.jsx";
-import BusPattern from "../components/bus-pattern.jsx";
 import { getAvatar } from "../services/user-service.jsx";
 import Button from "../components/form/visual/button.jsx";
 import InfoAlert from "../components/alerts/info-alert.jsx";
@@ -77,7 +76,6 @@ function Lobby() {
   const shouldRender = !!myself?.creator;
   return (
     <section className="!bg-gray-900 min-h-screen flex items-center justify-center px-4">
-      <BusPattern />
       <div className="w-full max-w-4xl z-10">
         <div className="flex flex-row gap-6 justify-end">
           <div className="p-2">

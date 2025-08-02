@@ -23,6 +23,7 @@ import Loading from "./components/loading.jsx";
 import GameLoading from "./components/game-loading.jsx";
 import UserContextProvider from "./components/providers/user-context-provider.jsx";
 import Users from "./routes/users.jsx";
+import BusPattern from "./components/bus-pattern.jsx";
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -60,6 +61,7 @@ function NotAuthenticatedRoute({ children }) {
 function App() {
   return (
     <Router>
+      <BusPattern />
       <LanguageProvider>
         <AuthProvider>
           <Routes>

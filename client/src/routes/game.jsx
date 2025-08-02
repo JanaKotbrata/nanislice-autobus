@@ -92,7 +92,7 @@ function Game() {
   return (
     <DndProvider backend={HTML5Backend}>
       <div
-        className="flex flex-col sm:flex-row w-full h-full p-1 bg-gray-800"
+        className="flex flex-col sm:flex-row w-full h-full p-1 relative bg-gray-800"
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       >

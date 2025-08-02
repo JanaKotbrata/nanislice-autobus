@@ -1,9 +1,5 @@
 import { useEffect } from "react";
-import { io } from "socket.io-client";
-import Config from "../../../shared/config/config.json";
-
-const socket = io(Config.SERVER_URI);
-
+import { socket } from "../services/create-socket.js";
 export function useGameSocket(userId, gameCode, setContextGame, showAlert) {
   useEffect(() => {
     if (gameCode && userId) {

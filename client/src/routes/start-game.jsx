@@ -10,7 +10,6 @@ import {
 } from "../services/game-service.jsx";
 import GameContext from "../context/game.js";
 import { FaSignInAlt } from "react-icons/fa";
-import BusPattern from "../components/bus-pattern.jsx";
 import Button from "../components/form/visual/button.jsx";
 import Avatar from "../components/form/visual/avatar.jsx";
 import LogOut from "./user/log-out.jsx";
@@ -83,7 +82,6 @@ function StartGame() {
   }
   return (
     <section className="!bg-gray-900 min-h-screen flex items-center justify-center px-4">
-      <BusPattern />
       <div className="w-full max-w-5xl z-10">
         <div className="flex flex-row gap-6 justify-end">
           <div className="p-2">
