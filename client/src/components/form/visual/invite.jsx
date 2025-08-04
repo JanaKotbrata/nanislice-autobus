@@ -10,7 +10,7 @@ function Invite() {
   const pulsing = gameContext.startAlert
     ? "bg-gray-500/40 animate-[pulse_1s_ease-in-out_infinite]"
     : "";
-  const handleCopy = async () => {
+  async function handleCopy() {
     try {
       const url = `${i18n.translate("comeToPlay")} ${window.location.origin}/lobby/${gameContext.gameCode} \n${i18n.translate("codeForConnect")} ${gameContext.gameCode}`;
       await navigator.clipboard.writeText(url);
@@ -19,7 +19,7 @@ function Invite() {
     } catch (err) {
       console.error("Nepodařilo se zkopírovat URL:", err);
     }
-  };
+  }
 
   return (
     <div

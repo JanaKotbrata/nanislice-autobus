@@ -3,15 +3,17 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/auth-context";
 import { getGameByUser } from "../services/game-service.jsx";
 import GameContext from "../context/game.js";
+import LanguageContext from "../context/language.js";
 
-export default function AuthCallback() {
+function AuthCallback() {
   const [searchParams] = useSearchParams();
   const { login } = useAuth();
   const navigate = useNavigate();
   const gameContext = useContext(GameContext);
+  const i18n = useContext(LanguageContext);
 
   useEffect(() => {
-    const initAuth = async () => {
+    async function initAuth() {
       try {
         const token = searchParams.get("token");
 
@@ -38,10 +40,11 @@ export default function AuthCallback() {
         console.error("Chyba:", error);
         navigate("/", { replace: true });
       }
-    };
+    }
 
     initAuth();
   }, [searchParams]);
 
-  return <p>Přihlašujeme tě...</p>;
+  return <p> {i18n.translate("signing")}</p>;
 }
+export default AuthCallback;

@@ -11,14 +11,14 @@ function Leave({ userId }) {
   const i18n = useContext(LanguageContext);
   const gameContext = React.useContext(GameContext);
   const { token } = useAuth();
-  const handleLeave = async () => {
+  async function handleLeave() {
     gameContext.setShowAlert(false);
     removePlayer({ gameCode: gameContext.gameCode, userId }, token)
       .then((game) => {
         gameContext.setContextGame(game);
       })
       .catch((err) => console.error(err));
-  };
+  }
   return (
     <div className="flex justify-end mb-3">
       <FaSignOutAlt

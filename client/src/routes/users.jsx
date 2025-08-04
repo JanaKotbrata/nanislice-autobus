@@ -16,6 +16,7 @@ function UsersPage() {
   const [pageIndex, setPageIndex] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const pageSize = 6;
+  const totalPages = Math.ceil(totalCount / pageSize);
 
   useEffect(() => {
     listUser({ pageInfo: { pageIndex, pageSize } }, token)
@@ -28,15 +29,13 @@ function UsersPage() {
       });
   }, [pageIndex, token]);
 
-  const totalPages = Math.ceil(totalCount / pageSize);
-
-  const nextPage = () => {
+  function nextPage() {
     if (pageIndex < totalPages - 1) setPageIndex((p) => p + 1);
-  };
+  }
 
-  const prevPage = () => {
+  function prevPage() {
     if (pageIndex > 0) setPageIndex((p) => p - 1);
-  };
+  }
 
   return (
     <div className="bg-gray-900 min-h-screen text-white px-8 py-12">

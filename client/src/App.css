@@ -108,3 +108,17 @@
                     transparent 12px
             )
 }
+@media (max-height: 740px) {
+    .force-vertical-layout {
+        flex-direction: column !important;
+    }
+    .left-bar {
+        width: auto !important;
+    }
+}
+
+@media (max-width: 1163px) {
+    .left-bar {
+        width: auto !important;
+    }
+}

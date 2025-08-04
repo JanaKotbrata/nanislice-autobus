@@ -14,7 +14,11 @@ function Profile() {
   );
   const [selectedFile, setSelectedFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const level = userContext.user.level ?? 1;
+  const xp = userContext.user.xp ?? 0;
+  const xpPercent = Math.min((xp / 1000) * 100, 100);
+  const email = userContext.user.email || "";
+  const role = userContext.user.role || i18n.translate("pleb");
   const avatar = getAvatar(userContext.user.id, userContext.user.sys.rev);
 
   useEffect(() => {
@@ -52,18 +56,10 @@ function Profile() {
       .finally(() => setIsSubmitting(false));
   }, [selectedFile]);
 
-  const handleNameChange = (e) => setName(e.target.value);
-
-  const handleAvatarChange = (e) => {
+  function handleAvatarChange(e) {
     const file = e.target.files[0];
     if (file) setSelectedFile(file);
-  };
-
-  const level = userContext.user.level ?? 1;
-  const xp = userContext.user.xp ?? 0;
-  const xpPercent = Math.min((xp / 1000) * 100, 100);
-  const email = userContext.user.email || "";
-  const role = userContext.user.role || i18n.translate("pleb");
+  }
 
   return (
     <section className="relative min-h-screen flex items-center justify-center px-4">
@@ -101,7 +97,7 @@ function Profile() {
               <input
                 type="text"
                 value={name}
-                onChange={handleNameChange}
+                onChange={(e) => setName(e.target.value)}
                 className="text-2xl font-bold text-center bg-transparent border-b border-gray-600 focus:outline-none focus:border-white w-full"
               />
               <span className="absolute right-0 top-1/2 -translate-y-1/2 text-sm text-gray-400">

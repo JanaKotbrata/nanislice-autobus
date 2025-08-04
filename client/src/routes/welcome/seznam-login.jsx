@@ -3,7 +3,7 @@ import Button from "../../components/form/visual/button.jsx";
 import seznam from "../../assets/seznam-cz.png";
 import Config from "../../../../shared/config/config.json";
 
-const SeznamLogin = ({ message = "" }) => {
+function SeznamLogin({ message = "" }) {
   function handleSeznamLogin(e) {
     e.preventDefault();
     const redirectUrl = encodeURIComponent(
@@ -19,6 +19,6 @@ const SeznamLogin = ({ message = "" }) => {
       <span>{message}</span>
     </Button>
   );
-};
+}
 
 export default SeznamLogin;

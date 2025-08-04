@@ -2,11 +2,10 @@ import React from "react";
 import Button from "../../components/form/visual/button.jsx";
 import discord from "../../assets/discord.svg";
 import Config from "../../../../shared/config/config.json";
-const DiscordLogin = ({ message = "" }) => {
+function DiscordLogin({ message = "" }) {
   const discordAuthUrl = `${Config.SERVER_URI}/auth/discord`;
 
   const handleDiscordLogin = () => {
-    // ciste v onClick nefungovalo presmerovani, mozna nejaky even handling v prohlizeci
     setTimeout(() => {
       window.location.href = discordAuthUrl;
     }, 0);
@@ -18,6 +17,6 @@ const DiscordLogin = ({ message = "" }) => {
       <span>{message}</span>{" "}
     </Button>
   );
-};
+}
 
 export default DiscordLogin;

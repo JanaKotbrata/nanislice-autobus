@@ -34,7 +34,7 @@ function CardPack({
     >
       {/* Hlavní karta */}
       <motion.button
-        className={`w-16 h-24 back-card-${bg} !bg-white flex items-center justify-center rounded-md shadow-md 
+        className={`w-11 h-16 sm:w-14 sm:h-22 md:w-16 md:h-24 back-card-${bg} !bg-white flex items-center justify-center rounded-md shadow-md 
               ${onDrawCard ? "hover:bg-gray-700 cursor-pointer" : "cursor-default"} 
           ${isDrawedCard ? "animate-[pulse_2s_ease-in-out_infinite]" : ""} z-30`}
         {...(onDrawCard ? { onClick: onDrawCard } : {})}
@@ -48,7 +48,7 @@ function CardPack({
         cardOffsets.map((i) => (
           <motion.div
             key={i}
-            className={`w-16 h-24 back-card-${bg} !bg-white rounded-md shadow-md absolute top-0 left-0 pointer-events-none`}
+            className={`w-11 h-16 sm:w-14 sm:h-22 md:w-16 md:h-24 back-card-${bg} !bg-white rounded-md shadow-md absolute top-0 left-0 pointer-events-none`}
             custom={i}
             variants={shadowCardVariants}
             transition={{ delay: i * 0.03, duration: 0.3 }}

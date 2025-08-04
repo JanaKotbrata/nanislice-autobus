@@ -1,34 +1,32 @@
-import React from "react";
-import Card from "./card.jsx";
-import Slot from "./Slot"; // ujisti se, že existuje
+import React, { useContext } from "react";
+import Slot from "./Slot";
+import GameContext from "../../context/game.js";
 
-function Hand({ player, reorderHand }) {
+function Hand({ player }) {
+  const gameContext = useContext(GameContext);
   return (
-    <div className="relative h-48 w-full flex items-end justify-center">
-      {player?.hand?.map((card, index) => {
-        const total = player.hand.length;
-        const angleStep = 15;
-        const middleIndex = (total - 1) / 2;
-        const angle = (index - middleIndex) * angleStep;
-
-        return (
-          <div
-            key={card?.i ?? index}
-            className="absolute bottom-0"
-            style={{
-              transform: `rotate(${angle}deg) translateY(-20%)`,
-              transformOrigin: "bottom center",
-              zIndex: index,
-            }}
-          >
-            {card.rank ? (
-              <Card card={card} index={index} />
-            ) : (
-              <Slot onDropCard={(card) => reorderHand(card, index)} />
-            )}
-          </div>
-        );
-      })}
+    <div className="flex flex-row items-center justify-center ">
+      {"🖐🏻"}
+      <div className="flex flex-wrap sm:flex-nowrap gap-4 p-4 border-2 border-dashed border-gray-500 rounded-md justify-center ">
+        {player?.hand?.map((card, index) => {
+          if (!card.rank) {
+            return (
+              <Slot
+                key={`gb_slot_nocard_${index}`}
+                onDropCard={(card) => gameContext.reorderHand(card, index)}
+              />
+            );
+          }
+          return (
+            <Slot
+              key={`gb_slot_card_${card.i}`}
+              card={card}
+              index={index}
+              onDropCard={(card) => gameContext.reorderHand(card, index)}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }

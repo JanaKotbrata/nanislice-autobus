@@ -8,10 +8,10 @@ function LangSelector({ size }) {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
 
-  const handleLanguageChange = (langCode) => {
+  function handleLanguageChange(langCode) {
     languageContext.setContextLanguage(langCode);
     setShowMenu(false);
-  };
+  }
 
   return (
     <div className="relative flex justify-end mb-3" ref={menuRef}>

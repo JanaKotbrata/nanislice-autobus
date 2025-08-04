@@ -30,7 +30,7 @@ function Slot({
   return (
     <div
       ref={slotRef}
-      className={`w-8 h-12 sm:w-10 sm:h-16 md:w-12 md:h-20 border rounded flex items-center justify-center text-xs sm:text-sm ${border} ${
+      className={`w-11 h-16 sm:w-14 sm:h-22 md:w-16 md:h-24 border rounded flex items-center justify-center text-xs sm:text-sm ${border} ${
         isOver ? isOverClass : isDropClass
       }`}
     >

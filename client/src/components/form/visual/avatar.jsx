@@ -12,12 +12,10 @@ function Avatar({
   isInGame = false,
 }) {
   const i18n = useContext(LanguageContext);
-
-  const handleClick = () => {
-    //navigate("/profile");
-    window.open("/profile", "_blank");
-  };
   const avatarUri = user ? getAvatar(user.id, gameCode) : picture;
+  function handleClick() {
+    window.open("/profile", "_blank");
+  }
   if (isMyself) {
     return (
       <label className="cursor-pointer relative group" onClick={handleClick}>

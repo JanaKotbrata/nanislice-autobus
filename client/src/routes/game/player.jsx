@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useRef } from "react";
 import GameContext from "../../context/game.js";
 import Slot from "./slot.jsx";
 import BusSlot from "./bus-slot.jsx";
@@ -15,13 +15,19 @@ function Player({
 }) {
   const gameContext = useContext(GameContext);
   const [expanded, setExpanded] = useState(!expandable);
+  const [showCounts, setShowCounts] = useState(false);
+  const countTimeoutRef = useRef(null);
+  const avatarUri = getAvatar(
+    player.userId,
+    player.rev || gameContext.gameCode,
+  );
+  let extraProps = {};
+  let bottomCard;
 
   function handleDropCard(card, dropIndex) {
     gameContext.moveCardToSlot(card, dropIndex, "busStop");
   }
 
-  let extraProps = {};
-  let bottomCard;
   if (player.myself) {
     extraProps = {
       onDropCard: handleDropCard,
@@ -31,10 +37,15 @@ function Player({
     }
   }
 
-  const avatarUri = getAvatar(
-    player.userId,
-    player.rev || gameContext.gameCode,
-  );
+  function handleShowCountsTemporary() {
+    setShowCounts(true);
+    if (countTimeoutRef.current) {
+      clearTimeout(countTimeoutRef.current);
+    }
+    countTimeoutRef.current = setTimeout(() => {
+      setShowCounts(false);
+    }, 2000);
+  }
 
   return (
     <div
@@ -45,7 +56,13 @@ function Player({
         className={`w-full text-[clamp(0.8rem,1.2vw,1.1rem)] font-semibold text-white truncate
           px-2 sm:px-4 py-1 flex items-center justify-between
           ${expandable ? "cursor-pointer" : ""}`}
-        onClick={() => expandable && setExpanded((prev) => !prev)}
+        onClick={() => {
+          if (expandable) {
+            setExpanded((prev) => !prev);
+          } else {
+            handleShowCountsTemporary();
+          }
+        }}
       >
         <div className="flex items-center gap-2 truncate">
           <Avatar
@@ -86,11 +103,18 @@ function Player({
             <span className="select-none text-[0.8rem]">🚏</span>
             <div className="flex flex-wrap items-center gap-1 sm:gap-2">
               {player?.busStop?.map((slot, index) => (
-                <div className="relative group" key={`player_slot_${index}`}>
+                <div
+                  className="relative group"
+                  key={`player_slot_${index}`}
+                  onClick={handleShowCountsTemporary}
+                >
                   <div
-                    className="absolute top-1 left-1 text-[0.6rem] bg-red-500 px-1 rounded
-                      opacity-0 invisible group-hover:opacity-100 group-hover:visible
-                      transition-opacity duration-200 z-30"
+                    className={`absolute top-1 left-1 text-[0.6rem] bg-red-500 text-white px-1 rounded transition-opacity duration-200 z-30
+                      ${
+                        showCounts
+                          ? "opacity-100 visible"
+                          : "opacity-0 invisible group-hover:opacity-100 group-hover:visible"
+                      }`}
                   >
                     {slot.length}
                   </div>
@@ -107,8 +131,8 @@ function Player({
             </div>
           </div>
 
-          <span className="ml-auto truncate select-none">
-            🖐🏻 🃏 {player?.handLength}
+          <span className="ml-auto truncate select-none text-lg">
+            🖐🏻🃏 {player?.handLength}
           </span>
         </div>
       </div>

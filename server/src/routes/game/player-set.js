@@ -16,7 +16,7 @@ class SetGamePlayer extends PostResponseHandler {
     }
 
     async set(req) {
-        const validData = validateData(req.body, schema); //TODO ask milan :D userId - user/update
+        const validData = validateData(req.body, schema); //TODO ---- userId - user/update
         const {userId, gameCode, gameId} = validData;
 
         let game;
@@ -35,7 +35,7 @@ class SetGamePlayer extends PostResponseHandler {
             throw new GameErrors.GameAlreadyActive(validData);
         }
 
-         await authorizeUser(userId, GameErrors.UserDoesNotExist, GameErrors.UserNotAuthorized);//TODO user has to be in game for set
+         await authorizeUser(userId, GameErrors.UserDoesNotExist, GameErrors.UserNotAuthorized);
 
 
         //validation of playerList

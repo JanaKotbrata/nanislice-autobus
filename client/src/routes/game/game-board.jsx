@@ -6,6 +6,7 @@ import GameContext from "../../context/game.js";
 import DangerAlert from "../../components/alerts/danger-alert.jsx";
 import GameBoardSlot from "./game-board-slot.jsx";
 import LanguageContext from "../../context/language.js";
+import Hand from "./hand.jsx";
 
 function GameBoard({ player }) {
   const i18n = useContext(LanguageContext);
@@ -47,13 +48,7 @@ function GameBoard({ player }) {
 
     prevBoard.forEach((prevPack, index) => {
       const currentPack = currentBoard[index];
-      console.log(
-        `Slot ${index}: prev length ${prevPack?.length}, current length ${currentPack?.length}`,
-      );
-
       if (prevPack?.length === 12 && currentPack?.length === 13) {
-        console.log("Slot se naplnil na 13 → SPUŠTĚNA animace");
-
         const fromEl = slotRefs.current[index];
         const toEl = completedCardRef.current;
         const boardEl = boardRef.current;
@@ -96,6 +91,7 @@ function GameBoard({ player }) {
       <div
         ref={boardRef}
         className={`flex flex-col items-center justify-start board p-6 shadow-lg rounded-xl grow transition-all duration-300 
+    overflow-x-hidden w-full
           ${shouldPulse ? "animate-[pulse_0.3s_ease-in-out_infinite]" : ""}`}
       >
         <div className="relative w-full mb-6 flex justify-center">
@@ -145,7 +141,7 @@ function GameBoard({ player }) {
           )}
         </div>
 
-        <div className="game-board flex flex-row md:gap-10 gap-5">
+        <div className="game-board flex flex-wrap justify-center gap-4 w-full max-w-full">
           {gameContext.showDangerAlert && (
             <DangerAlert
               message={gameContext.errorMessage}
@@ -176,29 +172,7 @@ function GameBoard({ player }) {
         </div>
       </div>
 
-      <div className="flex flex-row items-center justify-center">
-        {"🖐🏻"}
-        <div className="flex gap-4 p-4 border-2 border-dashed border-gray-500 rounded-md justify-center">
-          {player?.hand?.map((card, index) => {
-            if (!card.rank) {
-              return (
-                <Slot
-                  key={`gb_slot_nocard_${index}`}
-                  onDropCard={(card) => gameContext.reorderHand(card, index)}
-                />
-              );
-            }
-            return (
-              <Slot
-                key={`gb_slot_card_${card.i}`}
-                card={card}
-                index={index}
-                onDropCard={(card) => gameContext.reorderHand(card, index)}
-              />
-            );
-          })}
-        </div>
-      </div>
+      <Hand player={player} />
     </div>
   );
 }

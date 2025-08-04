@@ -10,13 +10,13 @@ function LogOut({ size }) {
   const { token } = useAuth();
   const [showAlert, setShowAlert] = useState(false);
 
-  const handleLogOut = () => {
+  function handleLogOut() {
     logOut({}, token)
       .then(() => {
         window.location.href = "/";
       })
       .catch((err) => console.error(err));
-  };
+  }
   return (
     <div className="flex justify-end p-2 z-10">
       <FaSignOutAlt

@@ -17,12 +17,16 @@ import LanguageContext from "../context/language.js";
 function Game() {
   const navigate = useNavigate();
   const gameContext = useContext(GameContext);
-  const [leftWidth, setLeftWidth] = useState(400);
+  const [leftWidth, setLeftWidth] = useState(653);
   const [dragging, setDragging] = useState(false);
   const [showEndGame, setShowEndGame] = useState(false);
+  const [leavingPlayer, setLeavingPlayer] = useState(false);
   const i18n = useContext(LanguageContext);
   const dragRef = useRef(null);
   const { user, token } = useAuth();
+  const [myself, players] = getPlayers(gameContext.players);
+  const isTooManyPlayers = players.length > 3;
+  const isMyselfJrInBus = myself.bus[0]?.rank === "Jr";
 
   useEffect(() => {
     if (gameContext?.gameState === "initial") {
@@ -39,7 +43,9 @@ function Game() {
       gameContext.gameState === "finished"
     ) {
       setTimeout(() => {
-        closeGame({ gameCode: gameContext.gameCode }, token);
+        closeGame({ gameCode: gameContext.gameCode }, token).then(() =>
+          navigate(`/`),
+        );
         navigate(`/`);
       }, 10000);
       setShowEndGame(true);
@@ -50,7 +56,7 @@ function Game() {
     user.id,
     gameContext.gameCode,
     gameContext.setContextGame,
-    gameContext.setLeavingPlayer,
+    setLeavingPlayer,
   );
 
   function handleMouseDown() {
@@ -85,28 +91,22 @@ function Game() {
 
     return [myself, orderedPlayers];
   }
-
-  const [myself, players] = getPlayers(gameContext.players);
-  const isTooManyPlayers = players.length > 3;
-  const isMyselfJrInBus = myself.bus[0]?.rank === "Jr";
   return (
     <DndProvider backend={HTML5Backend}>
       <div
-        className="flex flex-col sm:flex-row w-full h-full p-1 relative bg-gray-800"
+        className="flex flex-col sm:flex-row w-full h-full p-1 relative bg-gray-800 force-vertical-layout"
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       >
         {/* Levá sekce - Hráči */}
         <div
-          className="bg-gray-800 text-white p-4 flex flex-col"
+          className="bg-gray-800 text-white p-4 flex flex-col left-bar"
           style={{ width: leftWidth }}
         >
           <h2 className="text-xl font-bold mb-4">
             {i18n.translate("busTitle")}
           </h2>
           <div className="flex-grow overflow-y-auto sm:max-h-full max-h-[20vh] scrollbar-thin pr-2 -mr-2">
-            {" "}
-            {/*TODO scrollbar-thin*/}
             {players.map((player, index) => (
               <Player
                 key={"player_" + index}
@@ -141,21 +141,18 @@ function Game() {
         {/* Resize lišta */}
         <div
           ref={dragRef}
-          className="w-2 cursor-ew-resize bg-gray-500"
+          className="hidden sm:block w-2 cursor-ew-resize bg-gray-500"
           onMouseDown={handleMouseDown}
         />
 
         {/* Pravá sekce - Hrací pole */}
-        <div className="flex-grow bg-gray-900 p-6 flex flex-col relative">
+        <div className="flex-grow w-full bg-gray-900 p-6 flex flex-col relative">
           <div className="flex flex-row gap-6 justify-end">
-            {/* Tlačítko nahoře nad GameBoard */}
             <LangSelector />
             <Leave userId={myself.userId} />
           </div>
-          {/* GameBoard samotný */}
-          <div className="flex-grow">
-            <GameBoard player={myself} cardPack={gameContext.deck} />
-          </div>
+
+          <GameBoard player={myself} cardPack={gameContext.deck} />
         </div>
       </div>
 
@@ -168,11 +165,12 @@ function Game() {
           }
         />
       )}
+
       {/* Alert při odchodu ze hry */}
-      {gameContext.leavingPlayer && (
+      {leavingPlayer && (
         <InfoAlert
-          onClose={() => gameContext.setLeavingPlayer(false)}
-          message={`${gameContext.leavingPlayer} ${i18n.translate("tryToLeave")}`}
+          onClose={() => setLeavingPlayer(false)}
+          message={`${leavingPlayer} ${i18n.translate("tryToLeave")}`}
         />
       )}
     </DndProvider>

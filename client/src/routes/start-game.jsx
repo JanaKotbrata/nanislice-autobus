@@ -15,6 +15,7 @@ import Avatar from "../components/form/visual/avatar.jsx";
 import LogOut from "./user/log-out.jsx";
 import LanguageContext from "../context/language.js";
 import LangSelector from "../components/form/visual/lang-selector.jsx";
+import InfoAlert from "../components/alerts/info-alert.jsx";
 
 function StartGame() {
   const i18n = useContext(LanguageContext);
@@ -22,6 +23,7 @@ function StartGame() {
   const navigate = useNavigate();
   const gameContext = useContext(GameContext);
   const [gameCode, setGameCode] = useState("");
+  const [infoAlert, setInfoAlert] = useState(false);
 
   useEffect(() => {
     getGameByUser(token)
@@ -43,7 +45,7 @@ function StartGame() {
   async function startGame() {
     try {
       const response = await createGame({}, token);
-      gameContext.setContextGame(response);
+      gameContext.setContextGame(response); //TODO constants
       if (response.state === "active") {
         navigate(`/game/${response.code}`);
       } else {
@@ -68,7 +70,7 @@ function StartGame() {
 
   async function joinGame() {
     if (!gameCode) {
-      alert(i18n.translate("hintToStart")); //TODO customize
+      setInfoAlert(true);
       return;
     }
     try {
@@ -80,6 +82,7 @@ function StartGame() {
       console.error("Chyba při připojování do hry:", error);
     }
   }
+
   return (
     <section className="!bg-gray-900 min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-5xl z-10">
@@ -112,6 +115,12 @@ function StartGame() {
               </>
             </Button>
             <div className="flex items-center justify-center gap-x-3 sm:gap-x-4 flex-wrap mt-4 w-full">
+              {infoAlert && (
+                <InfoAlert
+                  onClose={() => setInfoAlert(false)}
+                  message={i18n.translate("hintToStart")}
+                />
+              )}
               <input
                 type="text"
                 placeholder={i18n.translate("enterGameCode")}

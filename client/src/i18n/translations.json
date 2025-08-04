@@ -513,6 +513,11 @@
       "cs": "Tady se dějou nějký divný věci...",
       "en": "Something went wwwwrong...",
       "sk": "Čo ti jebe, čo ti jebe? Něčo čudného: "
+    },
+    "signing": {
+      "cs": "Přihlašujeme tě...",
+      "en": "We are signing you up...",
+      "sk": "Prihlasujeme ťa..."
     }
   }
 }

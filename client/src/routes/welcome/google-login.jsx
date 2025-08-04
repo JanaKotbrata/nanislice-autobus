@@ -2,7 +2,7 @@ import Config from "../../../../shared/config/config.json";
 import google from "../../assets/google.svg";
 import Button from "../../components/form/visual/button.jsx";
 
-const GoogleLogin = ({ message = "" }) => {
+function GoogleLogin({ message = "" }) {
   function handleGoogleLogin(e) {
     e.preventDefault();
     const redirectUrl = encodeURIComponent(
@@ -17,5 +17,5 @@ const GoogleLogin = ({ message = "" }) => {
       <span>{message}</span>
     </Button>
   );
-};
+}
 export default GoogleLogin;
