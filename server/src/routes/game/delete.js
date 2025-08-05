@@ -5,6 +5,7 @@ const {PostResponseHandler} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
 const {authorizeUser, authorizePlayer} = require("../../services/auth-service");
+const {getGame} = require("../../services/game-service");
 const games = new GamesRepository();
 
 class DeleteGame extends PostResponseHandler {
@@ -18,16 +19,7 @@ class DeleteGame extends PostResponseHandler {
 
         const user = await authorizeUser(req.user.id, GameErrors.UserDoesNotExist, GameErrors.UserNotAuthorized);
 
-        let game;
-        if (id) {
-            game = await games.getGameById(id);
-        } else {
-            game = await games.getGameByCode(code);
-        }
-
-        if (!game) {
-            throw new GameErrors.GameDoesNotExist(validData);
-        }
+        let game = await getGame(id, code, GameErrors.GameDoesNotExist);
         await authorizePlayer(user, game, GameErrors.UserIsNotAllowedToDeleteGame);
 
         try {

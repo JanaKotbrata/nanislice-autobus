@@ -9,7 +9,7 @@ const GameErrors = require("../../errors/game/game-errors");
 const GameBoardValidation = require("../../services/gameboard-validation");
 const {RANK_CARD_ORDER, joker, States} = require("../../utils/game-constants");
 const {shuffleDeck, getCardIndex} = require("../../services/card-service");
-const {transformCurrentPlayerData} = require("../../services/game-service");
+const {transformCurrentPlayerData, getGame} = require("../../services/game-service");
 const {authorizeUser} = require("../../services/auth-service");
 const games = new GamesRepository();
 const users = new UsersRepository();
@@ -27,16 +27,7 @@ class ProcessAction extends PostResponseHandler {
 
         await authorizeUser(userId, GameErrors.UserDoesNotExist, GameErrors.UserNotAuthorized);
 
-        let game;
-        if (gameId) {
-            game = await games.getGameById(gameId);
-        } else if (gameCode) {
-            game = await games.getGameByCode(gameCode);
-        }
-
-        if (!game) {
-            throw new GameErrors.GameDoesNotExist(gameCode || gameId);
-        }
+        let game = await getGame(gameId, gameCode, GameErrors.GameDoesNotExist);
         if (game.state !== States.ACTIVE) {
             throw new GameErrors.GameIsNotActive(gameId);
         }

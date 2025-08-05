@@ -5,8 +5,8 @@ function AlertRules({ onClose }) {
   const i18n = useContext(LanguageContext);
 
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center !bg-black/60 rounded-lg">
-      <div className="!bg-gray-700 p-4 rounded-lg shadow-lg max-w-xs text-sm !text-gray-100 max-h-[80vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 !bg-black/60 flex items-center justify-center px-4 py-8">
+      <div className="!bg-gray-700 !text-gray-100 rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto p-4 text-sm">
         <h3 className="font-semibold mb-2">
           {i18n.translate("dangerAlertHints")}
         </h3>

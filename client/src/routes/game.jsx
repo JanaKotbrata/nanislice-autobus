@@ -13,6 +13,7 @@ import Leave from "../components/form/visual/leave.jsx";
 import InfoAlert from "../components/alerts/info-alert.jsx";
 import LangSelector from "../components/form/visual/lang-selector.jsx";
 import LanguageContext from "../context/language.js";
+import SlotContextProvider from "../components/providers/slot-context-provider.jsx";
 
 function Game() {
   const navigate = useNavigate();
@@ -51,6 +52,11 @@ function Game() {
       setShowEndGame(true);
     }
   }, [gameContext?.gameState]);
+  useEffect(() => {
+    if (window.innerWidth < 1163) {
+      setLeftWidth(undefined);
+    }
+  }, []);
 
   useGameSocket(
     user.id,
@@ -91,89 +97,92 @@ function Game() {
 
     return [myself, orderedPlayers];
   }
+
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div
-        className="flex flex-col sm:flex-row w-full h-full p-1 relative bg-gray-800 force-vertical-layout"
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-      >
-        {/* Levá sekce - Hráči */}
+    <SlotContextProvider>
+      <DndProvider backend={HTML5Backend}>
         <div
-          className="bg-gray-800 text-white p-4 flex flex-col left-bar"
-          style={{ width: leftWidth }}
+          className="flex flex-col sm:flex-row w-full h-full p-1 relative bg-gray-800 force-vertical-layout"
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
         >
-          <h2 className="text-xl font-bold mb-4">
-            {i18n.translate("busTitle")}
-          </h2>
-          <div className="flex-grow overflow-y-auto sm:max-h-full max-h-[20vh] scrollbar-thin pr-2 -mr-2">
-            {players.map((player, index) => (
+          {/* Levá sekce - Hráči */}
+          <div
+            className="bg-gray-800 text-white p-4 flex flex-col left-bar"
+            style={{ width: leftWidth }}
+          >
+            <h2 className="text-xl font-bold mb-4">
+              {i18n.translate("busTitle")}
+            </h2>
+            <div className="flex-grow overflow-y-auto sm:max-h-full max-h-[20vh] scrollbar-thin pr-2 -mr-2">
+              {players.map((player, index) => (
+                <Player
+                  key={"player_" + index}
+                  player={player}
+                  isActivePlayer={
+                    gameContext.players?.[gameContext.currentPlayer]?.userId ===
+                    player?.userId
+                  }
+                  isDraggable={false}
+                  expandable={isTooManyPlayers}
+                />
+              ))}
+            </div>
+            {myself && (
               <Player
-                key={"player_" + index}
-                player={player}
+                key={"myself_" + (gameContext.players.length - 1)}
+                player={myself}
                 isActivePlayer={
                   gameContext.players?.[gameContext.currentPlayer]?.userId ===
-                  player?.userId
+                  myself?.userId
                 }
-                isDraggable={false}
-                expandable={isTooManyPlayers}
+                isDraggable={
+                  gameContext.players?.[gameContext.currentPlayer]?.userId ===
+                  myself?.userId
+                }
+                isMyself={true}
+                isMyselfJrInBus={isMyselfJrInBus}
               />
-            ))}
-          </div>
-          {myself && (
-            <Player
-              key={"myself_" + (gameContext.players.length - 1)}
-              player={myself}
-              isActivePlayer={
-                gameContext.players?.[gameContext.currentPlayer]?.userId ===
-                myself?.userId
-              }
-              isDraggable={
-                gameContext.players?.[gameContext.currentPlayer]?.userId ===
-                myself?.userId
-              }
-              isMyself={true}
-              isMyselfJrInBus={isMyselfJrInBus}
-            />
-          )}
-        </div>
-
-        {/* Resize lišta */}
-        <div
-          ref={dragRef}
-          className="hidden sm:block w-2 cursor-ew-resize bg-gray-500"
-          onMouseDown={handleMouseDown}
-        />
-
-        {/* Pravá sekce - Hrací pole */}
-        <div className="flex-grow w-full bg-gray-900 p-6 flex flex-col relative">
-          <div className="flex flex-row gap-6 justify-end">
-            <LangSelector />
-            <Leave userId={myself.userId} />
+            )}
           </div>
 
-          <GameBoard player={myself} cardPack={gameContext.deck} />
+          {/* Resize lišta */}
+          <div
+            ref={dragRef}
+            className="hidden sm:block w-2 cursor-ew-resize bg-gray-500"
+            onMouseDown={handleMouseDown}
+          />
+
+          {/* Pravá sekce - Hrací pole */}
+          <div className="flex-grow w-full bg-gray-900 p-6 flex flex-col relative">
+            <div className="flex flex-row gap-6 justify-end">
+              <LangSelector />
+              <Leave userId={myself.userId} />
+            </div>
+
+            <GameBoard player={myself} cardPack={gameContext.deck} />
+          </div>
         </div>
-      </div>
 
-      {/* Alert při konci hry */}
-      {showEndGame && (
-        <SuccessAlert
-          message={
-            i18n.translate("winner") +
-            gameContext.players.find((player) => !player.bus.length)?.name
-          }
-        />
-      )}
+        {/* Alert při konci hry */}
+        {showEndGame && (
+          <SuccessAlert
+            message={
+              i18n.translate("winner") +
+              gameContext.players.find((player) => !player.bus.length)?.name
+            }
+          />
+        )}
 
-      {/* Alert při odchodu ze hry */}
-      {leavingPlayer && (
-        <InfoAlert
-          onClose={() => setLeavingPlayer(false)}
-          message={`${leavingPlayer} ${i18n.translate("tryToLeave")}`}
-        />
-      )}
-    </DndProvider>
+        {/* Alert při odchodu ze hry */}
+        {leavingPlayer && (
+          <InfoAlert
+            onClose={() => setLeavingPlayer(false)}
+            message={`${leavingPlayer} ${i18n.translate("tryToLeave")}`}
+          />
+        )}
+      </DndProvider>
+    </SlotContextProvider>
   );
 }
 

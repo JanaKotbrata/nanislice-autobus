@@ -1,8 +1,9 @@
-import React, { useContext, useRef } from "react";
-import { useDrag } from "react-dnd";
+import React, { useContext, useRef, useEffect } from "react";
+import { useDrag, useDragLayer } from "react-dnd";
 import RANK_CARD_ORDER from "../../../../shared/constants/rank-card-order.json";
 import GameContext from "../../context/game.js";
 import LanguageContext from "../../context/language.js";
+import SlotContext from "../../context/slot.js";
 
 function getEmoji(rank) {
   switch (rank) {
@@ -17,6 +18,25 @@ function getEmoji(rank) {
     default:
       return "🐷";
   }
+}
+
+function getRectOverlap(a, b) {
+  const x_overlap = Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left));
+  const y_overlap = Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+  return x_overlap * y_overlap;
+}
+
+function findMostOverlappedSlot(cardRect, slotRects) {
+  let maxOverlap = 0;
+  let bestSlot = null;
+  for (const slot of slotRects) {
+    const overlap = getRectOverlap(cardRect, slot.rect);
+    if (overlap > maxOverlap) {
+      maxOverlap = overlap;
+      bestSlot = slot;
+    }
+  }
+  return bestSlot;
 }
 
 function CornerLabel({ position, card, textColor, packLength }) {
@@ -51,36 +71,75 @@ function Card({
   isDraggable = true,
   isMyself = false,
   isMyselfJrInBus = false,
+  onDropCard,
 }) {
   const i18n = useContext(LanguageContext);
   const gameContext = useContext(GameContext);
+  const { getSlotRects, setActiveSlot, getActiveSlot } = useContext(SlotContext);
   const clickTimeout = useRef(null);
+  const cardSize = useRef({ width: 0, height: 0 });
   const isRedSuit = card.suit === "♥" || card.suit === "♦";
   const textColor = isRedSuit ? "text-red-600" : "text-amber-950";
   const backgroundColor = isBottomCard ? "bg-red-100 opacity-70" : "bg-white";
 
-  const [{ isDragging }, drag] = useDrag(
-    () => ({
-      type: "CARD",
-      item: { card, index },
-      canDrag: () => isDraggable,
-      collect: (monitor) => ({
-        isDragging: !!monitor.isDragging(),
-      }),
+  const [{ isDragging }, drag] = useDrag({
+    type: "CARD",
+    item: { card, index },
+    canDrag: () => isDraggable,
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
     }),
-    [card.i, index, isDraggable],
-  );
+    end: (item, monitor) => {
+      const point = monitor.getClientOffset();
+      const activeSlotIndex = getActiveSlot();
+      setActiveSlot(null);
+      if (!point || !item || !activeSlotIndex) {
+        return;
+      }
+      let closest = getSlotRects().find(item => item.lookupIndex === activeSlotIndex);
+
+      if (closest) {
+        closest.handler(item.card, closest.index);
+      }
+    },
+  });
+
+  const { currentOffset } = useDragLayer((monitor) => ({
+    currentOffset: monitor.getSourceClientOffset(),
+  }));
+
+  useEffect(() => {
+    if (!isDragging || !currentOffset) {
+      return;
+    }
+
+    const { x, y } = currentOffset;
+    const { width, height } = cardSize.current;
+    const cardRect = {
+      left: x,
+      top: y,
+      right: x + width,
+      bottom: y + height,
+    };
+    const slotRects = getSlotRects();
+    const bestSlot = findMostOverlappedSlot(cardRect, slotRects);
+
+    if (bestSlot) {
+      setActiveSlot(bestSlot.lookupIndex);
+    } else {
+      setActiveSlot(null);
+    }
+  }, [isDragging, currentOffset]);
 
   function showErrorAlert(message) {
     gameContext.setErrorMessage(message);
     gameContext.setShowDangerAlert(true);
   }
 
-  function handleDoubleClick() {
-    if (!isDraggable) return;
-  }
+  function handlePointerDown(e) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    cardSize.current = { width: rect.width, height: rect.height };
 
-  function handlePointerDown() {
     if (isDraggable) return;
 
     if (clickTimeout.current) {
@@ -108,7 +167,6 @@ function Card({
         isDragging ? "opacity-50" : ""
       } z-20`}
       onPointerDown={handlePointerDown}
-      onDoubleClick={handleDoubleClick}
     >
       <CornerLabel
         position="top"

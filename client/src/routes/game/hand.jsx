@@ -13,6 +13,8 @@ function Hand({ player }) {
             return (
               <Slot
                 key={`gb_slot_nocard_${index}`}
+                prefix="empty_hand_"
+                index={index}
                 onDropCard={(card) => gameContext.reorderHand(card, index)}
               />
             );
@@ -21,6 +23,7 @@ function Hand({ player }) {
             <Slot
               key={`gb_slot_card_${card.i}`}
               card={card}
+              prefix="hand_"
               index={index}
               onDropCard={(card) => gameContext.reorderHand(card, index)}
             />

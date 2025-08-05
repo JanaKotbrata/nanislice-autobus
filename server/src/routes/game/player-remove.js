@@ -4,7 +4,7 @@ const {playerRemove: schema} = require("../../data-validations/game/validation-s
 const {PostResponseHandler} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
-const {transformCurrentPlayerData, closeGame} = require("../../services/game-service");
+const {transformCurrentPlayerData, closeGame, getGame} = require("../../services/game-service");
 const {States} = require("../../utils/game-constants");
 const {shuffleDeck} = require("../../services/card-service");
 const {authorizeUser} = require("../../services/auth-service");
@@ -25,17 +25,8 @@ class RemoveGamePlayer extends PostResponseHandler {
             throw new GameErrors.UserNotAuthorized(validData);
         }
 
-        let game;
-        if (gameId) {
-            game = await games.getGameById(gameId);
-        } else {
-            game = await games.getGameByCode(gameCode);
-        }
+        let game = await getGame(gameId, gameCode, GameErrors.GameDoesNotExist);
 
-        if (!game) {
-            throw new GameErrors.GameDoesNotExist(validData);
-
-        }
         let isPlayerInGame = game.playerList.find((player) =>
             player.userId === userId
         );

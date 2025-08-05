@@ -18,9 +18,9 @@ function ModalWrapper({ children }) {
       ) : (
         <Rnd
           default={{
-            x: 100,
-            y: 100,
-            width: "auto",
+            x: window.innerWidth / 2 - 150,
+            y: window.innerHeight / 2 - 200,
+            width: 300,
             height: "auto",
           }}
           bounds="window"

@@ -8,6 +8,7 @@
         "LIST": "/api/game/list",
         "PLAYER_ADD": "/api/game/player/add",
         "PLAYER_SET": "/api/game/player/set",
+        "PLAYER_SET_ORDER": "/api/game/player/setOrder",
         "PLAYER_REMOVE": "/api/game/player/remove",
         "START": "/api/game/start",
         "ACTION_PROCESS": "/api/game/action/process"

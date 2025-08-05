@@ -92,6 +92,7 @@ function Player({
               onDropCard={(card, dropIndex) =>
                 gameContext.moveCardToSlot(card, dropIndex, "bus")
               }
+              prefix={`player_bus_${player.userId}_`}
               count={player?.bus?.length}
               bottomCard={bottomCard}
               isDraggable={isDraggable}
@@ -122,6 +123,7 @@ function Player({
                     card={slot[slot.length - 1]}
                     index={index}
                     {...extraProps}
+                    prefix={`player_slot_${player.userId}_`}
                     isDraggable={isDraggable}
                     isMyself={isMyself}
                     isMyselfJrInBus={isMyselfJrInBus}

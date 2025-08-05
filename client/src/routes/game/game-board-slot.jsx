@@ -10,6 +10,7 @@ const GameBoardSlot = forwardRef(
           packLength={packLength}
           onDropCard={onDropCard}
           index={index}
+          prefix="gameboard_"
           isOverClass={"bg-gray-300/30"}
           isDropClass={"bg-white/60"}
           isDraggable={false}

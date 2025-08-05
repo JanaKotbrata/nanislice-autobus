@@ -27,6 +27,10 @@ The goal of the game is to get rid of all the cards in your bus. The first playe
     - Hover over a bus to see how many cards are left.
     - Hover over a stop pile to see how many cards it contains.
 
+## Live app
+App url: https://autobus.dmw.cz/
+
+
 ## Tech Stack
 
 ### Frontend

@@ -24,12 +24,18 @@ export function useLobbySocket(userId, gameCode, setContextGame) {
           }
         }
       });
+      socket.on("playerSetOrder", (data) => {
+        if (data.code === gameCode) {
+          setContextGame(data);
+        }
+      });
     }
 
     return () => {
       socket.off("playerAdded");
       socket.off("playerRemoved");
       socket.off("gameStarted");
+      socket.off("playerSetOrder");
     };
   }, [userId, gameCode, setContextGame]);
 

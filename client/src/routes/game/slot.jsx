@@ -1,14 +1,14 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useContext } from "react";
 import { useDrop } from "react-dnd";
 import Card from "./card.jsx";
+import SlotContext from "../../context/slot.js";
 
 function Slot({
   card,
   onDropCard,
   packLength,
   index,
-  isOverClass = "bg-gray-300",
-  isDropClass = "bg-gray-800",
+  prefix = "slot_",
   border = "border-dashed border-gray-500",
   isBottomCard = false,
   isDraggable = true,
@@ -16,23 +16,30 @@ function Slot({
   isMyselfJrInBus = false,
 }) {
   const slotRef = useRef(null);
-  const [{ isOver }, drop] = useDrop({
+  const { setSlotRef, unsetSlotRef, getActiveSlot, setActiveSlot } = useContext(SlotContext);
+
+  const slotIndex = prefix + index;
+  const isActive = getActiveSlot() === slotIndex;
+
+  const [, drop] = useDrop({
     accept: "CARD",
     drop: (item) => {
+      setActiveSlot(null);
       onDropCard?.(item.card, index);
     },
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver() && onDropCard,
-    }),
   });
 
+  useEffect(() => {
+    setSlotRef(slotIndex, index, slotRef.current, onDropCard);
+    return () => unsetSlotRef(slotIndex);
+  }, [index, setSlotRef]);
+
   drop(slotRef);
+
   return (
     <div
       ref={slotRef}
-      className={`w-11 h-16 sm:w-14 sm:h-22 md:w-16 md:h-24 border rounded flex items-center justify-center text-xs sm:text-sm ${border} ${
-        isOver ? isOverClass : isDropClass
-      }`}
+      className={`w-11 h-16 sm:w-14 sm:h-22 md:w-16 md:h-24 border rounded flex items-center justify-center text-xs sm:text-sm relative ${border} ${isActive ? "ring-4 ring-blue-400" : ""}`}
     >
       {card?.rank ? (
         <Card
@@ -43,10 +50,9 @@ function Slot({
           isDraggable={isDraggable && !isMyselfJrInBus}
           isMyself={isMyself}
           isMyselfJrInBus={isMyselfJrInBus}
+          onDropCard={onDropCard}
         />
-      ) : (
-        ""
-      )}
+      ) : null}
     </div>
   );
 }

@@ -7,6 +7,7 @@ function BusSlot({
   index,
   count,
   bottomCard,
+  prefix = "bus_",
   isDraggable,
   isMyself,
 }) {
@@ -59,6 +60,7 @@ function BusSlot({
         card={showBottomCard ? bottomCard : card}
         onDropCard={showBottomCard ? undefined : onDropCard}
         index={index}
+        prefix={prefix}
         isOverClass={"bg-gray-300"}
         isDropClass={"bg-white"}
         border={pulse}

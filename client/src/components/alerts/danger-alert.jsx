@@ -27,7 +27,6 @@ function DangerAlert({ message, onClose }) {
       {i18n.translate("dangerAlertClose")}
     </button>,
   ];
-  //TODO
   return (
     <ModalWrapper>
       <BaseAlert

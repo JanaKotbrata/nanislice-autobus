@@ -107,3 +107,12 @@ export async function setPlayer(data = {}, token) {
     throw error;
   }
 }
+export async function setPlayersOrder(data = {}, token) {
+  try {
+    const response = await post(Routes.Game.PLAYER_SET_ORDER, data, token);
+    return response.data;
+  } catch (error) {
+    console.error("Error setting player:", error);
+    throw error;
+  }
+}

@@ -49,7 +49,7 @@ async function getGame(id, code, error, warning) {
     }
 
     if (!game && error) {
-        throw new GameErrors.GameDoesNotExist(params);
+        throw new error(params);
         // TODO return new GameErrors.GameDoesNotExist(validData); //Použití jako warning - ale je lepší udělat novou třídu pro Warning
     }
     if (!game && warning) {

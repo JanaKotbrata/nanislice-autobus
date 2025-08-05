@@ -63,7 +63,13 @@ class FailedToAddPlayer extends CommonError {
         this.params = params;
     }
 }
-
+class FailedToSetPlayersOrder extends CommonError {
+    constructor(params) {
+        super('FailedToSetPlayersOrder', "Failed to set players order");
+        this.status = 500;
+        this.params = params;
+    }
+}
 class PlayerAlreadyInGame extends CommonError {
     constructor(params) {
         super('PlayerAlreadyInGame', "Player already in game");
@@ -207,10 +213,23 @@ class InvalidCardInBusStopDifferentIndex extends CommonError {
         this.params = params;
     }
 }
-
+class InvalidPlayerList extends CommonError {
+    constructor(params) {
+        super('InvalidPlayerList', "Invalid player list");
+        this.status = 400;
+        this.params = params;
+    }
+}
 class UserCanNotStartGame extends CommonError {
     constructor(params) {
         super('UserCanNotStartGame', "User is not allowed to start the game");
+        this.status = 403;
+        this.params = params;
+    }
+}
+class UserCanNotSetPlayers extends CommonError {
+    constructor(params) {
+        super('UserCanNotSetPlayers', "User is not allowed to set players");
         this.status = 403;
         this.params = params;
     }
@@ -280,6 +299,7 @@ module.exports = {
     InvalidHandReorder,
     InvalidBusStopIndex,
     InvalidHandLength,
+    InvalidPlayerList,
     UserIsNotCurrentPlayer,
     NotPossibleToDraw,
     PlayerMustDrawCardFirst,
@@ -290,6 +310,8 @@ module.exports = {
     UserNotAuthorized,
     UserIsNotAllowedToDeleteGame,
     UserIsNotAllowedToCloseGame,
-    CardIsMissing
+    CardIsMissing,
+    UserCanNotSetPlayers,
+    FailedToSetPlayersOrder
 
 };
