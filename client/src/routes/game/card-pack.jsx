@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 
 function CardPack({
+  id = "cardpack_deck",
   text,
   onDrawCard,
   isDrawedCard,
@@ -27,6 +28,7 @@ function CardPack({
 
   return (
     <motion.div
+      id={id}
       className="relative group w-fit"
       initial="rest"
       animate="rest"

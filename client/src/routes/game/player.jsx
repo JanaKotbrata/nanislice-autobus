@@ -49,6 +49,7 @@ function Player({
 
   return (
     <div
+      id={`player_${player.userId}`}
       className={`w-full transition-all duration-300 ease-in-out rounded-xl border-b border-gray-600
         ${isActivePlayer ? "bg-gray-900 animate-[pulse_5s_ease-in-out_infinite]" : "bg-gray-800 hover:bg-gray-700"}`}
     >

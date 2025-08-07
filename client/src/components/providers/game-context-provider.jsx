@@ -60,16 +60,13 @@ function GameContextProvider({ children }) {
     if (!ready) {
       newReady = true;
       setReady(newReady);
-      console.log("true", newReady);
       alterMyself({ ready: newReady });
     } else {
       newReady = false;
       setReady(newReady);
-      console.log("false", newReady);
       alterMyself({ ready: newReady });
     }
     const userId = game.playerList.find((player) => player.myself)?.userId;
-    console.log("ready před setPlayer", { gameCode, userId, ready: newReady });
     setPlayer(
       {
         gameCode,

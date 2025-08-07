@@ -9,7 +9,6 @@ function SeznamLogin({ message = "" }) {
     const redirectUrl = encodeURIComponent(
       `${Config.CLIENT_URI}/auth-callback`,
     );
-    console.log("redirectUrl", redirectUrl);
     window.location.href = `${Config.SERVER_URI}/auth/seznam`;
   }
 

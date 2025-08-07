@@ -1,14 +1,29 @@
 import { useEffect } from "react";
 import { socket } from "../services/create-socket.js";
-export function useGameSocket(userId, gameCode, setContextGame, showAlert) {
+export function useGameSocket(
+  userId,
+  gameCode,
+  setContextGame,
+  showAlert,
+  animateToSlot,
+) {
   useEffect(() => {
     if (gameCode && userId) {
       socket.emit("listenToGame", gameCode, userId);
       socket.on("processAction", (data) => {
         if (data.newGame.code === gameCode) {
-          setContextGame(data.newGame);
+          if (data.actionBy !== userId && data.target) {
+            animateToSlot(data.target, data.actionBy, data.isShuffled, () => {
+              setContextGame(data.newGame);
+            });
+          } else {
+            animateToSlot(null, null, null, () => {
+              setContextGame(data.newGame);
+            });
+          }
         }
       });
+
       socket.on("playerRemoved", (data) => {
         if (data.code.startsWith(gameCode)) {
           setContextGame(data);
@@ -19,6 +34,7 @@ export function useGameSocket(userId, gameCode, setContextGame, showAlert) {
     socket.on("notify-player-leaving", ({ playerName }) => {
       showAlert(playerName);
     });
+
     return () => {
       socket.off("processAction");
       socket.off("playerRemoved");

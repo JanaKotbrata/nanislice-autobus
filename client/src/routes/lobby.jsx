@@ -202,7 +202,9 @@ function Lobby() {
                 />
               )}
               {!shouldRender && (
-                <div className="p-6 bg-gray-500/40 animate-[pulse_2s_ease-in-out_infinite] rounded-lg">
+                <div
+                  className={`p-6 bg-gray-500/40 ${gameContext?.ready || myself?.ready ? "" : "animate-[pulse_2s_ease-in-out_infinite]"} rounded-lg`}
+                >
                   <Button onClick={() => gameContext.handleReady()}>
                     {gameContext?.ready || myself?.ready ? (
                       <FaCheck className="w-5 h-5 mx-auto" />

@@ -1,7 +1,6 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import Player from "./game/player.jsx";
 import GameBoard from "./game/game-board.jsx";
 import GameContext from "../context/game.js";
 import { useNavigate } from "react-router-dom";
@@ -14,158 +13,202 @@ import InfoAlert from "../components/alerts/info-alert.jsx";
 import LangSelector from "../components/form/visual/lang-selector.jsx";
 import LanguageContext from "../context/language.js";
 import SlotContextProvider from "../components/providers/slot-context-provider.jsx";
+import AnimationCard from "../components/animation-card.jsx";
+import PlayerPanel from "./game/player-panel.jsx";
+
+const ANIMATION_DURATION = 1000;
+
+function splitPlayers(players) {
+  const playersWithPosition = players.map((player, idx) => ({
+    ...player,
+    position: idx + 1,
+  }));
+  const myselfIdx = playersWithPosition.findIndex((p) => p?.myself);
+  if (myselfIdx === -1) return [{}, playersWithPosition];
+  const myself = playersWithPosition[myselfIdx];
+  const others = playersWithPosition.filter((_, idx) => idx !== myselfIdx);
+  const orderedOthers = [
+    ...others.slice(myselfIdx),
+    ...others.slice(0, myselfIdx),
+  ];
+  return [myself, orderedOthers];
+}
+
+function getSlotCoordinates(slotId) {
+  const slotElement = document.getElementById(slotId);
+  if (!slotElement) return null;
+
+  const slotRect = slotElement.getBoundingClientRect();
+  return {
+    top: slotRect.top,
+    left: slotRect.left,
+  };
+}
 
 function Game() {
   const navigate = useNavigate();
   const gameContext = useContext(GameContext);
-  const [leftWidth, setLeftWidth] = useState(653);
-  const [dragging, setDragging] = useState(false);
-  const [showEndGame, setShowEndGame] = useState(false);
-  const [leavingPlayer, setLeavingPlayer] = useState(false);
+  const [leftPanelWidth, setLeftPanelWidth] = useState(653);
+  const [isDraggingPanel, setIsDraggingPanel] = useState(false);
+  const [showEndGameAlert, setShowEndGameAlert] = useState(false);
+  const [leavingPlayerName, setLeavingPlayerName] = useState("");
   const i18n = useContext(LanguageContext);
-  const dragRef = useRef(null);
+  const animationQueue = useRef([]);
+  const [currentAnimation, setCurrentAnimation] = useState(null);
+  const [animationTick, setAnimationTick] = useState(0);
+
+  useEffect(() => {
+    if (!currentAnimation && animationQueue.current.length > 0) {
+      const next = animationQueue.current.shift();
+      setCurrentAnimation(next);
+
+      setTimeout(() => {
+        if (next.animationCallback) {
+          next.animationCallback();
+        }
+        setCurrentAnimation(null);
+        setAnimationTick((tick) => tick + 1);
+      }, next.duration);
+    }
+  }, [currentAnimation, animationTick]);
+
   const { user, token } = useAuth();
-  const [myself, players] = getPlayers(gameContext.players);
-  const isTooManyPlayers = players.length > 3;
-  const isMyselfJrInBus = myself.bus[0]?.rank === "Jr";
+  const [myself, otherPlayers] = splitPlayers(gameContext.players);
 
   useEffect(() => {
     if (gameContext?.gameState === "initial") {
       navigate(`/lobby/${gameContext?.gameCode}`);
-    } else if (
-      gameContext &&
-      gameContext.gameState &&
-      gameContext.gameState === "closed"
-    ) {
+    } else if (gameContext?.gameState === "closed") {
       navigate(`/`);
-    } else if (
-      gameContext &&
-      gameContext.gameState &&
-      gameContext.gameState === "finished"
-    ) {
+    } else if (gameContext?.gameState === "finished") {
+      setShowEndGameAlert(true);
       setTimeout(() => {
-        closeGame({ gameCode: gameContext.gameCode }, token).then(() =>
-          navigate(`/`),
-        );
-        navigate(`/`);
+        closeGame({ gameCode: gameContext.gameCode }, token).finally(() => {
+          navigate(`/`);
+        });
       }, 10000);
-      setShowEndGame(true);
     }
-  }, [gameContext?.gameState]);
-  useEffect(() => {
-    if (window.innerWidth < 1163) {
-      setLeftWidth(undefined);
-    }
-  }, []);
+  }, [gameContext?.gameState, gameContext?.gameCode, navigate, token]);
 
   useGameSocket(
     user.id,
     gameContext.gameCode,
     gameContext.setContextGame,
-    setLeavingPlayer,
+    (playerName) => setLeavingPlayerName(playerName),
+    (target, actionBy, isShuffled, animationCallback) => {
+      setTimeout(() => {
+        if (!target && !actionBy) {
+          animationQueue.current.push({ duration: 0, animationCallback });
+          setAnimationTick((tick) => tick + 1);
+          return;
+        }
+        let duration = ANIMATION_DURATION;
+        let coords, originCoords, bg;
+        if (isShuffled) {
+          originCoords = getSlotCoordinates("completed_cardpack_deck");
+          coords = getSlotCoordinates("cardpack_deck");
+
+          const completedList = gameContext?.game?.completedCardList || [];
+          bg = completedList[completedList.length - 1]?.bg;
+          duration = duration / 2;
+
+          if (coords && originCoords) {
+            const animation = {
+              top: coords.top,
+              left: coords.left,
+              originTop: originCoords.top,
+              originLeft: originCoords.left,
+              bg,
+            };
+            animationQueue.current.push({
+              animation,
+              duration,
+              animationCallback,
+            });
+          }
+        }
+
+        coords = getSlotCoordinates(
+          target === "hand" ? `player_${actionBy}` : target,
+        );
+        originCoords = getSlotCoordinates(`player_${actionBy}`);
+
+        if (target === "hand") {
+          bg = gameContext?.deck?.[gameContext?.deck?.length - 1]?.bg;
+          originCoords = getSlotCoordinates("cardpack_deck");
+        }
+
+        if (coords && originCoords) {
+          const animation = {
+            top: coords.top,
+            left: coords.left,
+            originTop: originCoords.top,
+            originLeft: originCoords.left,
+            bg,
+          };
+          animationQueue.current.push({
+            animation,
+            duration,
+            animationCallback,
+          });
+          setAnimationTick((tick) => tick + 1);
+        }
+      }, 100);
+    },
   );
 
-  function handleMouseDown() {
-    setDragging(true);
+  function handlePanelDragStart() {
+    setIsDraggingPanel(true);
     document.body.style.cursor = "ew-resize";
   }
 
-  function handleMouseMove(e) {
-    if (!dragging) return;
-    const newWidth = Math.max(200, leftWidth + e.movementX);
-    setLeftWidth(newWidth);
+  function handlePanelDragMove(e) {
+    if (!isDraggingPanel) return;
+    setLeftPanelWidth((prevWidth) =>
+      Math.max(200, (prevWidth ?? 653) + e.movementX),
+    );
   }
 
-  function handleMouseUp() {
-    setDragging(false);
+  function handlePanelDragEnd() {
+    setIsDraggingPanel(false);
     document.body.style.cursor = "default";
-  }
-
-  function getPlayers(players) {
-    let newPlayers = players.map((player, index) => ({
-      ...player,
-      position: index + 1,
-    }));
-
-    let index = newPlayers.findIndex((player) => player?.myself);
-    let myself = newPlayers.splice(index, 1)[0];
-
-    let orderedPlayers = [
-      ...newPlayers.slice(index),
-      ...newPlayers.slice(0, index),
-    ];
-
-    return [myself, orderedPlayers];
   }
 
   return (
     <SlotContextProvider>
       <DndProvider backend={HTML5Backend}>
+        {currentAnimation?.animation && (
+          <AnimationCard
+            x={currentAnimation.animation.left}
+            y={currentAnimation.animation.top}
+            startY={currentAnimation.animation.originTop}
+            startX={currentAnimation.animation.originLeft}
+            bg={currentAnimation.animation.bg}
+            duration={currentAnimation.duration / 1000}
+          />
+        )}
+
         <div
           className="flex flex-col sm:flex-row w-full h-full p-1 relative bg-gray-800 force-vertical-layout"
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
+          onMouseMove={handlePanelDragMove}
+          onMouseUp={handlePanelDragEnd}
         >
-          {/* Levá sekce - Hráči */}
-          <div
-            className="bg-gray-800 text-white p-4 flex flex-col left-bar"
-            style={{ width: leftWidth }}
-          >
-            <h2 className="text-xl font-bold mb-4">
-              {i18n.translate("busTitle")}
-            </h2>
-            <div className="flex-grow overflow-y-auto sm:max-h-full max-h-[20vh] scrollbar-thin pr-2 -mr-2">
-              {players.map((player, index) => (
-                <Player
-                  key={"player_" + index}
-                  player={player}
-                  isActivePlayer={
-                    gameContext.players?.[gameContext.currentPlayer]?.userId ===
-                    player?.userId
-                  }
-                  isDraggable={false}
-                  expandable={isTooManyPlayers}
-                />
-              ))}
-            </div>
-            {myself && (
-              <Player
-                key={"myself_" + (gameContext.players.length - 1)}
-                player={myself}
-                isActivePlayer={
-                  gameContext.players?.[gameContext.currentPlayer]?.userId ===
-                  myself?.userId
-                }
-                isDraggable={
-                  gameContext.players?.[gameContext.currentPlayer]?.userId ===
-                  myself?.userId
-                }
-                isMyself={true}
-                isMyselfJrInBus={isMyselfJrInBus}
-              />
-            )}
-          </div>
-
-          {/* Resize lišta */}
-          <div
-            ref={dragRef}
-            className="hidden sm:block w-2 cursor-ew-resize bg-gray-500"
-            onMouseDown={handleMouseDown}
+          <PlayerPanel
+            otherPlayers={otherPlayers}
+            myself={myself}
+            leftPanelWidth={leftPanelWidth}
+            handlePanelDragStart={handlePanelDragStart}
           />
 
-          {/* Pravá sekce - Hrací pole */}
           <div className="flex-grow w-full bg-gray-900 p-6 flex flex-col relative">
             <div className="flex flex-row gap-6 justify-end">
               <LangSelector />
               <Leave userId={myself.userId} />
             </div>
-
             <GameBoard player={myself} cardPack={gameContext.deck} />
           </div>
         </div>
-
-        {/* Alert při konci hry */}
-        {showEndGame && (
+        {showEndGameAlert && (
           <SuccessAlert
             message={
               i18n.translate("winner") +
@@ -173,12 +216,10 @@ function Game() {
             }
           />
         )}
-
-        {/* Alert při odchodu ze hry */}
-        {leavingPlayer && (
+        {!!leavingPlayerName && (
           <InfoAlert
-            onClose={() => setLeavingPlayer(false)}
-            message={`${leavingPlayer} ${i18n.translate("tryToLeave")}`}
+            onClose={() => setLeavingPlayerName("")}
+            message={`${leavingPlayerName} ${i18n.translate("tryToLeave")}`}
           />
         )}
       </DndProvider>

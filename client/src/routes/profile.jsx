@@ -30,9 +30,7 @@ function Profile() {
         setIsSubmitting(true);
         userContext
           .update(formData)
-          .then(() => {
-            console.log("uložené jméno:", name);
-          })
+          .then(() => {})
           .finally(() => setIsSubmitting(false));
       }
     }, 600);
@@ -51,7 +49,6 @@ function Profile() {
       .update(formData)
       .then(() => {
         setSelectedFile(null);
-        console.log("uložený picture");
       })
       .finally(() => setIsSubmitting(false));
   }, [selectedFile]);

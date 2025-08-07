@@ -43,10 +43,11 @@ class ProcessAction extends PostResponseHandler {
             }
         }
 
-        let [updatedGame, xp] = this.#prepareGameData(game, userId, validData);
+        let [updatedGame, xp, target] = this.#prepareGameData(game, userId, validData);
 
         //Checks if the deck of the game is lower than 10 -> gets completedCardList shuffle and deck = [...completedCardList, ...deck]
-        updatedGame = this.#checkAndUpdateDeck(updatedGame);
+        let isShuffled = false;
+        [updatedGame, isShuffled] = this.#checkAndUpdateDeck(updatedGame);
 
         try {
             let newGame = await games.updateGame(game.id, updatedGame);
@@ -59,7 +60,8 @@ class ProcessAction extends PostResponseHandler {
                 transformCurrentPlayerData(playerGame, playerId);
                 console.log(`Emitting processAction event to ${gameCode}_${playerId}`);
                 this.io.to(`${gameCode}_${playerId}`).emit("processAction", {
-                    userId, newGame:playerGame, xp
+                    userId, newGame: playerGame, xp, target, actionBy: userId,
+                    card: validData.card || null, isShuffled
                 });
             })
             transformCurrentPlayerData(newGame, userId);
@@ -120,6 +122,7 @@ class ProcessAction extends PostResponseHandler {
         const newGame = structuredClone(game);
         const {action, card, targetIndex, hand} = params;
         let xp;
+        let target;
         const myself = newGame.playerList.find(player => player.userId === userId);
         if (myself.isCardDrawed || action === GameActions.REORDER_HAND || action === GameActions.DRAW_CARD) {
             const actionHandlers = {
@@ -145,6 +148,7 @@ class ProcessAction extends PostResponseHandler {
                     newGame.gameBoard.push([card]);
                     this.#removeCardFromHand(myself.hand, card);
                     this.#setPlayerToDraw(myself);
+                    target = `gb_nocard_`;
                 }, [GameActions.START_NEW_PACK_FROM_BUS]: () => {
                     GameBoardValidation.validationOfNewDestination(card);
                     newGame.gameBoard.push([card]);
@@ -159,6 +163,7 @@ class ProcessAction extends PostResponseHandler {
                     GameBoardValidation.validationOfGameBoard(newGame, targetIndex, card);
                     this.#removeCardFromHand(myself.hand, card);
                     this.#addCardTo(newGame.gameBoard[targetIndex], card);
+                    target = `gb_card_${targetIndex}`;
                     this.#setPlayerToDraw(myself);
                     //if the destination is full, move cards to completedCardList
                     this.#completeCardList(newGame, targetIndex);
@@ -168,6 +173,7 @@ class ProcessAction extends PostResponseHandler {
                     GameBoardValidation.validationOfGameBoard(newGame, targetIndex, card);
                     this.#removeCardFromBusStop(myself.busStop, card);
                     this.#addCardTo(newGame.gameBoard[targetIndex], card);
+                    target = `gb_card_${targetIndex}`;
                     //if the destination is full, move cards to completedCardList
                     this.#completeCardList(newGame, targetIndex);
                 },
@@ -176,6 +182,7 @@ class ProcessAction extends PostResponseHandler {
                     GameBoardValidation.validationOfGameBoard(newGame, targetIndex, card);
                     this.#removeCardFrom(myself.bus, card);
                     this.#addCardTo(newGame.gameBoard[targetIndex], card);
+                    target = `gb_card_${targetIndex}`;
                     //if the destination is full, move cards to completedCardList
                     this.#completeCardList(newGame, targetIndex);
                     if (myself.bus.length === 0) {
@@ -191,6 +198,7 @@ class ProcessAction extends PostResponseHandler {
                     this.#validateForDraw(myself, actualCardsInHand);
                     const newCard = newGame.deck.pop();
                     this.#drawCard(myself.hand, newCard);
+                    target = "hand";
                     if ((actualCardsInHand.length + 1) === 5) {
                         myself.isCardDrawed = true;
                     }
@@ -205,7 +213,7 @@ class ProcessAction extends PostResponseHandler {
             }
 
             actionHandlers[action]();
-            return [newGame, xp];
+            return [newGame, xp, target];
         } else {
             throw new GameErrors.PlayerMustDrawCardFirst({isCardDrawed: myself.isCardDrawed});
         }
@@ -213,6 +221,7 @@ class ProcessAction extends PostResponseHandler {
     }
 
     #checkAndUpdateDeck(game) {
+        let isShuffled = false;
         if (game?.deck?.length < 6) {
             if (game.completedCardList.length === 0) {
                 let unusedCards = [];
@@ -230,9 +239,10 @@ class ProcessAction extends PostResponseHandler {
                 const completedCardList = shuffleDeck(filteredCardList);
                 game.deck = [...completedCardList, ...game.deck];
                 game.completedCardList = [];
+                isShuffled = true;
             }
         }
-        return game;
+        return [game, isShuffled];
     }
 
     #validationReorderHands(myselfHand, newHand) {

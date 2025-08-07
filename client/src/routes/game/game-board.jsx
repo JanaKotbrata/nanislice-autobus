@@ -22,7 +22,6 @@ function GameBoard({ player }) {
 
   const [shouldPulse, setShouldPulse] = useState(false);
   const [animatingCard, setAnimatingCard] = useState(null);
-  const prevBoardRef = useRef([]);
 
   const deckLength = gameContext.deck.length;
   const completedCardLength = gameContext.game.completedCardList?.length || 0;
@@ -37,54 +36,6 @@ function GameBoard({ player }) {
       setShouldPulse(false);
     }
   }, [isDrawedCard]);
-
-  useEffect(() => {
-    const prevBoard = prevBoardRef.current;
-    const currentBoard = gameContext.gameBoard;
-
-    console.log("CHECKING ANIMATION CONDITIONS");
-    console.log("Previous board:", prevBoard);
-    console.log("Current board:", currentBoard);
-
-    prevBoard.forEach((prevPack, index) => {
-      const currentPack = currentBoard[index];
-      if (prevPack?.length === 12 && currentPack?.length === 13) {
-        const fromEl = slotRefs.current[index];
-        const toEl = completedCardRef.current;
-        const boardEl = boardRef.current;
-
-        if (!fromEl || !toEl || !boardEl) {
-          console.warn("Chybí DOM elementy pro animaci");
-          return;
-        }
-
-        const from = fromEl.getBoundingClientRect();
-        const to = toEl.getBoundingClientRect();
-        const board = boardEl.getBoundingClientRect();
-
-        const relativeFrom = {
-          top: from.top - board.top,
-          left: from.left - board.left,
-        };
-        const relativeTo = {
-          top: to.top - board.top,
-          left: to.left - board.left,
-        };
-
-        console.log("Animating from", relativeFrom, "to", relativeTo);
-
-        const card = currentPack[currentPack.length - 1];
-
-        setAnimatingCard({
-          from: relativeFrom,
-          to: relativeTo,
-          bg: card?.bg || "blue",
-        });
-      }
-    });
-
-    prevBoardRef.current = currentBoard.map((p) => [...p]);
-  }, [gameContext.gameBoard]);
 
   return (
     <div className="h-full flex flex-col gap-4">
@@ -110,6 +61,7 @@ function GameBoard({ player }) {
           >
             {completedCardLength > 0 ? (
               <CardPack
+                id={"completed_cardpack_deck"}
                 bg={
                   gameContext.game.completedCardList[completedCardLength - 1]
                     ?.bg
@@ -133,9 +85,13 @@ function GameBoard({ player }) {
               animate={{
                 top: animatingCard.to.top,
                 left: animatingCard.to.left,
-                rotate: 25,
+                rotate: animatingCard.rotate ?? 25,
+                scale: animatingCard.scale ?? 1,
               }}
-              transition={{ duration: 0.7, ease: "easeInOut" }}
+              transition={{
+                duration: animatingCard.duration ?? 0.7,
+                ease: "easeInOut",
+              }}
               onAnimationComplete={() => setAnimatingCard(null)}
             />
           )}
@@ -153,6 +109,7 @@ function GameBoard({ player }) {
             const card = pack[pack.length - 1];
             return (
               <GameBoardSlot
+                id={`gb_card_${index}`}
                 key={`gb_card_${card.i}`}
                 index={index}
                 card={card}
@@ -165,6 +122,7 @@ function GameBoard({ player }) {
           })}
 
           <GameBoardSlot
+            id={`gb_nocard_`}
             key={`gb_nocard_${gameContext.gameBoard.length}`}
             index={gameContext.gameBoard.length}
             onDropCard={gameContext.startNewPack}

@@ -2,9 +2,9 @@ import Slot from "./slot.jsx";
 import React, { forwardRef } from "react";
 
 const GameBoardSlot = forwardRef(
-  ({ card, onDropCard, index, packLength }, ref) => {
+  ({ id, card, onDropCard, index, packLength }, ref) => {
     return (
-      <div ref={ref} className="relative group">
+      <div ref={ref} className="relative group" id={id}>
         <Slot
           card={card}
           packLength={packLength}
