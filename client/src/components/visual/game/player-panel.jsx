@@ -1,7 +1,7 @@
 import Player from "./player.jsx";
 import React, { useContext, useRef } from "react";
-import LanguageContext from "../../context/language.js";
-import GameContext from "../../context/game.js";
+import LanguageContext from "../../../context/language.js";
+import GameContext from "../../../context/game.js";
 
 function PlayerPanel({
   otherPlayers,

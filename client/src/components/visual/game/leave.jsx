@@ -1,6 +1,6 @@
 import { FaSignOutAlt } from "react-icons/fa";
 import React, { useContext } from "react";
-import LeaveAlert from "../../alerts/leave-alert.jsx";
+import LeaveAlert from "../alerts/leave-alert.jsx";
 import GameContext from "../../../context/game.js";
 import { removePlayer } from "../../../services/game-service.jsx";
 import { useAuth } from "../../../context/auth-context.jsx";

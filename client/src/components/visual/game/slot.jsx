@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useContext } from "react";
 import { useDrop } from "react-dnd";
 import Card from "./card.jsx";
-import SlotContext from "../../context/slot.js";
+import SlotContext from "../../../context/slot.js";
 
 function Slot({
   card,
@@ -16,7 +16,8 @@ function Slot({
   isMyselfJrInBus = false,
 }) {
   const slotRef = useRef(null);
-  const { setSlotRef, unsetSlotRef, getActiveSlot, setActiveSlot } = useContext(SlotContext);
+  const { setSlotRef, unsetSlotRef, getActiveSlot, setActiveSlot } =
+    useContext(SlotContext);
 
   const slotIndex = prefix + index;
   const isActive = getActiveSlot() === slotIndex;

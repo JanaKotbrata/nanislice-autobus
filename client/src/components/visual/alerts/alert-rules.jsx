@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import LanguageContext from "../../context/language";
+import LanguageContext from "../../../context/language.js";
 
 function AlertRules({ onClose }) {
   const i18n = useContext(LanguageContext);

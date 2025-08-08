@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import ModalWrapper from "./modal-wrapper.jsx";
 import BaseAlert from "./base-alert.jsx";
-import LanguageContext from "../../context/language";
+import LanguageContext from "../../../context/language.js";
 import AlertRules from "./alert-rules.jsx";
 
 function DangerAlert({ message, onClose }) {

@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import ModalWrapper from "./modal-wrapper.jsx";
 import BaseAlert from "./base-alert.jsx";
-import LanguageContext from "../../context/language";
+import LanguageContext from "../../../context/language.js";
 
 function SuccessAlert({ message }) {
   const i18n = useContext(LanguageContext);

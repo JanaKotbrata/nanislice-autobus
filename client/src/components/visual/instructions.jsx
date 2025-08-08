@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import LanguageContext from "../context/language.js";
+import LanguageContext from "../../context/language.js";
 
 function Instructions() {
   const [currentSlide, setCurrentSlide] = useState(0);

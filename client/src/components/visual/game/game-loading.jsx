@@ -1,7 +1,7 @@
-import { useGameCode } from "../hooks/use-game-code.js";
+import { useGameCode } from "../../../hooks/use-game-code.js";
 import { useContext } from "react";
-import GameContext from "../context/game.js";
-import Loading from "./loading.jsx";
+import GameContext from "../../../context/game.js";
+import Loading from "../loading.jsx";
 import { Navigate } from "react-router-dom";
 
 function GameLoading({ children }) {

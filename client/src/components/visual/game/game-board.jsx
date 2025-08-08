@@ -2,10 +2,10 @@ import React, { useContext, useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import CardPack from "./card-pack.jsx";
 import Slot from "./slot.jsx";
-import GameContext from "../../context/game.js";
-import DangerAlert from "../../components/alerts/danger-alert.jsx";
+import GameContext from "../../../context/game.js";
+import DangerAlert from "../alerts/danger-alert.jsx";
 import GameBoardSlot from "./game-board-slot.jsx";
-import LanguageContext from "../../context/language.js";
+import LanguageContext from "../../../context/language.js";
 import Hand from "./hand.jsx";
 
 function GameBoard({ player }) {
@@ -130,7 +130,13 @@ function GameBoard({ player }) {
         </div>
       </div>
 
-      <Hand player={player} />
+      <Hand
+        player={player}
+        isActivePlayer={
+          gameContext.players?.[gameContext.currentPlayer]?.userId ===
+          player?.userId
+        }
+      />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import React from "react";
-import Button from "../../components/form/visual/button.jsx";
-import discord from "../../assets/discord.svg";
-import Config from "../../../../shared/config/config.json";
+import Button from "../button.jsx";
+import discord from "../../../assets/discord.svg";
+import Config from "../../../../../shared/config/config.json";
 function DiscordLogin({ message = "" }) {
   const discordAuthUrl = `${Config.SERVER_URI}/auth/discord`;
 

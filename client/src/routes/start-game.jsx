@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import React, { useContext, useEffect, useState } from "react";
-import Instructions from "../components/instructions.jsx";
+import Instructions from "../components/visual/instructions.jsx";
 import { useAuth } from "../context/auth-context.jsx";
 import {
   addPlayer,
@@ -10,12 +10,12 @@ import {
 } from "../services/game-service.jsx";
 import GameContext from "../context/game.js";
 import { FaSignInAlt } from "react-icons/fa";
-import Button from "../components/form/visual/button.jsx";
-import Avatar from "../components/form/visual/avatar.jsx";
-import LogOut from "./user/log-out.jsx";
+import Button from "../components/visual/button.jsx";
+import Avatar from "../components/visual/user/avatar.jsx";
+import LogOut from "../components/visual/login/log-out.jsx";
 import LanguageContext from "../context/language.js";
-import LangSelector from "../components/form/visual/lang-selector.jsx";
-import InfoAlert from "../components/alerts/info-alert.jsx";
+import LangSelector from "../components/visual/lang-selector.jsx";
+import InfoAlert from "../components/visual/alerts/info-alert.jsx";
 
 function StartGame() {
   const i18n = useContext(LanguageContext);
@@ -84,7 +84,7 @@ function StartGame() {
   }
 
   return (
-    <section className="!bg-gray-900 min-h-screen flex items-center justify-center px-4">
+    <section className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-5xl z-10">
         <div className="flex flex-row gap-6 justify-end">
           <div className="p-2">

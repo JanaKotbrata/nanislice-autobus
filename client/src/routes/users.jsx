@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import { listUser } from "../services/user-service.jsx";
 import { useAuth } from "../context/auth-context.jsx";
-import Avatar from "../components/form/visual/avatar.jsx";
-import Button from "../components/form/visual/button.jsx";
-import LogOut from "./user/log-out.jsx";
+import Avatar from "../components/visual/user/avatar.jsx";
+import Button from "../components/visual/button.jsx";
+import LogOut from "../components/visual/login/log-out.jsx";
 import LanguageContext from "../context/language.js";
-import LangSelector from "../components/form/visual/lang-selector.jsx";
+import LangSelector from "../components/visual/lang-selector.jsx";
 
 function UsersPage() {
   const i18n = useContext(LanguageContext);
@@ -38,7 +38,7 @@ function UsersPage() {
   }
 
   return (
-    <div className="bg-gray-900 min-h-screen text-white px-8 py-12">
+    <div className="bg-gray-900 text-white px-8 py-12">
       <div className="flex flex-row gap-6 justify-end">
         <div className={"p-2"}>
           <LangSelector size={21} />
@@ -63,7 +63,7 @@ function UsersPage() {
                   </p>
                 </div>
               </div>
-              <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
+              <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end ">
                 <p className="text-sm leading-6 text-white">
                   {user.role?.toUpperCase() ||
                     i18n.translate("pleb").toUpperCase()}

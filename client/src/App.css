@@ -9,6 +9,9 @@
   flex-direction: column;
   align-items: stretch;
 }
+#root svg+* {
+    z-index: 1;
+}
 
 .card {
   padding: 0.5em;

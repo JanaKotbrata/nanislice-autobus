@@ -1,11 +1,13 @@
 import React, { useContext } from "react";
-import Slot from "./Slot";
-import GameContext from "../../context/game.js";
+import Slot from "./slot.jsx";
+import GameContext from "../../../context/game.js";
 
-function Hand({ player }) {
+function Hand({ player, isActivePlayer = false }) {
   const gameContext = useContext(GameContext);
   return (
-    <div className="flex flex-row items-center justify-center ">
+    <div
+      className={`flex flex-row items-center justify-center ${isActivePlayer ? "animate-[pulse_2s_ease-in-out_infinite] bg-gray-300/30" : ""} `}
+    >
       {"🖐🏻"}
       <div className="flex flex-wrap sm:flex-nowrap gap-4 p-4 border-2 border-dashed border-gray-500 rounded-md justify-center ">
         {player?.hand?.map((card, index) => {

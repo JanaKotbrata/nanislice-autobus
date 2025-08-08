@@ -1,6 +1,6 @@
-import Config from "../../../../shared/config/config.json";
-import google from "../../assets/google.svg";
-import Button from "../../components/form/visual/button.jsx";
+import Config from "../../../../../shared/config/config.json";
+import google from "../../../assets/google.svg";
+import Button from "../button.jsx";
 
 function GoogleLogin({ message = "" }) {
   function handleGoogleLogin(e) {

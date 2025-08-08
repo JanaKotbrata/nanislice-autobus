@@ -1,20 +1,21 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import GameBoard from "./game/game-board.jsx";
+import GameBoard from "../components/visual/game/game-board.jsx";
 import GameContext from "../context/game.js";
 import { useNavigate } from "react-router-dom";
 import { useGameSocket } from "../hooks/use-game-socket.js";
 import { useAuth } from "../context/auth-context.jsx";
-import SuccessAlert from "../components/alerts/success-alert.jsx";
+import SuccessAlert from "../components/visual/alerts/success-alert.jsx";
 import { closeGame } from "../services/game-service";
-import Leave from "../components/form/visual/leave.jsx";
-import InfoAlert from "../components/alerts/info-alert.jsx";
-import LangSelector from "../components/form/visual/lang-selector.jsx";
+import Leave from "../components/visual/game/leave.jsx";
+import InfoAlert from "../components/visual/alerts/info-alert.jsx";
+import LangSelector from "../components/visual/lang-selector.jsx";
 import LanguageContext from "../context/language.js";
 import SlotContextProvider from "../components/providers/slot-context-provider.jsx";
-import AnimationCard from "../components/animation-card.jsx";
-import PlayerPanel from "./game/player-panel.jsx";
+import AnimationCard from "../components/visual/game/animation-card.jsx";
+import PlayerPanel from "../components/visual/game/player-panel.jsx";
+import CardDragLayer from "../components/visual/game/card-drag-layer.jsx";
 
 const ANIMATION_DURATION = 1000;
 
@@ -177,6 +178,7 @@ function Game() {
   return (
     <SlotContextProvider>
       <DndProvider backend={HTML5Backend}>
+        <CardDragLayer />
         {currentAnimation?.animation && (
           <AnimationCard
             x={currentAnimation.animation.left}

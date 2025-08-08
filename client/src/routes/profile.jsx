@@ -2,9 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 import { getAvatar } from "../services/user-service.jsx";
 import UserContext from "../context/user.js";
 import { FaPencilAlt } from "react-icons/fa";
-import LogOut from "./user/log-out.jsx";
+import LogOut from "../components/visual/login/log-out.jsx";
 import LanguageContext from "../context/language.js";
-import LangSelector from "../components/form/visual/lang-selector.jsx";
+import LangSelector from "../components/visual/lang-selector.jsx";
 
 function Profile() {
   const i18n = useContext(LanguageContext);

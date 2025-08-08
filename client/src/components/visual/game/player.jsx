@@ -1,9 +1,9 @@
 import React, { useContext, useState, useRef } from "react";
-import GameContext from "../../context/game.js";
+import GameContext from "../../../context/game.js";
 import Slot from "./slot.jsx";
 import BusSlot from "./bus-slot.jsx";
-import { getAvatar } from "../../services/user-service.jsx";
-import Avatar from "../../components/form/visual/avatar.jsx";
+import { getAvatar } from "../../../services/user-service.jsx";
+import Avatar from "../user/avatar.jsx";
 
 function Player({
   player,

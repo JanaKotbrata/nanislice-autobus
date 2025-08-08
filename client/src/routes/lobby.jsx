@@ -1,11 +1,11 @@
 import React, { useContext, useEffect } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
-import Member from "../components/form/visual/member.jsx";
-import Invite from "../components/form/visual/invite.jsx";
-import Start from "../components/form/visual/start.jsx";
+import Member from "../components/visual/game/member.jsx";
+import Invite from "../components/visual/invite.jsx";
+import Start from "../components/visual/game/start.jsx";
 import nanislice from "../assets/nanislice.svg";
-import Instructions from "../components/instructions.jsx";
+import Instructions from "../components/visual/instructions.jsx";
 import GameContext from "../context/game.js";
 import { useLobbySocket } from "../hooks/use-lobby-socket.js";
 import {
@@ -16,12 +16,12 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth-context.jsx";
 import { getAvatar } from "../services/user-service.jsx";
-import Button from "../components/form/visual/button.jsx";
-import InfoAlert from "../components/alerts/info-alert.jsx";
-import LogOut from "./user/log-out.jsx";
+import Button from "../components/visual/button.jsx";
+import InfoAlert from "../components/visual/alerts/info-alert.jsx";
+import LogOut from "../components/visual/login/log-out.jsx";
 import LanguageContext from "../context/language.js";
-import LangSelector from "../components/form/visual/lang-selector.jsx";
-import DraggableItem from "../components/form/visual/draggable-item.jsx";
+import LangSelector from "../components/visual/lang-selector.jsx";
+import DraggableItem from "../components/visual/draggable-item.jsx";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
@@ -105,7 +105,7 @@ function Lobby() {
 
   const shouldRender = !!myself?.creator;
   return (
-    <section className="!bg-gray-900 min-h-screen flex items-center justify-center px-4">
+    <section className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-4xl z-10">
         <div className="flex flex-row gap-6 justify-end">
           <div className="p-2">

@@ -19,11 +19,12 @@ import Profile from "./routes/profile.jsx";
 import AuthCallback from "./routes/auth-callback.jsx";
 import StartGame from "./routes/start-game.jsx";
 import LanguageProvider from "./components/providers/language-context-provider.jsx";
-import Loading from "./components/loading.jsx";
-import GameLoading from "./components/game-loading.jsx";
+import Loading from "./components/visual/loading.jsx";
+import GameLoading from "./components/visual/game/game-loading.jsx";
 import UserContextProvider from "./components/providers/user-context-provider.jsx";
 import Users from "./routes/users.jsx";
-import BusPattern from "./components/bus-pattern.jsx";
+import BusPattern from "./components/visual/bus-pattern.jsx";
+import CardDragLayer from "./components/visual/game/card-drag-layer.jsx";
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -62,6 +63,7 @@ function App() {
   return (
     <Router>
       <BusPattern />
+      {/*TODO container*/}
       <LanguageProvider>
         <AuthProvider>
           <Routes>

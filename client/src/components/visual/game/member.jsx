@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import Avatar from "./avatar.jsx";
+import Avatar from "../user/avatar.jsx";
 import LanguageContext from "../../../context/language.js";
 
 function Member({ children, picture, isCreator, isMyself, role }) {

@@ -1,6 +1,6 @@
 import React, { useState, useContext, useRef } from "react";
 import { FaFlag } from "react-icons/fa";
-import LanguageContext from "../../../context/language.js";
+import LanguageContext from "../../context/language.js";
 
 function LangSelector({ size }) {
   const i18n = useContext(LanguageContext);

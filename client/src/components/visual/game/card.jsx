@@ -1,9 +1,10 @@
 import React, { useContext, useRef, useEffect } from "react";
 import { useDrag, useDragLayer } from "react-dnd";
-import RANK_CARD_ORDER from "../../../../shared/constants/rank-card-order.json";
-import GameContext from "../../context/game.js";
-import LanguageContext from "../../context/language.js";
-import SlotContext from "../../context/slot.js";
+import RANK_CARD_ORDER from "../../../../../shared/constants/rank-card-order.json";
+import GameContext from "../../../context/game.js";
+import LanguageContext from "../../../context/language.js";
+import SlotContext from "../../../context/slot.js";
+import { getEmptyImage } from "react-dnd-html5-backend";
 
 function getEmoji(rank) {
   switch (rank) {
@@ -21,8 +22,14 @@ function getEmoji(rank) {
 }
 
 function getRectOverlap(a, b) {
-  const x_overlap = Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left));
-  const y_overlap = Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+  const x_overlap = Math.max(
+    0,
+    Math.min(a.right, b.right) - Math.max(a.left, b.left),
+  );
+  const y_overlap = Math.max(
+    0,
+    Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top),
+  );
   return x_overlap * y_overlap;
 }
 
@@ -75,19 +82,20 @@ function Card({
 }) {
   const i18n = useContext(LanguageContext);
   const gameContext = useContext(GameContext);
-  const { getSlotRects, setActiveSlot, getActiveSlot } = useContext(SlotContext);
+  const { getSlotRects, setActiveSlot, getActiveSlot } =
+    useContext(SlotContext);
   const clickTimeout = useRef(null);
   const cardSize = useRef({ width: 0, height: 0 });
   const isRedSuit = card.suit === "♥" || card.suit === "♦";
   const textColor = isRedSuit ? "text-red-600" : "text-amber-950";
   const backgroundColor = isBottomCard ? "bg-red-100 opacity-70" : "bg-white";
 
-  const [{ isDragging }, drag] = useDrag({
+  const [{ isDragging }, drag, preview] = useDrag({
     type: "CARD",
     item: { card, index },
     canDrag: () => isDraggable,
     collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(),
+      isDragging: monitor.isDragging(),
     }),
     end: (item, monitor) => {
       const point = monitor.getClientOffset();
@@ -96,7 +104,9 @@ function Card({
       if (!point || !item || !activeSlotIndex) {
         return;
       }
-      let closest = getSlotRects().find(item => item.lookupIndex === activeSlotIndex);
+      let closest = getSlotRects().find(
+        (item) => item.lookupIndex === activeSlotIndex,
+      );
 
       if (closest) {
         closest.handler(item.card, closest.index);
@@ -130,6 +140,10 @@ function Card({
       setActiveSlot(null);
     }
   }, [isDragging, currentOffset]);
+
+  useEffect(() => {
+    preview(getEmptyImage(), { captureDraggingState: true });
+  }, []);
 
   function showErrorAlert(message) {
     gameContext.setErrorMessage(message);

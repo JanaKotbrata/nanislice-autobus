@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { startGame } from "../../../services/game-service.jsx";
 import { useAuth } from "../../../context/auth-context.jsx";
 import GameContext from "../../../context/game.js";
-import Button from "./button.jsx";
+import Button from "../button.jsx";
 import LanguageContext from "../../../context/language.js";
-import InfoAlert from "../../alerts/info-alert.jsx";
+import InfoAlert from "../alerts/info-alert.jsx";
 function Start({ gameCode, playerList }) {
   const i18n = useContext(LanguageContext);
   const navigate = useNavigate();

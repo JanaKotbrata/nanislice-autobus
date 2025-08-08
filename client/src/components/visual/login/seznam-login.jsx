@@ -1,7 +1,7 @@
 import React from "react";
-import Button from "../../components/form/visual/button.jsx";
-import seznam from "../../assets/seznam-cz.png";
-import Config from "../../../../shared/config/config.json";
+import Button from "../button.jsx";
+import seznam from "../../../assets/seznam-cz.png";
+import Config from "../../../../../shared/config/config.json";
 
 function SeznamLogin({ message = "" }) {
   function handleSeznamLogin(e) {

@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
-import GameContext from "../../../context/game.js";
+import GameContext from "../../context/game.js";
 import Button from "./button.jsx";
-import LanguageContext from "../../../context/language.js";
+import LanguageContext from "../../context/language.js";
 
 function Invite() {
   const i18n = useContext(LanguageContext);

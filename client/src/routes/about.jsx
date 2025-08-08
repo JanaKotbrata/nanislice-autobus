@@ -1,7 +1,7 @@
 import React from "react";
 import { FaLinkedin } from "react-icons/fa";
-import LogOut from "./user/log-out.jsx";
-import LangSelector from "../components/form/visual/lang-selector.jsx";
+import LogOut from "../components/visual/login/log-out.jsx";
+import LangSelector from "../components/visual/lang-selector.jsx";
 import LanguageContext from "../context/language.js";
 
 function About() {

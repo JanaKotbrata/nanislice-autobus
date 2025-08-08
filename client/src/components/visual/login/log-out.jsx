@@ -1,9 +1,9 @@
 import { FaSignOutAlt } from "react-icons/fa";
 import React, { useContext, useState } from "react";
-import { useAuth } from "../../context/auth-context.jsx";
-import { logOut } from "../../services/user-service.jsx";
-import LogOutAlert from "../../components/alerts/log-out-alert.jsx";
-import LanguageContext from "../../context/language.js";
+import { useAuth } from "../../../context/auth-context.jsx";
+import { logOut } from "../../../services/user-service.jsx";
+import LogOutAlert from "../alerts/log-out-alert.jsx";
+import LanguageContext from "../../../context/language.js";
 
 function LogOut({ size }) {
   const i18n = useContext(LanguageContext);
