@@ -133,6 +133,10 @@ class ProcessAction extends PostResponseHandler {
                     //next round
                     newGame.currentPlayer = (newGame.currentPlayer + 1) % newGame.playerList.length;
                 },
+                [GameActions.VIEW_BOTTOM_BUS_CARD]: () => {
+                    myself.checkedBottomBusCard ||= 0;
+                    myself.checkedBottomBusCard++;
+                },
 
                 [GameActions.MOVE_CARD_TO_BUS_STOP]: () => {
                     this.#validationOfBusStop(myself, targetIndex, card);

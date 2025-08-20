@@ -287,6 +287,10 @@ function GameContextProvider({ children }) {
     );
   }
 
+  function viewBusBottomCard() {
+    updateGameServerState({ gameCode }, GameActions.VIEW_BOTTOM_BUS_CARD);
+  }
+
   function moveCardToSlot(card, targetIndex, destination) {
     const myself = getPlayerAndValid(players, currentPlayer, showErrorAlert);
     if (!myself) return;
@@ -350,6 +354,7 @@ function GameContextProvider({ children }) {
         currentPlayer,
         loading: isLoading(),
         gameState,
+        viewBusBottomCard,
         errorMessage,
         setErrorMessage,
         showAlert,

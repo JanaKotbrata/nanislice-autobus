@@ -34,6 +34,11 @@
       "en": "WTF was that?",
       "sk": "Čo to do...?"
     },
+    "bottomBusCardNotAvailable": {
+      "cs": "Na spodní kartu se můžeš podívat jen párkrát. Už si to přešvih.",
+      "en": "You can peek at the bottom bus card only a few times. You’ve hit the limit.",
+      "sk": "Na spodnú kartu sa môžeš pozrieť len párkrát. Už si to prešvihol."
+    },
     "iCanPlay": {
       "cs": "Už můžu hrát!",
       "en": "I’m in! Let’s roll!",

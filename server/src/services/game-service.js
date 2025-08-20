@@ -20,7 +20,8 @@ function transformCurrentPlayerData(game, userId) {
         if (player.bus?.length) {
             const busLength = player.bus.length;
             const firstCard = player.bus[0];
-            const lastCard = player.bus[busLength - 1];
+            // TODO better handling, different value per user (?) - must be passed to the method
+            const lastCard = player.checkedBottomBusCard > 2 ? null : player.bus[busLength - 1];
 
             if (isCurrentUser) {
                 player.bus = Array.from({length: busLength}, (_, i) =>
@@ -32,10 +33,12 @@ function transformCurrentPlayerData(game, userId) {
                 player.bus = [firstCard, ...Array(busLength - 1).fill(null)];
             }
         }
+
+        delete player.checkedBottomBusCard;
     }
 
     if (game.deck?.length) {
-        game.deck = game.deck.map(card => ({ bg: card.bg }));;
+        game.deck = game.deck.map(card => ({ bg: card.bg }));
     }
 }
 

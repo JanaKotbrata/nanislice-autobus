@@ -1,5 +1,7 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import Slot from "./slot.jsx";
+import GameContext from "../../../context/game.js";
+import LanguageContext from "../../../context/language.js";
 
 function BusSlot({
   card,
@@ -11,14 +13,36 @@ function BusSlot({
   isDraggable,
   isMyself,
 }) {
+  const i18n = useContext(LanguageContext);
+  const gameContext = useContext(GameContext);
   const [showBottomCard, setShowBottomCard] = useState(false);
   const [showCount, setShowCount] = useState(false);
   const countTimeoutRef = useRef(null);
 
   let pulse = "";
 
+  useEffect(() => {
+    if (showBottomCard && !bottomCard) {
+      setShowBottomCard(false);
+    }
+  }, [bottomCard, showBottomCard]);
+
   function handleDoubleClick() {
-    setShowBottomCard((prev) => !prev);
+    if (!bottomCard) {
+      if (count > 1) {
+        gameContext.setErrorMessage(
+          i18n.translate("bottomBusCardNotAvailable"),
+        );
+        gameContext.setShowDangerAlert(true);
+      }
+      return;
+    }
+    setShowBottomCard((prev) => {
+      if (!prev) {
+        gameContext.viewBusBottomCard();
+      }
+      return !prev;
+    });
   }
 
   function handleClick() {
@@ -40,7 +64,7 @@ function BusSlot({
   return (
     <div
       className="relative group"
-      onDoubleClick={bottomCard ? handleDoubleClick : undefined}
+      onDoubleClick={handleDoubleClick}
       onClick={handleClick}
     >
       {count && (

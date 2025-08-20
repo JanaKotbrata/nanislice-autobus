@@ -2,6 +2,7 @@
   "DRAW_CARD": "drawCard",
   "MOVE_CARD_TO_BUS_STOP": "moveCardToBusStop",
   "MOVE_CARD_TO_BUS": "moveCardToBus",
+  "VIEW_BOTTOM_BUS_CARD": "viewBottomBusCard",
   "REORDER_HAND": "reorderHand",
   "START_NEW_PACK": "startNewPack",
   "START_NEW_PACK_FROM_BUS": "startNewPackFromBus",
