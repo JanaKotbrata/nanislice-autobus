@@ -1,19 +1,29 @@
 import React, { useContext, useRef, useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import CardPack from "./card-pack.jsx";
-import Slot from "./slot.jsx";
 import GameContext from "../../../context/game.js";
 import DangerAlert from "../alerts/danger-alert.jsx";
 import GameBoardSlot from "./game-board-slot.jsx";
 import LanguageContext from "../../../context/language.js";
 import Hand from "./hand.jsx";
+import CardAnimationContext from "../../../context/card-animation.js";
+
+function getSlotCoordinates(slotId) {
+  const slotElement = document.getElementById(slotId);
+  if (!slotElement) return null;
+
+  const slotRect = slotElement.getBoundingClientRect();
+  return {
+    top: slotRect.top,
+    left: slotRect.left,
+  };
+}
+
 
 function GameBoard({ player }) {
   const i18n = useContext(LanguageContext);
   const gameContext = useContext(GameContext);
+  const cardAnimationContext = useContext(CardAnimationContext);
   const boardRef = useRef(null);
-  const slotRefs = useRef({});
-  const completedCardRef = useRef(null);
 
   const isCurrentPlayer =
     gameContext.players?.[gameContext.currentPlayer]?.myself;
@@ -21,7 +31,8 @@ function GameBoard({ player }) {
   const drawCardText = isDrawedCard ? i18n.translate("drawCard") : "";
 
   const [shouldPulse, setShouldPulse] = useState(false);
-  const [animatingCard, setAnimatingCard] = useState(null);
+
+  const prevBoardRef = useRef(null);
 
   const deckLength = gameContext.deck.length;
   const completedCardLength = gameContext.game.completedCardList?.length || 0;
@@ -36,6 +47,44 @@ function GameBoard({ player }) {
       setShouldPulse(false);
     }
   }, [isDrawedCard]);
+
+  useEffect(() => {
+    if (!prevBoardRef.current) {
+      prevBoardRef.current = gameContext.gameBoard;
+    }
+
+    const prevBoard = prevBoardRef.current;
+    const currentBoard = gameContext.gameBoard;
+
+    prevBoard.forEach((prevPack, index) => {
+      const currentPack = currentBoard[index];
+      if (prevPack?.length === 12 && currentPack?.length === 13) {
+        // const fromEl = slotRefs.current[index];
+        // const toEl = completedCardRef.current;
+        //
+        // if (!fromEl || !toEl) {
+        //   return;
+        // }
+
+        const from = getSlotCoordinates(`gb_card_${index}`);
+        const to = getSlotCoordinates("completed_cardpack_deck");
+
+        const card = currentPack[currentPack.length - 1];
+
+        const animation = {
+          top: to.top,
+          left: to.left,
+          originTop: from.top,
+          originLeft: from.left,
+          bg: card?.bg || "blue",
+          rotateTo: 360*2 + 25
+        };
+        cardAnimationContext.addAndRunAnimation(animation, 1000, () => {});
+      }
+    });
+
+    prevBoardRef.current = currentBoard.map((p) => [...p]);
+  }, [gameContext.gameBoard]);
 
   return (
     <div className="h-full flex flex-col gap-4">
@@ -56,12 +105,11 @@ function GameBoard({ player }) {
 
           <div
             className="absolute right-0"
-            ref={completedCardRef}
+            id="completed_cardpack_deck"
             style={{ transform: "rotate(25deg)" }}
           >
             {completedCardLength > 0 ? (
               <CardPack
-                id={"completed_cardpack_deck"}
                 bg={
                   gameContext.game.completedCardList[completedCardLength - 1]
                     ?.bg
@@ -74,27 +122,6 @@ function GameBoard({ player }) {
               <div className="w-16 h-24 opacity-0" />
             )}
           </div>
-
-          {animatingCard && (
-            <motion.div
-              className={`w-16 h-24 rounded-md shadow-md absolute z-50 border-2 back-card-${animatingCard.bg} !bg-white`}
-              style={{
-                top: animatingCard.from.top,
-                left: animatingCard.from.left,
-              }}
-              animate={{
-                top: animatingCard.to.top,
-                left: animatingCard.to.left,
-                rotate: animatingCard.rotate ?? 25,
-                scale: animatingCard.scale ?? 1,
-              }}
-              transition={{
-                duration: animatingCard.duration ?? 0.7,
-                ease: "easeInOut",
-              }}
-              onAnimationComplete={() => setAnimatingCard(null)}
-            />
-          )}
         </div>
 
         <div className="game-board flex flex-wrap justify-center gap-4 w-full max-w-full">
@@ -116,7 +143,6 @@ function GameBoard({ player }) {
                 onDropCard={gameContext.addToPack}
                 count={pack.length}
                 packLength={pack.length - 1}
-                ref={(el) => (slotRefs.current[index] = el)}
               />
             );
           })}

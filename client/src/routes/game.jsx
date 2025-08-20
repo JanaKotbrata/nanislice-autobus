@@ -13,9 +13,9 @@ import InfoAlert from "../components/visual/alerts/info-alert.jsx";
 import LangSelector from "../components/visual/lang-selector.jsx";
 import LanguageContext from "../context/language.js";
 import SlotContextProvider from "../components/providers/slot-context-provider.jsx";
-import AnimationCard from "../components/visual/game/animation-card.jsx";
 import PlayerPanel from "../components/visual/game/player-panel.jsx";
 import CardDragLayer from "../components/visual/game/card-drag-layer.jsx";
+import CardAnimationContext from "../context/card-animation.js";
 
 const ANIMATION_DURATION = 1000;
 
@@ -49,31 +49,14 @@ function getSlotCoordinates(slotId) {
 function Game() {
   const navigate = useNavigate();
   const gameContext = useContext(GameContext);
+  const cardAnimationContext = useContext(CardAnimationContext);
   const [leftPanelWidth, setLeftPanelWidth] = useState(653);
   const isDraggingPanel = useRef(false);
   const [showEndGameAlert, setShowEndGameAlert] = useState(false);
   const [leavingPlayerName, setLeavingPlayerName] = useState("");
   const i18n = useContext(LanguageContext);
-  const animationQueue = useRef([]);
-  const [currentAnimation, setCurrentAnimation] = useState(null);
-  const [animationTick, setAnimationTick] = useState(0);
 
   const canResizePanel = window.innerWidth >= 1163;
-
-  useEffect(() => {
-    if (!currentAnimation && animationQueue.current.length > 0) {
-      const next = animationQueue.current.shift();
-      setCurrentAnimation(next);
-
-      setTimeout(() => {
-        if (next.animationCallback) {
-          next.animationCallback();
-        }
-        setCurrentAnimation(null);
-        setAnimationTick((tick) => tick + 1);
-      }, next.duration);
-    }
-  }, [currentAnimation, animationTick]);
 
   const { user, token } = useAuth();
   const [myself, otherPlayers] = splitPlayers(gameContext.players);
@@ -98,11 +81,10 @@ function Game() {
     gameContext.gameCode,
     gameContext.setContextGame,
     (playerName) => setLeavingPlayerName(playerName),
-    (target, actionBy, isShuffled, animationCallback) => {
+    (target, actionBy, isShuffled, finishedPackIndex, animationCallback) => {
       setTimeout(() => {
         if (!target && !actionBy) {
-          animationQueue.current.push({ duration: 0, animationCallback });
-          setAnimationTick((tick) => tick + 1);
+          cardAnimationContext.addAndRunAnimation(null, 0, animationCallback);
           return;
         }
         let duration = ANIMATION_DURATION;
@@ -123,11 +105,28 @@ function Game() {
               originLeft: originCoords.left,
               bg,
             };
-            animationQueue.current.push({
-              animation,
-              duration,
-              animationCallback,
-            });
+            cardAnimationContext.addAnimation(animation, duration, animationCallback);
+          }
+        }
+
+        let finishedPackAnimation;
+        if (finishedPackIndex !== null) {
+          duration = duration / 2;
+          originCoords = getSlotCoordinates(`gb_card_${finishedPackIndex}`);
+          coords = getSlotCoordinates("completed_cardpack_deck");
+
+          const finishedPack = gameContext?.game?.gameBoard || [];
+          bg = finishedPack[0]?.bg || "blue";
+
+          if (coords && originCoords) {
+            finishedPackAnimation = {
+              top: coords.top,
+              left: coords.left,
+              originTop: originCoords.top,
+              originLeft: originCoords.left,
+              bg,
+              rotateTo: 360*2 + 25,
+            };
           }
         }
 
@@ -149,13 +148,18 @@ function Game() {
             originLeft: originCoords.left,
             bg,
           };
-          animationQueue.current.push({
-            animation,
-            duration,
-            animationCallback,
-          });
-          setAnimationTick((tick) => tick + 1);
+          cardAnimationContext.addAnimation(animation, duration, animationCallback);
         }
+
+        if (finishedPackAnimation) {
+          cardAnimationContext.addAnimation(
+            finishedPackAnimation,
+            duration,
+            () => {},
+          );
+        }
+
+        cardAnimationContext.runAnimation();
       }, 100);
     },
   );
@@ -184,17 +188,6 @@ function Game() {
     <SlotContextProvider>
       <DndProvider backend={HTML5Backend}>
         <CardDragLayer />
-        {currentAnimation?.animation && (
-          <AnimationCard
-            x={currentAnimation.animation.left}
-            y={currentAnimation.animation.top}
-            startY={currentAnimation.animation.originTop}
-            startX={currentAnimation.animation.originLeft}
-            bg={currentAnimation.animation.bg}
-            duration={currentAnimation.duration / 1000}
-          />
-        )}
-
         <div
           className="flex flex-col sm:flex-row w-full h-full p-1 relative bg-gray-800 force-vertical-layout game"
           onMouseMove={handlePanelDragMove}

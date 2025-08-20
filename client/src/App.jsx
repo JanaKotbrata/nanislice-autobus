@@ -26,6 +26,7 @@ import Users from "./routes/users.jsx";
 import BusPattern from "./components/visual/bus-pattern.jsx";
 import CardDragLayer from "./components/visual/game/card-drag-layer.jsx";
 import PrivacyPolicy from "./routes/privacy-policy.jsx";
+import CardAnimationContextProvider from "./components/providers/card-animation-context-provider.jsx";
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -118,7 +119,11 @@ function App() {
                 }
               >
                 <Route path="/lobby/:code" element={<Lobby />} />
-                <Route path="/game/:code" element={<Game />} />
+                <Route path="/game/:code" element={
+                  <CardAnimationContextProvider>
+                    <Game />
+                  </CardAnimationContextProvider>
+                } />
               </Route>
             </Route>
           </Routes>

@@ -49,6 +49,14 @@ class ProcessAction extends PostResponseHandler {
         let isShuffled = false;
         [updatedGame, isShuffled] = this.#checkAndUpdateDeck(updatedGame);
 
+        let finishedPack = null;
+        if (game.gameBoard.length > updatedGame.gameBoard.length) {
+            finishedPack = game.gameBoard.findIndex((pack, index) => {
+                const updatedGamePack = updatedGame.gameBoard[index];
+                return pack[pack.length - 1]?.i !== updatedGamePack?.[updatedGamePack.length - 1]?.i;
+            })
+        }
+
         try {
             let newGame = await games.updateGame(game.id, updatedGame);
             if (xp) {
@@ -60,8 +68,14 @@ class ProcessAction extends PostResponseHandler {
                 transformCurrentPlayerData(playerGame, playerId);
                 console.log(`Emitting processAction event to ${gameCode}_${playerId}`);
                 this.io.to(`${gameCode}_${playerId}`).emit("processAction", {
-                    userId, newGame: playerGame, xp, target, actionBy: userId,
-                    card: validData.card || null, isShuffled
+                    userId,
+                    newGame: playerGame,
+                    xp,
+                    target,
+                    actionBy: userId,
+                    card: validData.card || null,
+                    isShuffled,
+                    finishedPack,
                 });
             })
             transformCurrentPlayerData(newGame, userId);

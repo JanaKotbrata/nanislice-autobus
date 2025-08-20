@@ -13,7 +13,7 @@ export function useGameSocket(
       socket.on("processAction", (data) => {
         if (data.newGame.code === gameCode) {
           if (data.actionBy !== userId && data.target) {
-            animateToSlot(data.target, data.actionBy, data.isShuffled, () => {
+            animateToSlot(data.target, data.actionBy, data.isShuffled, data.finishedPack, () => {
               setContextGame(data.newGame);
             });
           } else {
