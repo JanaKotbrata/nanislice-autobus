@@ -3,12 +3,13 @@ import Button from "../button.jsx";
 import seznam from "../../../assets/seznam-cz.png";
 import Config from "../../../../../shared/config/config.json";
 
-function SeznamLogin({ message = "" }) {
+function SeznamLogin({ message = "", consentGiven = false, onBlockedClick }) {
   function handleSeznamLogin(e) {
     e.preventDefault();
-    const redirectUrl = encodeURIComponent(
-      `${Config.CLIENT_URI}/auth-callback`,
-    );
+    if (!consentGiven) {
+      onBlockedClick?.();
+      return;
+    }
     window.location.href = `${Config.SERVER_URI}/auth/seznam`;
   }
 

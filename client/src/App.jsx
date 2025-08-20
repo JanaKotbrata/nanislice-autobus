@@ -25,6 +25,7 @@ import UserContextProvider from "./components/providers/user-context-provider.js
 import Users from "./routes/users.jsx";
 import BusPattern from "./components/visual/bus-pattern.jsx";
 import CardDragLayer from "./components/visual/game/card-drag-layer.jsx";
+import PrivacyPolicy from "./routes/privacy-policy.jsx";
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -68,6 +69,7 @@ function App() {
         <AuthProvider>
           <Routes>
             <Route path="/about" element={<About />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route
               path="/"
               element={

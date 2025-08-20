@@ -7,7 +7,7 @@ import LanguageContext from "../context/language.js";
 function About() {
   const i18n = React.useContext(LanguageContext);
   return (
-    <section className="bg-gray-900 text-white min-h-screen flex items-center justify-center overflow-hidden">
+    <section className=" text-white min-h-screen flex items-center justify-center overflow-hidden">
       <div className="mx-auto max-w-3xl relative z-10">
         <div className="flex flex-row gap-6 justify-end">
           <div className="p-2">

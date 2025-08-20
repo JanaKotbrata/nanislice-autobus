@@ -2,9 +2,13 @@ import Config from "../../../../../shared/config/config.json";
 import google from "../../../assets/google.svg";
 import Button from "../button.jsx";
 
-function GoogleLogin({ message = "" }) {
+function GoogleLogin({ message = "", consentGiven = false, onBlockedClick }) {
   function handleGoogleLogin(e) {
     e.preventDefault();
+    if (!consentGiven) {
+      onBlockedClick?.();
+      return;
+    }
     const redirectUrl = encodeURIComponent(
       `${Config.CLIENT_URI}/auth-callback`,
     );

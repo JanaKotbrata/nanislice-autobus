@@ -17,6 +17,17 @@ function resolveInitialLangCode() {
   return translations.languages[1].code;
 }
 
+function findTranslateKey(key, i18nData) {
+  if (key.includes(".")) {
+    const keys = key.split(".");
+    return keys.reduce((acc, key) => {
+      console.log(`Resolving key: ${key} in translations`, acc);
+      return acc?.[key];
+    }, i18nData.translations);
+  }
+  return i18nData.translations[key];
+}
+
 function LanguageContextProvider({ children }) {
   const [lang, setLang] = React.useState(() => resolveInitialLangCode());
 
@@ -25,11 +36,9 @@ function LanguageContextProvider({ children }) {
   }
 
   function translate(key) {
-    return (
-      translations.translations[key]?.[lang] ||
-      translations.translations[key]?.["cs"] ||
-      "Tohle neznam"
-    );
+    const toTranslate = findTranslateKey(key, translations);
+    //console.log(`Translating key: ${key} for language: ${lang}`, toTranslate);
+    return toTranslate?.[lang] || toTranslate?.["cs"] || "Tohle neznam";
   }
 
   return (
