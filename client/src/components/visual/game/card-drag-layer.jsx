@@ -27,7 +27,7 @@ function CardDragLayer() {
     currentOffset: monitor.getSourceClientOffset(),
   }));
 
-  if (!isDragging || !item) {
+  if (!isDragging || !item || !item.card) {
     return null;
   }
 

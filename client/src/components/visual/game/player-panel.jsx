@@ -7,6 +7,7 @@ function PlayerPanel({
   otherPlayers,
   myself,
   leftPanelWidth,
+  canResizePanel,
   handlePanelDragStart,
 }) {
   const dragBarRef = useRef(null);
@@ -54,7 +55,7 @@ function PlayerPanel({
       </div>
       <div
         ref={dragBarRef}
-        className="hidden sm:block w-2 cursor-ew-resize bg-gray-500"
+        className={`hidden sm:block w-2 ${canResizePanel ? "cursor-ew-resize" : ""} bg-gray-500`}
         onMouseDown={handlePanelDragStart}
       />
     </>

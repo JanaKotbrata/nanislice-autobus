@@ -50,13 +50,15 @@ function Game() {
   const navigate = useNavigate();
   const gameContext = useContext(GameContext);
   const [leftPanelWidth, setLeftPanelWidth] = useState(653);
-  const [isDraggingPanel, setIsDraggingPanel] = useState(false);
+  const isDraggingPanel = useRef(false);
   const [showEndGameAlert, setShowEndGameAlert] = useState(false);
   const [leavingPlayerName, setLeavingPlayerName] = useState("");
   const i18n = useContext(LanguageContext);
   const animationQueue = useRef([]);
   const [currentAnimation, setCurrentAnimation] = useState(null);
   const [animationTick, setAnimationTick] = useState(0);
+
+  const canResizePanel = window.innerWidth >= 1163;
 
   useEffect(() => {
     if (!currentAnimation && animationQueue.current.length > 0) {
@@ -159,19 +161,22 @@ function Game() {
   );
 
   function handlePanelDragStart() {
-    setIsDraggingPanel(true);
+    if (!canResizePanel) return;
+    isDraggingPanel.current = true;
     document.body.style.cursor = "ew-resize";
   }
 
   function handlePanelDragMove(e) {
-    if (!isDraggingPanel) return;
+    if (!canResizePanel) return;
+    if (!isDraggingPanel.current) return;
     setLeftPanelWidth((prevWidth) =>
       Math.max(200, (prevWidth ?? 653) + e.movementX),
     );
   }
 
   function handlePanelDragEnd() {
-    setIsDraggingPanel(false);
+    if (!canResizePanel) return;
+    isDraggingPanel.current = false;
     document.body.style.cursor = "default";
   }
 
@@ -191,7 +196,7 @@ function Game() {
         )}
 
         <div
-          className="flex flex-col sm:flex-row w-full h-full p-1 relative bg-gray-800 force-vertical-layout"
+          className="flex flex-col sm:flex-row w-full h-full p-1 relative bg-gray-800 force-vertical-layout game"
           onMouseMove={handlePanelDragMove}
           onMouseUp={handlePanelDragEnd}
         >
@@ -199,6 +204,7 @@ function Game() {
             otherPlayers={otherPlayers}
             myself={myself}
             leftPanelWidth={leftPanelWidth}
+            canResizePanel={canResizePanel}
             handlePanelDragStart={handlePanelDragStart}
           />
 
