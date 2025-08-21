@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import GameContext from "../../../context/game.js";
 import Slot from "./slot.jsx";
 import BusSlot from "./bus-slot.jsx";
@@ -9,12 +9,13 @@ function Player({
   player,
   isActivePlayer = false,
   expandable = false,
+  defaultCollapsed = false,
   isDraggable = true,
   isMyself = false,
   isMyselfJrInBus = false,
 }) {
   const gameContext = useContext(GameContext);
-  const [expanded, setExpanded] = useState(!expandable);
+  const [expanded, setExpanded] = useState(!defaultCollapsed);
   const [showCounts, setShowCounts] = useState(false);
   const countTimeoutRef = useRef(null);
   const avatarUri = getAvatar(
@@ -46,6 +47,11 @@ function Player({
       setShowCounts(false);
     }, 2000);
   }
+
+  // FIX: sync expanded state with defaultCollapsed both ways
+  useEffect(() => {
+    setExpanded(!defaultCollapsed);
+  }, [defaultCollapsed]);
 
   return (
     <div
