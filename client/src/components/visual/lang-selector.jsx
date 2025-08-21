@@ -1,7 +1,7 @@
 import React, { useState, useContext, useRef } from "react";
 import { FaFlag } from "react-icons/fa";
 import LanguageContext from "../../context/language.js";
-
+import { FaLanguage } from "react-icons/fa6";
 function LangSelector({ size }) {
   const i18n = useContext(LanguageContext);
   const languageContext = useContext(LanguageContext);
@@ -15,7 +15,7 @@ function LangSelector({ size }) {
 
   return (
     <div className="relative flex justify-end mb-3" ref={menuRef}>
-      <FaFlag
+      <FaLanguage
         className="hover:!bg-green-700 cursor-pointer"
         title={i18n.translate("changeLanguage")}
         onClick={() => setShowMenu((prev) => !prev)}

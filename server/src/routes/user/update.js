@@ -22,7 +22,7 @@ class UpdateUser extends PostFormDataResponseHandler {
             dataToValidate = {...dataToValidate, picture: "yes"};
         }
         const validData = validateData(dataToValidate, schema);
-        const {name, picture} = validData;
+        const {name, language, picture} = validData;
 
         let user = await authorizeUser(userId, UserErrors.UserDoesNotExist, UserErrors.UserNotAuthorized);//TODO admin or update own user
         const activeGameWithUser = await games.findNotClosedGameByUserId(userId);
@@ -30,6 +30,13 @@ class UpdateUser extends PostFormDataResponseHandler {
         let toUpdate = {sys: user.sys}
         if (name) {
             toUpdate.name = name;
+        }
+        if (language) {
+            if (language === "null") {
+                toUpdate.language = null;
+            } else {
+                toUpdate.language = language;
+            }
         }
         try {
             user = await users.updateUser(userId, toUpdate);

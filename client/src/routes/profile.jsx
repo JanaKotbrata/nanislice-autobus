@@ -20,6 +20,11 @@ function Profile() {
   const email = userContext.user.email || "";
   const role = userContext.user.role || i18n.translate("pleb");
   const avatar = getAvatar(userContext.user.id, userContext.user.sys.rev);
+  const [preferLang, setPreferLang] = useState(!!userContext?.user?.language);
+  const [selectedLang, setSelectedLang] = useState(
+    userContext?.user?.language || null,
+  );
+  const languageContext = useContext(LanguageContext);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -52,6 +57,36 @@ function Profile() {
       })
       .finally(() => setIsSubmitting(false));
   }, [selectedFile]);
+
+  useEffect(() => {
+    if (!preferLang) {
+      if (userContext.user.language !== null) {
+        const formData = new FormData();
+        formData.append("language", null);
+
+        setIsSubmitting(true);
+        userContext.update(formData).finally(() => setIsSubmitting(false));
+      }
+      setSelectedLang(null);
+      return;
+    }
+
+    if (selectedLang && selectedLang !== userContext.user.language) {
+      const formData = new FormData();
+      formData.append("language", selectedLang);
+
+      setIsSubmitting(true);
+      userContext
+        .update(formData)
+        .then(() => {
+          setSelectedFile(null);
+        })
+        .finally(() => {
+          setIsSubmitting(false);
+          languageContext.setContextLanguage(selectedLang);
+        });
+    }
+  }, [preferLang, selectedLang, userContext.user.language]);
 
   function handleAvatarChange(e) {
     const file = e.target.files[0];
@@ -95,8 +130,11 @@ function Profile() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="text-2xl font-bold text-center bg-transparent border-b border-gray-600 focus:outline-none focus:border-white w-full"
+                className="text-2xl font-bold text-center bg-transparent border-b border-gray-600
+             focus:outline-none focus:border-white w-full
+             hover:bg-gray-800 transition-colors duration-200 rounded-lg"
               />
+
               <span className="absolute right-0 top-1/2 -translate-y-1/2 text-sm text-gray-400">
                 <FaPencilAlt className="w-4 h-4" />
               </span>
@@ -138,6 +176,36 @@ function Profile() {
             </div>
             <p className="text-xs text-gray-400 text-right mt-1">{xp} XP</p>
           </div>
+
+          <label className="inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              className="sr-only peer"
+              checked={preferLang}
+              onChange={(e) => setPreferLang(e.target.checked)}
+            />
+            <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+            <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+              {selectedLang
+                ? i18n.translate("preferredLanguage") + " " + selectedLang
+                : i18n.translate("setPrefLang")}
+            </span>
+          </label>
+
+          {preferLang && (
+            <select
+              value={selectedLang || ""}
+              onChange={(e) => setSelectedLang(e.target.value)}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            >
+              <option value="">🌎</option>
+              {languageContext.languages.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.name}
+                </option>
+              ))}
+            </select>
+          )}
 
           {isSubmitting && (
             <p className="text-sm text-gray-500">{i18n.translate("saving")}</p>

@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import LanguageContext from "../../context/language.js";
 import translations from "../../i18n/translations.json";
+import UserContext from "../../context/user.js";
+import { useAuth } from "../../context/auth-context.jsx";
 
 function detectBrowserBaseLang() {
   const list = navigator.languages?.length
@@ -10,8 +12,9 @@ function detectBrowserBaseLang() {
   return primary.split("-")[0];
 }
 
-function resolveInitialLangCode() {
+function resolveInitialLangCode(user) {
   const base = detectBrowserBaseLang();
+  if (user && user.language) return user.language;
   if (base === "cs") return translations.languages[0].code;
   if (base === "sk") return translations.languages[2].code;
   return translations.languages[1].code;
@@ -29,7 +32,12 @@ function findTranslateKey(key, i18nData) {
 }
 
 function LanguageContextProvider({ children }) {
-  const [lang, setLang] = React.useState(() => resolveInitialLangCode());
+  const { user } = useAuth();
+  const [lang, setLang] = React.useState(() => resolveInitialLangCode(user));
+
+  useEffect(() => {
+    setLang(resolveInitialLangCode(user));
+  }, [user]);
 
   function setContextLanguage(lang) {
     setLang(lang);

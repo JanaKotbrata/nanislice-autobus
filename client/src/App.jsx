@@ -65,8 +65,8 @@ function App() {
     <Router>
       <BusPattern />
       {/*TODO container*/}
-      <LanguageProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <LanguageProvider>
           <Routes>
             <Route path="/about" element={<About />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -122,8 +122,8 @@ function App() {
               </Route>
             </Route>
           </Routes>
-        </AuthProvider>
-      </LanguageProvider>
+        </LanguageProvider>
+      </AuthProvider>
     </Router>
   );
 }

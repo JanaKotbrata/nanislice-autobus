@@ -379,6 +379,16 @@
       "en": "XP gained",
       "sk": "Nazbierané XP"
     },
+    "preferredLanguage": {
+        "cs": "Preferovaný jazyk hry",
+        "en": "Preferred game language",
+        "sk": "Preferovaný jazyk hry"
+    },
+    "setPrefLang": {
+        "cs": "Nastavit preferovaný jazyk hry",
+        "en": "Set preferred game language",
+        "sk": "Nastaviť preferovaný jazyk hry"
+    },
     "change": {
       "cs": "Změnit",
       "en": "Change it up",

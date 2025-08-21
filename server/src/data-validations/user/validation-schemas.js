@@ -10,6 +10,7 @@ const list = Joi.object().keys({
 })
 const update = Joi.object().keys({
     name: Joi.string().min(1).max(100).optional(),
+    language:Joi.string().valid("cs", "sk", "en", "null").optional(),
     picture: Joi.string().optional(),
-}).or("name", "picture");
+}).or("name", "picture", "language");
 module.exports = {list, update};

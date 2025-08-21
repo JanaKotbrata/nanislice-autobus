@@ -16,7 +16,7 @@ function UserContextProvider({ children }) {
       setContextUser(updatedUser);
       return updatedUser;
     } catch (err) {
-      console.error("Chyba při nahrávání obrázku:", err);
+      console.error("Failed to update user:", err);
     }
   }
 
