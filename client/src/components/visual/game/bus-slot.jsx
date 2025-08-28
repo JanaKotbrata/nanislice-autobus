@@ -21,19 +21,24 @@ function BusSlot({
 
   let pulse = "";
 
+  function tooManyViewOfBottomCard() {
+    gameContext.setErrorMessage(
+      i18n.translate("bottomBusCardNotAvailable"),
+    );
+    gameContext.setShowDangerAlert(true);
+  }
+
   useEffect(() => {
     if (showBottomCard && !bottomCard) {
       setShowBottomCard(false);
+      tooManyViewOfBottomCard();
     }
   }, [bottomCard, showBottomCard]);
 
   function handleDoubleClick() {
     if (!bottomCard) {
       if (count > 1) {
-        gameContext.setErrorMessage(
-          i18n.translate("bottomBusCardNotAvailable"),
-        );
-        gameContext.setShowDangerAlert(true);
+        tooManyViewOfBottomCard();
       }
       return;
     }

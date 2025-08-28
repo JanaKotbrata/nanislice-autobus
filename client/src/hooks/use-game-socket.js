@@ -17,7 +17,7 @@ export function useGameSocket(
               setContextGame(data.newGame);
             });
           } else {
-            animateToSlot(null, null, null, () => {
+            animateToSlot(null, null, null, null, () => {
               setContextGame(data.newGame);
             });
           }
@@ -40,7 +40,7 @@ export function useGameSocket(
       socket.off("playerRemoved");
       socket.off("notify-player-leaving");
     };
-  }, [userId, gameCode, setContextGame]);
+  }, [userId, gameCode]);
 
   return socket;
 }

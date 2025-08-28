@@ -37,7 +37,7 @@ export function useLobbySocket(userId, gameCode, setContextGame) {
       socket.off("gameStarted");
       socket.off("playerSetOrder");
     };
-  }, [userId, gameCode, setContextGame]);
+  }, [userId, gameCode]);
 
   return socket;
 }

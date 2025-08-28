@@ -144,6 +144,7 @@ class ProcessAction extends PostResponseHandler {
                     this.#removeCardFromHand(myself.hand, card);
                     this.#addCardTo(myself.bus, card);
                     myself.isCardDrawed = false;
+                    target = `player_bus_${userId}_0`;
                     //next round
                     newGame.currentPlayer = (newGame.currentPlayer + 1) % newGame.playerList.length;
                 },
@@ -157,6 +158,7 @@ class ProcessAction extends PostResponseHandler {
                     this.#removeCardFromHand(myself.hand, card);
                     this.#addCardTo(myself.busStop[targetIndex], card);
                     myself.isCardDrawed = false;
+                    target = `player_slot_${userId}_${targetIndex}`;
                     // next round
                     newGame.currentPlayer = (newGame.currentPlayer + 1) % newGame.playerList.length;
                 },

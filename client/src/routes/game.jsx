@@ -82,63 +82,19 @@ function Game() {
     gameContext.setContextGame,
     (playerName) => setLeavingPlayerName(playerName),
     (target, actionBy, isShuffled, finishedPackIndex, animationCallback) => {
-      setTimeout(() => {
-        if (!target && !actionBy) {
-          cardAnimationContext.addAndRunAnimation(null, 0, animationCallback);
-          return;
-        }
-        let duration = ANIMATION_DURATION;
-        let coords, originCoords, bg;
-        if (isShuffled) {
-          originCoords = getSlotCoordinates("completed_cardpack_deck");
-          coords = getSlotCoordinates("cardpack_deck");
+      if (!target && !actionBy) {
+        cardAnimationContext.addAndRunAnimation(null, 0, animationCallback);
+        return;
+      }
+      let duration = ANIMATION_DURATION;
+      let coords, originCoords, bg;
+      if (isShuffled) {
+        originCoords = getSlotCoordinates("completed_cardpack_deck");
+        coords = getSlotCoordinates("cardpack_deck");
 
-          const completedList = gameContext?.game?.completedCardList || [];
-          bg = completedList[completedList.length - 1]?.bg;
-          duration = duration / 2;
-
-          if (coords && originCoords) {
-            const animation = {
-              top: coords.top,
-              left: coords.left,
-              originTop: originCoords.top,
-              originLeft: originCoords.left,
-              bg,
-            };
-            cardAnimationContext.addAnimation(animation, duration, animationCallback);
-          }
-        }
-
-        let finishedPackAnimation;
-        if (finishedPackIndex !== null) {
-          duration = duration / 2;
-          originCoords = getSlotCoordinates(`gb_card_${finishedPackIndex}`);
-          coords = getSlotCoordinates("completed_cardpack_deck");
-
-          const finishedPack = gameContext?.game?.gameBoard || [];
-          bg = finishedPack[0]?.bg || "blue";
-
-          if (coords && originCoords) {
-            finishedPackAnimation = {
-              top: coords.top,
-              left: coords.left,
-              originTop: originCoords.top,
-              originLeft: originCoords.left,
-              bg,
-              rotateTo: 360*2 + 25,
-            };
-          }
-        }
-
-        coords = getSlotCoordinates(
-          target === "hand" ? `player_${actionBy}` : target,
-        );
-        originCoords = getSlotCoordinates(`player_${actionBy}`);
-
-        if (target === "hand") {
-          bg = gameContext?.deck?.[gameContext?.deck?.length - 1]?.bg;
-          originCoords = getSlotCoordinates("cardpack_deck");
-        }
+        const completedList = gameContext?.game?.completedCardList || [];
+        bg = completedList[completedList.length - 1]?.bg;
+        duration = duration / 2;
 
         if (coords && originCoords) {
           const animation = {
@@ -150,17 +106,59 @@ function Game() {
           };
           cardAnimationContext.addAnimation(animation, duration, animationCallback);
         }
+      }
 
-        if (finishedPackAnimation) {
-          cardAnimationContext.addAnimation(
-            finishedPackAnimation,
-            duration,
-            () => {},
-          );
+      let finishedPackAnimation;
+      if (finishedPackIndex !== null) {
+        duration = duration / 2;
+        originCoords = getSlotCoordinates(`gb_card_${finishedPackIndex}`);
+        coords = getSlotCoordinates("completed_cardpack_deck");
+
+        const finishedPack = gameContext?.game?.gameBoard || [];
+        bg = finishedPack[0]?.bg || "blue";
+
+        if (coords && originCoords) {
+          finishedPackAnimation = {
+            top: coords.top,
+            left: coords.left,
+            originTop: originCoords.top,
+            originLeft: originCoords.left,
+            bg,
+            rotateTo: 360*2 + 25,
+          };
         }
+      }
 
-        cardAnimationContext.runAnimation();
-      }, 100);
+      coords = getSlotCoordinates(
+        target === "hand" ? `player_${actionBy}` : target,
+      );
+      originCoords = getSlotCoordinates(`player_${actionBy}`);
+
+      if (target === "hand") {
+        bg = gameContext?.deck?.[gameContext?.deck?.length - 1]?.bg;
+        originCoords = getSlotCoordinates("cardpack_deck");
+      }
+
+      if (coords && originCoords) {
+        const animation = {
+          top: coords.top,
+          left: coords.left,
+          originTop: originCoords.top,
+          originLeft: originCoords.left,
+          bg,
+        };
+        cardAnimationContext.addAnimation(animation, duration, animationCallback);
+      }
+
+      if (finishedPackAnimation) {
+        cardAnimationContext.addAnimation(
+          finishedPackAnimation,
+          duration,
+          () => {},
+        );
+      }
+
+      cardAnimationContext.runAnimation();
     },
   );
 

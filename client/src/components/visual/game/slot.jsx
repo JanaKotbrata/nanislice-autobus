@@ -40,6 +40,7 @@ function Slot({
   return (
     <div
       ref={slotRef}
+      id={slotIndex}
       className={`w-11 h-16 sm:w-14 sm:h-22 md:w-16 md:h-24 border rounded flex items-center justify-center text-xs sm:text-sm relative ${border} ${isActive ? "ring-4 ring-blue-400" : ""}`}
     >
       {card?.rank ? (
