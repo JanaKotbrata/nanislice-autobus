@@ -24,7 +24,6 @@ import GameLoading from "./components/visual/game/game-loading.jsx";
 import UserContextProvider from "./components/providers/user-context-provider.jsx";
 import Users from "./routes/users.jsx";
 import BusPattern from "./components/visual/bus-pattern.jsx";
-import CardDragLayer from "./components/visual/game/card-drag-layer.jsx";
 import PrivacyPolicy from "./routes/privacy-policy.jsx";
 import CardAnimationContextProvider from "./components/providers/card-animation-context-provider.jsx";
 
@@ -34,12 +33,18 @@ function ProtectedRoute({ children }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const currentAddress = location.pathname + location.search;
     if (!user) {
       localStorage.setItem(
         "redirectAfterLogin",
-        location.pathname + location.search,
+        currentAddress,
       );
       navigate("/", { replace: true });
+    } else { // user is logged in
+      const shouldRedirectTo = localStorage.getItem("redirectAfterLogin");
+      if (shouldRedirectTo === currentAddress) {
+        localStorage.removeItem("redirectAfterLogin"); // we have reached the final destination
+      }
     }
   }, [user]);
 
@@ -53,12 +58,15 @@ function ProtectedRoute({ children }) {
 function NotAuthenticatedRoute({ children }) {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const navigateTo =
-    localStorage.getItem("redirectAfterLogin") || "/start-game";
-  if (user) {
-    localStorage.removeItem("redirectAfterLogin");
-    navigate(navigateTo, { replace: true });
-  }
+
+  useEffect(() => {
+    const navigateTo =
+      localStorage.getItem("redirectAfterLogin") || "/start-game";
+    if (user) {
+      navigate(navigateTo, { replace: true });
+    }
+  }, [user]);
+
   if (loading) {
     return <Loading />;
   }

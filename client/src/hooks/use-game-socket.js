@@ -10,12 +10,21 @@ export function useGameSocket(
   useEffect(() => {
     if (gameCode && userId) {
       socket.emit("listenToGame", gameCode, userId);
+      socket.on("connect", () => {
+        socket.emit("listenToGame", gameCode, userId);
+      });
       socket.on("processAction", (data) => {
         if (data.newGame.code === gameCode) {
           if (data.actionBy !== userId && data.target) {
-            animateToSlot(data.target, data.actionBy, data.isShuffled, data.finishedPack, () => {
-              setContextGame(data.newGame);
-            });
+            animateToSlot(
+              data.target,
+              data.actionBy,
+              data.isShuffled,
+              data.finishedPack,
+              () => {
+                setContextGame(data.newGame);
+              },
+            );
           } else {
             animateToSlot(null, null, null, null, () => {
               setContextGame(data.newGame);
@@ -37,6 +46,7 @@ export function useGameSocket(
 
     return () => {
       socket.off("processAction");
+      socket.off("connect");
       socket.off("playerRemoved");
       socket.off("notify-player-leaving");
     };

@@ -38,13 +38,6 @@ function Lobby() {
   useLobbySocket(user.id, gameContext.gameCode, gameContext.setContextGame);
 
   useEffect(() => {
-    const redirect = localStorage.getItem("redirectAfterLogin");
-    if (redirect) {
-      localStorage.removeItem("redirectAfterLogin");
-    }
-  }, []);
-
-  useEffect(() => {
     setOrderedPlayers(gameContext.players);
   }, [gameContext.players]);
 
