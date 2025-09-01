@@ -2,14 +2,12 @@ import { useContext, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/auth-context";
 import { getGameByUser } from "../services/game-service.jsx";
-import GameContext from "../context/game.js";
 import LanguageContext from "../context/language.js";
 
 function AuthCallback() {
   const [searchParams] = useSearchParams();
   const { login } = useAuth();
   const navigate = useNavigate();
-  const gameContext = useContext(GameContext);
   const i18n = useContext(LanguageContext);
 
   useEffect(() => {
@@ -24,14 +22,17 @@ function AuthCallback() {
         }
 
         await login(token);
+        const redirect = localStorage.getItem("redirectAfterLogin");
+        if (redirect) {
+          navigate(redirect, { replace: true });
+          return;
+        }
 
         const activeGame = await getGameByUser(token);
         if (activeGame?.state === "active") {
-          gameContext.setContextGame(activeGame);
           //TODO konstanty
           navigate(`/game/${activeGame.code}`);
         } else if (activeGame?.state === "initial") {
-          gameContext.setContextGame(activeGame);
           navigate(`/lobby/${activeGame.code}`);
         } else {
           navigate("/start-game", { replace: true });

@@ -35,9 +35,11 @@ function ProtectedRoute({ children }) {
 
   useEffect(() => {
     if (!user) {
-      navigate("/", {
-        state: location.pathname,
-      });
+      localStorage.setItem(
+        "redirectAfterLogin",
+        location.pathname + location.search,
+      );
+      navigate("/", { replace: true });
     }
   }, [user]);
 
@@ -50,10 +52,12 @@ function ProtectedRoute({ children }) {
 
 function NotAuthenticatedRoute({ children }) {
   const { user, loading } = useAuth();
-  const { state } = useLocation();
-  const navigateTo = state || "/start-game";
+  const navigate = useNavigate();
+  const navigateTo =
+    localStorage.getItem("redirectAfterLogin") || "/start-game";
   if (user) {
-    return <Navigate to={navigateTo} />;
+    localStorage.removeItem("redirectAfterLogin");
+    navigate(navigateTo, { replace: true });
   }
   if (loading) {
     return <Loading />;
@@ -119,11 +123,14 @@ function App() {
                 }
               >
                 <Route path="/lobby/:code" element={<Lobby />} />
-                <Route path="/game/:code" element={
-                  <CardAnimationContextProvider>
-                    <Game />
-                  </CardAnimationContextProvider>
-                } />
+                <Route
+                  path="/game/:code"
+                  element={
+                    <CardAnimationContextProvider>
+                      <Game />
+                    </CardAnimationContextProvider>
+                  }
+                />
               </Route>
             </Route>
           </Routes>
