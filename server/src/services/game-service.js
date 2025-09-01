@@ -38,7 +38,7 @@ function transformCurrentPlayerData(game, userId) {
     }
 
     if (game.deck?.length) {
-        game.deck = game.deck.map(card => ({ bg: card.bg }));
+        game.deck = game.deck.map(card => ({bg: card.bg}));
     }
 }
 
@@ -53,10 +53,10 @@ async function getGame(id, code, error, warning) {
 
     if (!game && error) {
         throw new error(params);
-        // TODO return new GameErrors.GameDoesNotExist(validData); //Použití jako warning - ale je lepší udělat novou třídu pro Warning
     }
     if (!game && warning) {
         console.warn(`${GameWarnings.GAME_NOT_FOUND.message} : ${JSON.stringify(params)}`);
+        // TODO return new GameErrors.GameDoesNotExist(validData); //Použití jako warning - ale je lepší udělat novou třídu pro Warning
         return {params, warning: GameWarnings.GAME_NOT_FOUND};
     }
     return game;

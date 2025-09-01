@@ -11,6 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/auth-context.jsx";
 import LanguageContext from "../../context/language.js";
+import { useAudio } from "./audio-context-provider.jsx";
 
 const maxHandSize = 5;
 
@@ -22,6 +23,7 @@ function GameContextProvider({ children }) {
   const [showAlert, setShowAlert] = useState(false);
   const [startAlert, setStartAlert] = useState(false);
   const [ready, setReady] = useState(false);
+  const [nextGame, setNextGame] = useState(false);
   const code = useRef(null);
   const navigate = useNavigate();
   const players = game?.playerList || [];
@@ -31,6 +33,7 @@ function GameContextProvider({ children }) {
   const gameState = game?.state;
   const i18n = useContext(LanguageContext);
   const { token } = useAuth();
+  const { playSound } = useAudio();
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -53,25 +56,23 @@ function GameContextProvider({ children }) {
     setGameCode(game.code);
     const myself = game.playerList.find((player) => player.myself);
     setReady(myself?.ready || false);
+    setNextGame(myself?.nextGame || false);
   }
 
-  function handleReady() {
-    let newReady;
-    if (!ready) {
-      newReady = true;
-      setReady(newReady);
-      alterMyself({ ready: newReady });
-    } else {
-      newReady = false;
-      setReady(newReady);
-      alterMyself({ ready: newReady });
-    }
+  function handleToggle(field, setter, forceValue = null) {
+    const current = field === "ready" ? ready : nextGame;
+    const newValue = forceValue !== null ? forceValue : !current;
+
+    setter(newValue);
+    alterMyself({ [field]: newValue });
+
     const userId = game.playerList.find((player) => player.myself)?.userId;
+
     setPlayer(
       {
         gameCode,
         userId,
-        ready: newReady,
+        [field]: newValue,
       },
       token,
     )
@@ -79,11 +80,22 @@ function GameContextProvider({ children }) {
         setContextGame(updatedGame);
       })
       .catch((err) => {
-        console.error("Chyba při nastavení připravenosti:", err);
-        setReady(!newReady);
-        console.log("ready po chybě", !newReady);
-        alterMyself({ ready: !newReady });
+        console.error(`Chyba při nastavení ${field}:`, err);
+        setter(current);
+        alterMyself({ [field]: current });
       });
+  }
+
+  function handleReady() {
+    handleToggle("ready", setReady);
+  }
+
+  function handleNextGame() {
+    handleToggle("nextGame", setNextGame);
+  }
+  //TODO Dunno if is it ok
+  function setNextGameFalse() {
+    handleToggle("nextGame", setNextGame, false);
   }
 
   function showErrorAlert(messageKey, message = "") {
@@ -98,6 +110,7 @@ function GameContextProvider({ children }) {
       .catch((err) => {
         console.error("Chyba při updateGameServerState:", err);
       });
+    playSound("/sounds/playing-card.mp3");
   }
 
   function alterMyself(changes) {
@@ -349,6 +362,9 @@ function GameContextProvider({ children }) {
         players,
         handleReady,
         ready,
+        handleNextGame,
+        setNextGameFalse,
+        nextGame,
         deck: gameDeck,
         gameBoard,
         currentPlayer,

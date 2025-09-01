@@ -10,6 +10,7 @@ import { useGameFlow } from "../hooks/use-game-flow.js";
 import { handleSocketAnimation } from "../utils/animation-utils.js";
 import GameBase from "./game-base.jsx";
 import Leave from "../components/visual/game/leave.jsx";
+import { useAudio } from "../components/providers/audio-context-provider.jsx";
 
 function splitPlayers(players) {
   const playersWithPosition = players.map((p, idx) => ({
@@ -28,11 +29,11 @@ function splitPlayers(players) {
 }
 
 function Game() {
-  const navigate = useNavigate();
   const gameContext = useContext(GameContext);
   const cardAnimationContext = useContext(CardAnimationContext);
   const i18n = useContext(LanguageContext);
   const { user, token } = useAuth();
+  const { playSound } = useAudio();
   const {
     leftPanelWidth,
     canResizePanel,
@@ -40,7 +41,7 @@ function Game() {
     handlePanelDragMove,
     handlePanelDragEnd,
   } = useResizablePanel();
-  const { showEndGameAlert } = useGameFlow(gameContext, navigate, token);
+  const { showEndGameAlert } = useGameFlow();
   const [leavingPlayerName, setLeavingPlayerName] = useState("");
 
   const [myself, otherPlayers] = splitPlayers(gameContext.players);
@@ -50,8 +51,17 @@ function Game() {
     gameContext.gameCode,
     gameContext.setContextGame,
     setLeavingPlayerName,
-    (...args) =>
-      handleSocketAnimation(cardAnimationContext, gameContext, ...args),
+    (target, actionBy, isShuffled, finishedPackIndex, animationCallBack) =>
+      handleSocketAnimation(
+        cardAnimationContext,
+        gameContext,
+        target,
+        actionBy,
+        isShuffled,
+        finishedPackIndex,
+        animationCallBack,
+        playSound,
+      ),
   );
 
   if (!myself.userId) {

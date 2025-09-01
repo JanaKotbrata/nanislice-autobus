@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import SlotContextProvider from "../components/providers/slot-context-provider.jsx";
@@ -6,8 +6,10 @@ import PlayerPanel from "../components/visual/game/player-panel.jsx";
 import CardDragLayer from "../components/visual/game/card-drag-layer.jsx";
 import GameBoard from "../components/visual/game/game-board.jsx";
 import LangSelector from "../components/visual/lang-selector.jsx";
-import SuccessAlert from "../components/visual/alerts/success-alert.jsx";
+import EndGameAlert from "../components/visual/alerts/end-game-alert.jsx";
 import InfoAlert from "../components/visual/alerts/info-alert.jsx";
+import { useAudio } from "../components/providers/audio-context-provider.jsx";
+import VolumeSettings from "../components/visual/volume-settings.jsx";
 
 function GameBase({
   otherPlayers,
@@ -23,6 +25,32 @@ function GameBase({
   i18n,
   gameContext,
 }) {
+  const [counter, setCounter] = useState(30);
+  const { playSound } = useAudio();
+  useEffect(() => {
+    let timer;
+    let interval;
+    let audio;
+    if (showEndGameAlert) {
+      setCounter(30);
+      audio = playSound("/sounds/ticking.mp3", true);
+      timer = setTimeout(() => {
+        audio.stopAndRemove();
+      }, 29000);
+      interval = setInterval(
+        () => setCounter((prev) => (prev > 0 ? prev - 1 : 0)),
+        1000,
+      );
+    } else {
+      setCounter(30);
+    }
+    return () => {
+      clearTimeout(timer);
+      clearInterval(interval);
+      if (audio) audio.stopAndRemove();
+    };
+  }, [showEndGameAlert]);
+
   return (
     <SlotContextProvider>
       <DndProvider backend={HTML5Backend}>
@@ -42,6 +70,7 @@ function GameBase({
 
           <div className="flex-grow w-full bg-gray-900 p-6 flex flex-col relative">
             <div className="flex flex-row gap-6 justify-end">
+              <VolumeSettings size={22} />
               <LangSelector />
               {children}
             </div>
@@ -49,10 +78,14 @@ function GameBase({
           </div>
         </div>
         {showEndGameAlert && (
-          <SuccessAlert
+          <EndGameAlert
             message={
               i18n.translate("winner") +
-              gameContext.players.find((p) => !p?.bus?.length)?.name
+              gameContext.players.find((p) => !p?.bus?.length)?.name +
+              ". " +
+              i18n.translate("newGame") +
+              counter +
+              "s"
             }
           />
         )}

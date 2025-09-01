@@ -38,7 +38,7 @@ class ProcessAction extends PostResponseHandler {
         }
         //Can play only current player
         if (game.currentPlayer !== myselfIndex) {
-            if (validData.action !== GameActions.REORDER_HAND) {
+            if (validData.action !== GameActions.REORDER_HAND && validData.action !== GameActions.VIEW_BOTTOM_BUS_CARD) {
                 throw new GameErrors.UserIsNotCurrentPlayer({myselfIndex, currentPlayer: game.currentPlayer});
             }
         }
@@ -151,7 +151,7 @@ class ProcessAction extends PostResponseHandler {
         let xp;
         let target;
         const myself = newGame.playerList.find(player => player.userId === userId);
-        if (myself.isCardDrawed || action === GameActions.REORDER_HAND || action === GameActions.DRAW_CARD) {
+        if (myself.isCardDrawed || action === GameActions.REORDER_HAND || action === GameActions.DRAW_CARD || action === GameActions.VIEW_BOTTOM_BUS_CARD) {
             const actionHandlers = {
                 [GameActions.MOVE_CARD_TO_BUS]: () => {
                     this.#removeCardFromHand(myself.hand, card);

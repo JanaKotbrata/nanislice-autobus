@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import CardAnimationContext from "../../context/card-animation.js";
 import AnimationCard from "../visual/game/animation-card.jsx";
 
@@ -7,11 +7,13 @@ function SlotContextProvider({ children }) {
   const [currentAnimation, setCurrentAnimation] = useState(null);
   const [animationTick, setAnimationTick] = useState(0);
 
-
   useEffect(() => {
     if (!currentAnimation && animationQueue.current.length > 0) {
       const next = animationQueue.current.shift();
       setCurrentAnimation(next);
+      if (next.animationSoundCallback) {
+        next.animationSoundCallback();
+      }
 
       setTimeout(() => {
         if (next.animationCallback) {
@@ -23,12 +25,17 @@ function SlotContextProvider({ children }) {
     }
   }, [currentAnimation, animationTick]);
 
-
-  function addAnimation(animation, duration, animationCallback) {
+  function addAnimation(
+    animation,
+    duration,
+    animationCallback,
+    animationSoundCallback,
+  ) {
     animationQueue.current.push({
       animation,
       duration,
       animationCallback,
+      animationSoundCallback,
     });
   }
 
@@ -36,14 +43,25 @@ function SlotContextProvider({ children }) {
     setAnimationTick((tick) => tick + 1);
   }
 
-  function addAndRunAnimation(animation, duration, animationCallback) {
-    addAnimation(animation, duration, animationCallback);
-    runAnimation()
+  function addAndRunAnimation(
+    animation,
+    duration,
+    animationCallback,
+    animationSoundCallback,
+  ) {
+    addAnimation(
+      animation,
+      duration,
+      animationCallback,
+      animationSoundCallback,
+    );
+    runAnimation();
   }
 
-
   return (
-    <CardAnimationContext.Provider value={{ addAnimation, runAnimation, addAndRunAnimation }}>
+    <CardAnimationContext.Provider
+      value={{ addAnimation, runAnimation, addAndRunAnimation }}
+    >
       {currentAnimation?.animation && (
         <AnimationCard
           x={currentAnimation.animation.left}

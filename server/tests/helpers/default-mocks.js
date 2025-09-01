@@ -150,6 +150,9 @@ function activeGame(params = {}, extraParams) {
 function closedGame(params = {}, extraParams = {}) {
     return activeGame({win: true, state: "closed", rev: params.rev || 2, ...params}, extraParams);
 }
+function finishedGame(params = {}, extraParams = {}) {
+    return activeGame({win: true, state: "finished", rev: params.rev || 2, ...params}, extraParams);
+}
 
 module.exports = {
     initialGame,
@@ -159,5 +162,6 @@ module.exports = {
     userMock,
     generateRandomId,
     generateRandomCode,
-    getPlayerList
+    getPlayerList,
+    finishedGame
 }

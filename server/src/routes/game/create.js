@@ -47,7 +47,6 @@ class CreateGame extends PostResponseHandler {
                 const game = await games.createGame(newGame);
                 transformCurrentPlayerData(game, userId);
                 return {...game, success: true};
-
             } catch (error) { //TODO errors
                 if (error.code !== 11000) {
                     console.error("Game already exist:", error);

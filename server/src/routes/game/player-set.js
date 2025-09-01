@@ -27,7 +27,6 @@ class SetGamePlayer extends PostResponseHandler {
 
          await authorizeUser(userId, GameErrors.UserDoesNotExist, GameErrors.UserNotAuthorized);
 
-
         //validation of playerList
         const playerIndex = game.playerList.findIndex((player) =>
             player.userId === userId
@@ -37,6 +36,9 @@ class SetGamePlayer extends PostResponseHandler {
         }
         let newPlayerList = structuredClone(game.playerList);
         newPlayerList[playerIndex].ready = validData.ready;
+        if("nextGame" in validData){
+            newPlayerList[playerIndex].nextGame = validData.nextGame;
+        }
         try {
             const updatedGame = await games.updateGame(game.id, {playerList: newPlayerList, sys: game.sys});
             updatedGame.playerList.forEach(player => {

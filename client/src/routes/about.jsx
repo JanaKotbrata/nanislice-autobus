@@ -3,6 +3,7 @@ import { FaLinkedin } from "react-icons/fa";
 import LogOut from "../components/visual/login/log-out.jsx";
 import LangSelector from "../components/visual/lang-selector.jsx";
 import LanguageContext from "../context/language.js";
+import VolumeSettings from "../components/visual/volume-settings.jsx";
 
 function About() {
   const i18n = React.useContext(LanguageContext);
@@ -10,6 +11,9 @@ function About() {
     <section className=" text-white min-h-screen flex items-center justify-center overflow-hidden">
       <div className="mx-auto max-w-3xl relative z-10">
         <div className="flex flex-row gap-6 justify-end">
+          <div className="p-2">
+            <VolumeSettings size={32} />
+          </div>
           <div className="p-2">
             <LangSelector size={32} />
           </div>

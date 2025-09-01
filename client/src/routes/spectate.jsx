@@ -1,5 +1,4 @@
 import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import GameContext from "../context/game.js";
 import CardAnimationContext from "../context/card-animation.js";
 import LanguageContext from "../context/language.js";
@@ -8,11 +7,12 @@ import { useResizablePanel } from "../hooks/use-game-layout.js";
 import { useGameFlow } from "../hooks/use-game-flow.js";
 import { handleSocketAnimation } from "../utils/animation-utils.js";
 import GameBase from "./game-base.jsx";
+import { useAudio } from "../components/providers/audio-context-provider.jsx";
 
 function Spectate() {
-  const navigate = useNavigate();
   const gameContext = useContext(GameContext);
   const cardAnimationContext = useContext(CardAnimationContext);
+  const { playSound } = useAudio();
   const i18n = useContext(LanguageContext);
   const {
     leftPanelWidth,
@@ -21,7 +21,7 @@ function Spectate() {
     handlePanelDragMove,
     handlePanelDragEnd,
   } = useResizablePanel();
-  const { showEndGameAlert } = useGameFlow(gameContext, navigate);
+  const { showEndGameAlert } = useGameFlow();
   const [leavingPlayerName, setLeavingPlayerName] = useState("");
 
   const otherPlayers = gameContext.players || [];
@@ -31,8 +31,17 @@ function Spectate() {
     gameContext.gameCode,
     gameContext.setContextGame,
     setLeavingPlayerName,
-    (...args) =>
-      handleSocketAnimation(cardAnimationContext, gameContext, ...args),
+    (target, actionBy, isShuffled, finishedPackIndex, animationCallBack) =>
+      handleSocketAnimation(
+        cardAnimationContext,
+        gameContext,
+        target,
+        actionBy,
+        isShuffled,
+        finishedPackIndex,
+        animationCallBack,
+        playSound,
+      ),
   );
 
   return (

@@ -24,6 +24,14 @@ class GameIsNotActive extends CommonError {
     }
 }
 
+class GameIsNotFinished extends CommonError {
+    constructor(params) {
+        super('GameIsNotFinished', "Game has to be in finished state.");
+        this.status = 400;
+        this.params = params;
+    }
+}
+
 class UpdateGameFailed extends CommonError {
     constructor(params) {
         super('UpdateGameFailed', "Failed to update game");
@@ -63,6 +71,7 @@ class FailedToAddPlayer extends CommonError {
         this.params = params;
     }
 }
+
 class FailedToSetPlayersOrder extends CommonError {
     constructor(params) {
         super('FailedToSetPlayersOrder', "Failed to set players order");
@@ -70,6 +79,7 @@ class FailedToSetPlayersOrder extends CommonError {
         this.params = params;
     }
 }
+
 class PlayerAlreadyInGame extends CommonError {
     constructor(params) {
         super('PlayerAlreadyInGame', "Player already in game");
@@ -213,6 +223,7 @@ class InvalidCardInBusStopDifferentIndex extends CommonError {
         this.params = params;
     }
 }
+
 class InvalidPlayerList extends CommonError {
     constructor(params) {
         super('InvalidPlayerList', "Invalid player list");
@@ -220,6 +231,7 @@ class InvalidPlayerList extends CommonError {
         this.params = params;
     }
 }
+
 class UserCanNotStartGame extends CommonError {
     constructor(params) {
         super('UserCanNotStartGame', "User is not allowed to start the game");
@@ -227,6 +239,7 @@ class UserCanNotStartGame extends CommonError {
         this.params = params;
     }
 }
+
 class UserCanNotSetPlayers extends CommonError {
     constructor(params) {
         super('UserCanNotSetPlayers', "User is not allowed to set players");
@@ -234,6 +247,7 @@ class UserCanNotSetPlayers extends CommonError {
         this.params = params;
     }
 }
+
 class GameAlreadyActive extends CommonError {
     constructor(params) {
         super('GameAlreadyActive', "Game is already active is not possible to add player.");
@@ -241,6 +255,7 @@ class GameAlreadyActive extends CommonError {
         this.params = params;
     }
 }
+
 class FailedToSetPlayer extends CommonError {
     constructor(params) {
         super('FailedToSetPlayer', "Failed to set player");
@@ -248,6 +263,7 @@ class FailedToSetPlayer extends CommonError {
         this.params = params;
     }
 }
+
 class UserNotAuthorized extends CommonError {
     constructor(params) {
         super('UserNotAuthorized', "User is not authorized to perform this action");
@@ -255,6 +271,7 @@ class UserNotAuthorized extends CommonError {
         this.params = params;
     }
 }
+
 class UserIsNotAllowedToDeleteGame extends CommonError {
     constructor(params) {
         super('UserIsNotAllowedToDeleteGame', "User is not allowed to delete this game");
@@ -262,6 +279,7 @@ class UserIsNotAllowedToDeleteGame extends CommonError {
         this.params = params;
     }
 }
+
 class UserIsNotAllowedToCloseGame extends CommonError {
     constructor(params) {
         super('UserIsNotAllowedToCloseGame', "User is not allowed to close this game");
@@ -269,6 +287,7 @@ class UserIsNotAllowedToCloseGame extends CommonError {
         this.params = params;
     }
 }
+
 class CardIsMissing extends CommonError {
     constructor(params) {
         super('CardIsMissing', "Card is missing");
@@ -276,6 +295,31 @@ class CardIsMissing extends CommonError {
         this.params = params;
     }
 }
+
+class NotEnoughPlayersForRematch extends CommonError {
+    constructor(params) {
+        super('NotEnoughPlayersForRematch', "Not enough players for rematch");
+        this.status = 400;
+        this.params = params;
+    }
+}
+
+class UserNotInPreviousGame extends CommonError {
+    constructor(params) {
+        super('UserNotInPreviousGame', "User was not in the previous game");
+        this.status = 400;
+        this.params = params;
+    }
+}
+
+class FailedToRematchGame extends CommonError {
+    constructor(params) {
+        super('FailedToRematchGame', "Failed to rematch game");
+        this.status = 500;
+        this.params = params;
+    }
+}
+
 module.exports = {
     GameDoesNotExist,
     GameIsNotActive,
@@ -312,6 +356,9 @@ module.exports = {
     UserIsNotAllowedToCloseGame,
     CardIsMissing,
     UserCanNotSetPlayers,
-    FailedToSetPlayersOrder
-
+    FailedToSetPlayersOrder,
+    NotEnoughPlayersForRematch,
+    UserNotInPreviousGame,
+    FailedToRematchGame,
+    GameIsNotFinished
 };

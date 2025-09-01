@@ -25,6 +25,7 @@ import Users from "./routes/users.jsx";
 import BusPattern from "./components/visual/bus-pattern.jsx";
 import PrivacyPolicy from "./routes/privacy-policy.jsx";
 import CardAnimationContextProvider from "./components/providers/card-animation-context-provider.jsx";
+import AudioContextProvider from "./components/providers/audio-context-provider.jsx";
 import Spectate from "./routes/spectate.jsx";
 
 function ProtectedRoute({ children }) {
@@ -35,12 +36,10 @@ function ProtectedRoute({ children }) {
   useEffect(() => {
     const currentAddress = location.pathname + location.search;
     if (!user) {
-      localStorage.setItem(
-        "redirectAfterLogin",
-        currentAddress,
-      );
+      localStorage.setItem("redirectAfterLogin", currentAddress);
       navigate("/", { replace: true });
-    } else { // user is logged in
+    } else {
+      // user is logged in
       const shouldRedirectTo = localStorage.getItem("redirectAfterLogin");
       if (shouldRedirectTo === currentAddress) {
         localStorage.removeItem("redirectAfterLogin"); // we have reached the final destination
@@ -79,78 +78,80 @@ function App() {
       <BusPattern />
       {/*TODO container*/}
       <AuthProvider>
-        <LanguageProvider>
-          <Routes>
-            <Route path="/about" element={<About />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route
-              path="/"
-              element={
-                <NotAuthenticatedRoute>
-                  <Welcome />
-                </NotAuthenticatedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <UserContextProvider>
-                    <Profile />
-                  </UserContextProvider>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/users"
-              element={
-                <ProtectedRoute>
-                  <UserContextProvider>
-                    <Users />
-                  </UserContextProvider>
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/auth-callback" element={<AuthCallback />} />
+        <AudioContextProvider>
+          <LanguageProvider>
+            <Routes>
+              <Route path="/about" element={<About />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route
+                path="/"
+                element={
+                  <NotAuthenticatedRoute>
+                    <Welcome />
+                  </NotAuthenticatedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <UserContextProvider>
+                      <Profile />
+                    </UserContextProvider>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/users"
+                element={
+                  <ProtectedRoute>
+                    <UserContextProvider>
+                      <Users />
+                    </UserContextProvider>
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/auth-callback" element={<AuthCallback />} />
 
-            <Route
-              element={
-                <ProtectedRoute>
-                  <GameContextProvider>
-                    <Outlet />
-                  </GameContextProvider>
-                </ProtectedRoute>
-              }
-            >
-              <Route path="/start-game" element={<StartGame />} />
               <Route
                 element={
-                  <GameLoading>
-                    <Outlet />
-                  </GameLoading>
+                  <ProtectedRoute>
+                    <GameContextProvider>
+                      <Outlet />
+                    </GameContextProvider>
+                  </ProtectedRoute>
                 }
               >
-                <Route path="/lobby/:code" element={<Lobby />} />
+                <Route path="/start-game" element={<StartGame />} />
                 <Route
-                  path="/game/:code"
                   element={
-                    <CardAnimationContextProvider>
-                      <Game />
-                    </CardAnimationContextProvider>
+                    <GameLoading>
+                      <Outlet />
+                    </GameLoading>
                   }
-                />
-                <Route
-                  path="/spectate/:code"
-                  element={
-                    <CardAnimationContextProvider>
-                      <Spectate />
-                    </CardAnimationContextProvider>
-                  }
-                />
+                >
+                  <Route path="/lobby/:code" element={<Lobby />} />
+                  <Route
+                    path="/game/:code"
+                    element={
+                      <CardAnimationContextProvider>
+                        <Game />
+                      </CardAnimationContextProvider>
+                    }
+                  />
+                  <Route
+                    path="/spectate/:code"
+                    element={
+                      <CardAnimationContextProvider>
+                        <Spectate />
+                      </CardAnimationContextProvider>
+                    }
+                  />
+                </Route>
               </Route>
-            </Route>
-          </Routes>
-        </LanguageProvider>
+            </Routes>
+          </LanguageProvider>
+        </AudioContextProvider>
       </AuthProvider>
     </Router>
   );

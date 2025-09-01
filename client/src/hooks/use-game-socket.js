@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { socket } from "../services/create-socket.js";
+import { useNavigate } from "react-router-dom";
 export function useGameSocket(
   userId,
   gameCode,
@@ -7,6 +8,8 @@ export function useGameSocket(
   showAlert,
   animateToSlot,
 ) {
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (gameCode && userId) {
       if (userId === -1) {
@@ -20,6 +23,16 @@ export function useGameSocket(
           socket.emit("listenToGame", gameCode, userId);
         });
       }
+
+      socket.on("rematch", (data) => {
+        navigate(`/lobby/${data.gameCode}`);
+      });
+
+      socket.on("playerAdded", (data) => {
+        if (data.code === gameCode) {
+          setContextGame(data);
+        }
+      });
 
       socket.on("processAction", (data) => {
         if (data.newGame.code === gameCode) {

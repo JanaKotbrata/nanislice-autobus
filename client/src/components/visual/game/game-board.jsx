@@ -6,70 +6,50 @@ import GameBoardSlot from "./game-board-slot.jsx";
 import LanguageContext from "../../../context/language.js";
 import Hand from "./hand.jsx";
 import CardAnimationContext from "../../../context/card-animation.js";
+import { handleSocketAnimation } from "../../../utils/animation-utils.js";
+import { useAudio } from "../../providers/audio-context-provider.jsx";
 
 function getSlotCoordinates(slotId) {
   const slotElement = document.getElementById(slotId);
   if (!slotElement) return null;
-
   const slotRect = slotElement.getBoundingClientRect();
-  return {
-    top: slotRect.top,
-    left: slotRect.left,
-  };
+  return { top: slotRect.top, left: slotRect.left };
 }
 
 function GameBoard({ player }) {
   const i18n = useContext(LanguageContext);
   const gameContext = useContext(GameContext);
   const cardAnimationContext = useContext(CardAnimationContext);
+  const { playSound } = useAudio();
   const boardRef = useRef(null);
 
   const isCurrentPlayer =
     gameContext.players?.[gameContext.currentPlayer]?.myself;
   const isDrawedCard = isCurrentPlayer && !player.isCardDrawed;
   const drawCardText = isDrawedCard ? i18n.translate("drawCard") : "";
-
   const [shouldPulse, setShouldPulse] = useState(false);
-
   const prevBoardRef = useRef(null);
-
   const deckLength = gameContext.deck.length;
   const completedCardLength = gameContext.game.completedCardList?.length || 0;
 
   useEffect(() => {
     if (isDrawedCard) {
-      const timer = setTimeout(() => {
-        setShouldPulse(true);
-      }, 7000);
+      const timer = setTimeout(() => setShouldPulse(true), 7000);
       return () => clearTimeout(timer);
-    } else {
-      setShouldPulse(false);
-    }
+    } else setShouldPulse(false);
   }, [isDrawedCard]);
 
   useEffect(() => {
-    if (!prevBoardRef.current) {
-      prevBoardRef.current = gameContext.gameBoard;
-    }
-
+    if (!prevBoardRef.current) prevBoardRef.current = gameContext.gameBoard;
     const prevBoard = prevBoardRef.current;
     const currentBoard = gameContext.gameBoard;
 
     prevBoard.forEach((prevPack, index) => {
       const currentPack = currentBoard[index];
       if (prevPack?.length === 12 && currentPack?.length === 13) {
-        // const fromEl = slotRefs.current[index];
-        // const toEl = completedCardRef.current;
-        //
-        // if (!fromEl || !toEl) {
-        //   return;
-        // }
-
         const from = getSlotCoordinates(`gb_card_${index}`);
         const to = getSlotCoordinates("completed_cardpack_deck");
-
         const card = currentPack[currentPack.length - 1];
-
         const animation = {
           top: to.top,
           left: to.left,
@@ -78,30 +58,73 @@ function GameBoard({ player }) {
           bg: card?.bg || "blue",
           rotateTo: 360 * 2 + 25,
         };
-        cardAnimationContext.addAndRunAnimation(animation, 1000, () => {});
+        cardAnimationContext.addAndRunAnimation(
+          animation,
+          1000,
+          () => {},
+          () => playSound("/sounds/shuffle-card.mp3"),
+        );
       }
     });
-
     prevBoardRef.current = currentBoard.map((p) => [...p]);
   }, [gameContext.gameBoard]);
+
+  function handleDraw() {
+    const deckBefore = gameContext.deck;
+    const deckLenBefore = deckLength;
+    gameContext.drawCard();
+    const from = getSlotCoordinates(`cardpack_deck`);
+    let to;
+    for (let i = 0; i < 5; i++) {
+      to = getSlotCoordinates(`empty_hand_${i}`);
+      if (to) break;
+    }
+    const cardBG = deckBefore[deckBefore.length - 1]?.bg;
+    const animation = {
+      top: to.top,
+      left: to.left,
+      originTop: from.top,
+      originLeft: from.left,
+      bg: cardBG || "blue",
+      rotateTo: 360 * 2 + 25,
+    };
+
+    if (deckLenBefore <= 6) {
+      // shuffle animation first
+      handleSocketAnimation(
+        cardAnimationContext,
+        gameContext,
+        null,
+        player.userId,
+        true,
+        null,
+        () => {},
+        playSound,
+      );
+    }
+
+    cardAnimationContext.addAndRunAnimation(
+      animation,
+      1000,
+      () => {},
+      () => playSound("/sounds/playing-card.mp3"),
+    );
+  }
 
   return (
     <div className="h-full flex flex-col gap-4">
       <div
         ref={boardRef}
-        className={`flex flex-col items-center justify-start board p-6 shadow-lg rounded-xl grow transition-all duration-300 
-    overflow-x-hidden w-full
-          ${shouldPulse ? "animate-[pulse_0.3s_ease-in-out_infinite]" : ""}`}
+        className={`flex flex-col items-center justify-start board p-6 shadow-lg rounded-xl grow transition-all duration-300 overflow-x-hidden w-full ${shouldPulse ? "animate-[pulse_0.3s_ease-in-out_infinite]" : ""}`}
       >
         <div className="relative w-full mb-6 flex justify-center">
           <CardPack
             text={drawCardText}
-            onDrawCard={isCurrentPlayer && gameContext.drawCard}
+            onDrawCard={isCurrentPlayer && handleDraw}
             isDrawedCard={isDrawedCard}
             bg={gameContext.deck[deckLength - 1]?.bg}
             count={deckLength}
           />
-
           <div
             className="absolute right-0"
             id="completed_cardpack_deck"
@@ -122,7 +145,6 @@ function GameBoard({ player }) {
             )}
           </div>
         </div>
-
         <div className="game-board flex flex-wrap justify-center gap-4 w-full max-w-full">
           {gameContext.showDangerAlert && (
             <DangerAlert
@@ -130,7 +152,6 @@ function GameBoard({ player }) {
               onClose={() => gameContext.setShowDangerAlert(false)}
             />
           )}
-
           {gameContext.gameBoard.map((pack, index) => {
             const card = pack[pack.length - 1];
             return (
@@ -145,7 +166,6 @@ function GameBoard({ player }) {
               />
             );
           })}
-
           <GameBoardSlot
             id={`gb_nocard_`}
             key={`gb_nocard_${gameContext.gameBoard.length}`}
@@ -154,7 +174,6 @@ function GameBoard({ player }) {
           />
         </div>
       </div>
-
       <Hand
         player={player}
         isActivePlayer={

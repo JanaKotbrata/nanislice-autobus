@@ -5,6 +5,7 @@ import GoogleLogin from "../components/visual/login/google-login.jsx";
 import SeznamLogin from "../components/visual/login/seznam-login.jsx";
 import LangSelector from "../components/visual/lang-selector.jsx";
 import LanguageContext from "../context/language.js";
+import VolumeSettings from "../components/visual/volume-settings.jsx";
 
 function Welcome() {
   const i18n = useContext(LanguageContext);

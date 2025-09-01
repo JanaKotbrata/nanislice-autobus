@@ -6,6 +6,7 @@ import Button from "../components/visual/button.jsx";
 import LogOut from "../components/visual/login/log-out.jsx";
 import LanguageContext from "../context/language.js";
 import LangSelector from "../components/visual/lang-selector.jsx";
+import VolumeSettings from "../components/visual/volume-settings.jsx";
 
 function UsersPage() {
   const i18n = useContext(LanguageContext);
@@ -40,6 +41,9 @@ function UsersPage() {
   return (
     <div className="bg-gray-900 text-white px-8 py-12">
       <div className="flex flex-row gap-6 justify-end">
+        <div className={"p-2"}>
+          <VolumeSettings size={22} />
+        </div>
         <div className={"p-2"}>
           <LangSelector size={21} />
         </div>

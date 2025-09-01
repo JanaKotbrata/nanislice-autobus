@@ -8,6 +8,10 @@ const get = Joi.object().keys({
     id,
     code
 }).or("id", "code");
+const rematch = Joi.object().keys({
+    gameId: id,
+    gameCode: code
+}).or("gameId", "gameCode");
 
 const list = Joi.object().keys({
     state,
@@ -16,17 +20,27 @@ const list = Joi.object().keys({
         pageSize: Joi.number().integer().min(1).default(1000)
     })
 })
-const create = Joi.object().keys({
-
-});
-const close = Joi.object().keys({gameId: id, gameCode: code}).or("gameId", "gameCode");;
+const create = Joi.object().keys({});
+const close = Joi.object().keys({gameId: id, gameCode: code}).or("gameId", "gameCode");
+;
 const gDelete = Joi.object().keys({
     id,
     code
 }).or("id", "code");
 const playerAdd = Joi.object().keys({gameId: id, gameCode: code, userId: id}).or("gameId", "gameCode");
-const playerSet = Joi.object().keys({gameId: id, gameCode: code, userId: id, ready:Joi.boolean()}).or("gameId", "gameCode");
-const playerSetOrder = Joi.object().keys({gameId: id, gameCode: code, userId: id, playerList: Joi.array().required()}).or("gameId", "gameCode");
+const playerSet = Joi.object().keys({
+    gameId: id,
+    gameCode: code,
+    userId: id,
+    ready: Joi.boolean(),
+    nextGame: Joi.boolean()
+}).or("gameId", "gameCode");
+const playerSetOrder = Joi.object().keys({
+    gameId: id,
+    gameCode: code,
+    userId: id,
+    playerList: Joi.array().required()
+}).or("gameId", "gameCode");
 const playerRemove = Joi.object().keys({gameId: id, gameCode: code, userId: id}).or("gameId", "gameCode");
 const startGame = Joi.object().keys({gameId: id, gameCode: code}).or("gameId", "gameCode");
 const processAction = Joi.object().keys({
@@ -65,4 +79,17 @@ const processAction = Joi.object().keys({
     }
 ).or("gameId", "gameCode");
 
-module.exports = {get, list, create, close, gDelete, playerAdd, playerSet, playerRemove, startGame, processAction, playerSetOrder};
+module.exports = {
+    get,
+    list,
+    create,
+    close,
+    gDelete,
+    playerAdd,
+    playerSet,
+    playerRemove,
+    startGame,
+    processAction,
+    playerSetOrder,
+    rematch
+};

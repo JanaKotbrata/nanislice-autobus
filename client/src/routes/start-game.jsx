@@ -16,6 +16,7 @@ import LogOut from "../components/visual/login/log-out.jsx";
 import LanguageContext from "../context/language.js";
 import LangSelector from "../components/visual/lang-selector.jsx";
 import InfoAlert from "../components/visual/alerts/info-alert.jsx";
+import VolumeSettings from "../components/visual/volume-settings.jsx";
 
 function StartGame() {
   const i18n = useContext(LanguageContext);
@@ -87,6 +88,9 @@ function StartGame() {
     <section className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-5xl z-10">
         <div className="flex flex-row gap-6 justify-end">
+          <div className="p-2">
+            <VolumeSettings size={32} />
+          </div>
           <div className="p-2">
             <LangSelector size={32} />
           </div>

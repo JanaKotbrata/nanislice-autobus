@@ -11,7 +11,8 @@
         "PLAYER_SET_ORDER": "/api/game/player/setOrder",
         "PLAYER_REMOVE": "/api/game/player/remove",
         "START": "/api/game/start",
-        "ACTION_PROCESS": "/api/game/action/process"
+        "ACTION_PROCESS": "/api/game/action/process",
+        "REMATCH": "/api/game/rematch"
     },
     "User": {
         "AUTHENTICATE": "/api/user/authenticate",

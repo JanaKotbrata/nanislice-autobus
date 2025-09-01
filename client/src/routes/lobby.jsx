@@ -24,6 +24,7 @@ import LangSelector from "../components/visual/lang-selector.jsx";
 import DraggableItem from "../components/visual/draggable-item.jsx";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import VolumeSettings from "../components/visual/volume-settings.jsx";
 
 function Lobby() {
   const i18n = useContext(LanguageContext);
@@ -109,6 +110,9 @@ function Lobby() {
     <section className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-4xl z-10">
         <div className="flex flex-row gap-6 justify-end">
+          <div className="p-2">
+            <VolumeSettings size={32} />
+          </div>
           <div className="p-2">
             <LangSelector size={32} />
           </div>

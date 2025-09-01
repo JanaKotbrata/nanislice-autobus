@@ -88,6 +88,15 @@ export async function createGame(data = {}, token) {
     throw error;
   }
 }
+export async function rematchGame(data = {}, token) {
+  try {
+    const response = await post(Routes.Game.REMATCH, data, token);
+    return response.data;
+  } catch (error) {
+    console.error("Error rematching game:", error);
+    throw error;
+  }
+}
 export async function closeGame(data = {}, token) {
   try {
     const response = await post(Routes.Game.CLOSE, data, token);

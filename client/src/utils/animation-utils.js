@@ -15,6 +15,7 @@ export function handleSocketAnimation(
   isShuffled,
   finishedPackIndex,
   animationCallback,
+  playSound,
 ) {
   if (!target && !actionBy) {
     cardAnimationContext.addAndRunAnimation(null, 0, animationCallback);
@@ -42,6 +43,7 @@ export function handleSocketAnimation(
         },
         duration,
         animationCallback,
+        () => playSound("/sounds/shuffle-card.mp3"),
       );
     }
   }
@@ -87,6 +89,7 @@ export function handleSocketAnimation(
       },
       duration,
       animationCallback,
+      () => playSound("/sounds/playing-card.mp3"),
     );
   }
 
@@ -95,6 +98,7 @@ export function handleSocketAnimation(
       finishedPackAnimation,
       duration,
       () => {},
+      () => playSound("/sounds/shuffle-card.mp3"),
     );
   }
 

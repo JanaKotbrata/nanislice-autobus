@@ -36,8 +36,8 @@
     },
     "spectator": {
       "cs": "DIVÁK",
-        "en": "SPECTATOR",
-        "sk": "DIVÁK"
+      "en": "SPECTATOR",
+      "sk": "DIVÁK"
     },
     "bottomBusCardNotAvailable": {
       "cs": "Ha!ha! No prostě sem nemůžeš čumět furt.",
@@ -148,6 +148,21 @@
       "cs": "No to je dost, že si vyhrál: ",
       "en": "Well, look who finally won: ",
       "sk": "Aha ho, víťaza: "
+    },
+    "newGame": {
+      "cs": "Chceš hrát znova? Máš na to: ",
+      "en": "Wanna roll again? You’ve got: ",
+      "sk": "Chceš hrať znova? Máš na to: "
+    },
+    "yesNewGame": {
+      "cs": "No tak jo!",
+      "en": "Heck yeah!",
+      "sk": "No jasné!"
+    },
+    "noNewGame": {
+      "cs": "Hm, už ne.",
+      "en": "Nah, not now.",
+      "sk": "Nie, teraz nie."
     },
     "tryToLeave": {
       "cs": "se pokouší opustit hru.",
@@ -393,6 +408,26 @@
       "cs": "Nastavit preferovaný jazyk hry",
       "en": "Set preferred game language",
       "sk": "Nastaviť preferovaný jazyk hry"
+    },
+    "volume": {
+      "cs": "Hlasitost",
+      "en": "Volume",
+      "sk": "Hlasitosť"
+    },
+    "saveVolume": {
+      "cs": "Uložit trvale",
+      "en": "Save permanently",
+      "sk": "Uložiť natrvalo"
+    },
+    "saveVolumeTitle": {
+      "cs": "Po kliknutí se nastavení uloží ke tvému účtu. Pokud to neuložíš, tak se ti to po refreshi dá na defaultní hodnotu.",
+      "en": "Clicking this will save the setting to your account. If you don’t save it, it’ll reset to default on refresh.",
+      "sk": "Kliknutím sa nastavenie uloží k tvojmu účtu. Ak to neuložíš, tak sa to po refreshi vráti na defaultnú hodnotu."
+    },
+    "changeVolume": {
+      "cs": "Změnit hlasitost",
+      "en": "Change volume",
+      "sk": "Zmeniť hlasitosť"
     },
     "change": {
       "cs": "Změnit",

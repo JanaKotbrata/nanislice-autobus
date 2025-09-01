@@ -5,6 +5,7 @@ import { FaPencilAlt } from "react-icons/fa";
 import LogOut from "../components/visual/login/log-out.jsx";
 import LanguageContext from "../context/language.js";
 import LangSelector from "../components/visual/lang-selector.jsx";
+import VolumeSettings from "../components/visual/volume-settings.jsx";
 
 function Profile() {
   const i18n = useContext(LanguageContext);
@@ -97,6 +98,9 @@ function Profile() {
     <section className="relative min-h-screen flex items-center justify-center px-4">
       <div className="relative z-10 w-full max-w-2xl">
         <div className="flex flex-row gap-6 justify-end">
+          <div className="p-2">
+            <VolumeSettings size={32} />
+          </div>
           <div className="p-2">
             <LangSelector size={32} />
           </div>
