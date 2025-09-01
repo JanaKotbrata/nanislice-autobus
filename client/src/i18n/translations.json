@@ -34,10 +34,15 @@
       "en": "WTF was that?",
       "sk": "Čo to do...?"
     },
+    "spectator": {
+      "cs": "DIVÁK",
+        "en": "SPECTATOR",
+        "sk": "DIVÁK"
+    },
     "bottomBusCardNotAvailable": {
-      "cs": "Na spodní kartu se můžeš podívat jen párkrát. Už si to přešvih.",
-      "en": "You can peek at the bottom bus card only a few times. You’ve hit the limit.",
-      "sk": "Na spodnú kartu sa môžeš pozrieť len párkrát. Už si to prešvihol."
+      "cs": "Ha!ha! No prostě sem nemůžeš čumět furt.",
+      "en": "Haha! No peeking at the bottom card forever.",
+      "sk": "Haha! Nie je možné čumieť na spodnú kartu naveky."
     },
     "iCanPlay": {
       "cs": "Už můžu hrát!",
@@ -380,14 +385,14 @@
       "sk": "Nazbierané XP"
     },
     "preferredLanguage": {
-        "cs": "Preferovaný jazyk hry",
-        "en": "Preferred game language",
-        "sk": "Preferovaný jazyk hry"
+      "cs": "Preferovaný jazyk hry",
+      "en": "Preferred game language",
+      "sk": "Preferovaný jazyk hry"
     },
     "setPrefLang": {
-        "cs": "Nastavit preferovaný jazyk hry",
-        "en": "Set preferred game language",
-        "sk": "Nastaviť preferovaný jazyk hry"
+      "cs": "Nastavit preferovaný jazyk hry",
+      "en": "Set preferred game language",
+      "sk": "Nastaviť preferovaný jazyk hry"
     },
     "change": {
       "cs": "Změnit",
@@ -550,101 +555,101 @@
       "sk": "⚠ Aby si mohol pokračovať, musíš súhlasiť so Zásadami ochrany osobných údajov."
     },
     "privacyPolicy": {
-    "name": {
-      "cs": "Jméno / přezdívka",
-      "en": "Name / Nickname",
-      "sk": "Meno / prezývka"
-    },
-    "avatar": {
-      "cs": "Profilový obrázek (avatar)",
-      "en": "Profile picture (avatar)",
-      "sk": "Profilový obrázok (avatar)"
-    },
-    "email": {
-      "cs": "E-mailová adresa",
-      "en": "Email address",
-      "sk": "E-mailová adresa"
-    },
+      "name": {
+        "cs": "Jméno / přezdívka",
+        "en": "Name / Nickname",
+        "sk": "Meno / prezývka"
+      },
+      "avatar": {
+        "cs": "Profilový obrázek (avatar)",
+        "en": "Profile picture (avatar)",
+        "sk": "Profilový obrázok (avatar)"
+      },
+      "email": {
+        "cs": "E-mailová adresa",
+        "en": "Email address",
+        "sk": "E-mailová adresa"
+      },
       "title": {
         "cs": "Zásady ochrany osobních údajů",
         "en": "Privacy Policy",
         "sk": "Zásady ochrany osobných údajov"
       },
       "intro": {
-      "cs": "Vaše soukromí je pro mě důležité. Tyto zásady vysvětlují, jak nakládám s osobními údaji.",
-      "en": "Your privacy is important to me. This policy explains how I handle personal data.",
-      "sk": "Vaše súkromie je pre mňa dôležité. Tieto zásady vysvetľujú, ako nakladám s osobnými údajmi."
+        "cs": "Vaše soukromí je pro mě důležité. Tyto zásady vysvětlují, jak nakládám s osobními údaji.",
+        "en": "Your privacy is important to me. This policy explains how I handle personal data.",
+        "sk": "Vaše súkromie je pre mňa dôležité. Tieto zásady vysvetľujú, ako nakladám s osobnými údajmi."
       },
       "whatWeCollect": {
         "title": {
-        "cs": "Jaké údaje shromažďuji",
-        "en": "What data I collect",
-        "sk": "Aké údaje zhromažďujem"
+          "cs": "Jaké údaje shromažďuji",
+          "en": "What data I collect",
+          "sk": "Aké údaje zhromažďujem"
         },
         "content": {
-        "cs": "Při přihlášení prostřednictvím externích služeb (např. Seznam.cz, Google, Discord) získávám pouze vaše jméno, e-mailovou adresu a profilový obrázek.",
-        "en": "When you sign in through external services (like Seznam.cz, Google, Discord), I only collect your name, email address, and profile picture.",
-        "sk": "Pri prihlásení cez externé služby (ako Seznam.cz, Google, Discord) zhromažďujem iba vaše meno, e-mailovú adresu a profilový obrázok."
+          "cs": "Při přihlášení prostřednictvím externích služeb (např. Seznam.cz, Google, Discord) získávám pouze vaše jméno, e-mailovou adresu a profilový obrázek.",
+          "en": "When you sign in through external services (like Seznam.cz, Google, Discord), I only collect your name, email address, and profile picture.",
+          "sk": "Pri prihlásení cez externé služby (ako Seznam.cz, Google, Discord) zhromažďujem iba vaše meno, e-mailovú adresu a profilový obrázok."
         }
       },
       "purpose": {
         "title": {
-        "cs": "K čemu údaje používám",
-        "en": "How I use your data",
-        "sk": "Na čo používam vaše údaje"
+          "cs": "K čemu údaje používám",
+          "en": "How I use your data",
+          "sk": "Na čo používam vaše údaje"
         },
         "content": {
-        "cs": "Údaje slouží výhradně k vytvoření a zobrazení vašeho účtu v aplikaci. Nepoužívám je k žádným dalším účelům.",
-        "en": "The data is used solely to create and display your account in the app. I do not use it for any other purposes.",
-        "sk": "Údaje slúžia výhradne na vytvorenie a zobrazenie vášho účtu v aplikácii. Nepoužívam ich na žiadne ďalšie účely."
+          "cs": "Údaje slouží výhradně k vytvoření a zobrazení vašeho účtu v aplikaci. Nepoužívám je k žádným dalším účelům.",
+          "en": "The data is used solely to create and display your account in the app. I do not use it for any other purposes.",
+          "sk": "Údaje slúžia výhradne na vytvorenie a zobrazenie vášho účtu v aplikácii. Nepoužívam ich na žiadne ďalšie účely."
         }
       },
       "sharing": {
         "title": {
-        "cs": "Komu údaje poskytuji",
-        "en": "Who I share your data with",
-        "sk": "Komu poskytujem vaše údaje"
+          "cs": "Komu údaje poskytuji",
+          "en": "Who I share your data with",
+          "sk": "Komu poskytujem vaše údaje"
         },
         "content": {
-        "cs": "Osobní údaje nikomu nepředávám. Sdílím je pouze s poskytovatelem přihlášení, který je potřebuje k ověření vaší identity.",
-        "en": "I do not share personal data with anyone. I only share it with the login provider, which needs it to verify your identity.",
-        "sk": "Osobné údaje nikomu neposkytujem. Zdieľam ich iba s poskytovateľom prihlásenia, ktorý ich potrebuje na overenie vašej identity."
+          "cs": "Osobní údaje nikomu nepředávám. Sdílím je pouze s poskytovatelem přihlášení, který je potřebuje k ověření vaší identity.",
+          "en": "I do not share personal data with anyone. I only share it with the login provider, which needs it to verify your identity.",
+          "sk": "Osobné údaje nikomu neposkytujem. Zdieľam ich iba s poskytovateľom prihlásenia, ktorý ich potrebuje na overenie vašej identity."
         }
       },
       "retention": {
         "title": {
           "cs": "Doba uchovávání",
           "en": "Data retention",
-            "sk": "Doba uchovávania"
+          "sk": "Doba uchovávania"
         },
         "content": {
-        "cs": "Vaše údaje uchovávám pouze po dobu existence vašeho účtu. Po jeho smazání jsou trvale odstraněny.",
-        "en": "I keep your data only for as long as your account exists. Once your account is deleted, the data is permanently removed.",
-        "sk": "Vaše údaje uchovávam iba počas existencie vášho účtu. Po jeho zmazaní sú trvalo odstránené."
+          "cs": "Vaše údaje uchovávám pouze po dobu existence vašeho účtu. Po jeho smazání jsou trvale odstraněny.",
+          "en": "I keep your data only for as long as your account exists. Once your account is deleted, the data is permanently removed.",
+          "sk": "Vaše údaje uchovávam iba počas existencie vášho účtu. Po jeho zmazaní sú trvalo odstránené."
         }
       },
       "rights": {
         "title": {
           "cs": "Vaše práva",
           "en": "Your rights",
-            "sk": "Vaše práva"
+          "sk": "Vaše práva"
         },
         "content": {
-        "cs": "Máte právo na přístup, opravu a výmaz svých údajů. V případě dotazů nebo žádostí mě můžete kontaktovat na e-mailu: kkotrbataj@gmail.com.",
-        "en": "You have the right to access, correct, and delete your data. For any questions or requests, you can contact me at: kkotrbataj@gmail.com.",
-        "sk": "Máte právo na prístup, opravu a vymazanie svojich údajov. V prípade otázok alebo žiadostí ma môžete kontaktovať na e-mailovej adrese: kkotrbataj@gmail.com."
+          "cs": "Máte právo na přístup, opravu a výmaz svých údajů. V případě dotazů nebo žádostí mě můžete kontaktovat na e-mailu: kkotrbataj@gmail.com.",
+          "en": "You have the right to access, correct, and delete your data. For any questions or requests, you can contact me at: kkotrbataj@gmail.com.",
+          "sk": "Máte právo na prístup, opravu a vymazanie svojich údajov. V prípade otázok alebo žiadostí ma môžete kontaktovať na e-mailovej adrese: kkotrbataj@gmail.com."
         }
       },
       "contact": {
         "title": {
           "cs": "Kontakt",
           "en": "Contact",
-            "sk": "Kontakt"
+          "sk": "Kontakt"
         },
         "content": {
-        "cs": "Za zpracování údajů odpovídám já, Jana Kotrbatá, e-mail: kkotrbataj@gmail.com.",
-        "en": "I am the data controller: Jana Kotrbatá, e-mail: kkotrbataj@gmail.com.",
-        "sk": "Za spracovanie údajov zodpovedám ja, Jana Kotrbatá, e-mail: kkotrbataj@gmail.com."
+          "cs": "Za zpracování údajů odpovídám já, Jana Kotrbatá, e-mail: kkotrbataj@gmail.com.",
+          "en": "I am the data controller: Jana Kotrbatá, e-mail: kkotrbataj@gmail.com.",
+          "sk": "Za spracovanie údajov zodpovedám ja, Jana Kotrbatá, e-mail: kkotrbataj@gmail.com."
         }
       }
     }

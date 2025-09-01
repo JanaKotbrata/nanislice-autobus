@@ -78,6 +78,19 @@ class ProcessAction extends PostResponseHandler {
                     finishedPack,
                 });
             })
+            const spectateGame = structuredClone(newGame);
+            transformCurrentPlayerData(spectateGame, 0);
+            this.io.to(`spectate_${gameCode}`).emit("processAction", {
+                userId,
+                newGame: spectateGame,
+                xp,
+                target,
+                actionBy: userId,
+                card: validData.card || null,
+                isShuffled,
+                finishedPack,
+            });
+
             transformCurrentPlayerData(newGame, userId);
             return {xp, newGame, success: true};
         } catch (error) {

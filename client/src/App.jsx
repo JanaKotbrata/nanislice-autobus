@@ -5,7 +5,6 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate,
   useNavigate,
   useLocation,
   Outlet,
@@ -26,6 +25,7 @@ import Users from "./routes/users.jsx";
 import BusPattern from "./components/visual/bus-pattern.jsx";
 import PrivacyPolicy from "./routes/privacy-policy.jsx";
 import CardAnimationContextProvider from "./components/providers/card-animation-context-provider.jsx";
+import Spectate from "./routes/spectate.jsx";
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -136,6 +136,14 @@ function App() {
                   element={
                     <CardAnimationContextProvider>
                       <Game />
+                    </CardAnimationContextProvider>
+                  }
+                />
+                <Route
+                  path="/spectate/:code"
+                  element={
+                    <CardAnimationContextProvider>
+                      <Spectate />
                     </CardAnimationContextProvider>
                   }
                 />

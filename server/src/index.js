@@ -55,6 +55,11 @@ async function main() {
             console.log(`Socket ${socket.id} joined lobby: ${gameCode}_${userId}`);
         });
 
+        socket.on("spectate", (gameCode) => {
+            socket.join(`spectate_${gameCode}`);
+            console.log(`Socket ${socket.id} joined spectate: ${gameCode}`);
+        });
+
         socket.on("disconnect", () => {
             console.log("Uživatel odpojen:", socket.id);
         });

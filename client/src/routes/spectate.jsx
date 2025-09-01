@@ -1,38 +1,19 @@
 import React, { useContext, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import GameContext from "../context/game.js";
 import CardAnimationContext from "../context/card-animation.js";
 import LanguageContext from "../context/language.js";
-import { useAuth } from "../context/auth-context.jsx";
 import { useGameSocket } from "../hooks/use-game-socket.js";
 import { useResizablePanel } from "../hooks/use-game-layout.js";
 import { useGameFlow } from "../hooks/use-game-flow.js";
 import { handleSocketAnimation } from "../utils/animation-utils.js";
 import GameBase from "./game-base.jsx";
-import Leave from "../components/visual/game/leave.jsx";
 
-function splitPlayers(players) {
-  const playersWithPosition = players.map((p, idx) => ({
-    ...p,
-    position: idx + 1,
-  }));
-  const myselfIdx = playersWithPosition.findIndex((p) => p?.myself);
-  if (myselfIdx === -1) return [{}, playersWithPosition];
-  const myself = playersWithPosition[myselfIdx];
-  const others = playersWithPosition.filter((_, idx) => idx !== myselfIdx);
-  const orderedOthers = [
-    ...others.slice(myselfIdx),
-    ...others.slice(0, myselfIdx),
-  ];
-  return [myself, orderedOthers];
-}
-
-function Game() {
+function Spectate() {
   const navigate = useNavigate();
   const gameContext = useContext(GameContext);
   const cardAnimationContext = useContext(CardAnimationContext);
   const i18n = useContext(LanguageContext);
-  const { user, token } = useAuth();
   const {
     leftPanelWidth,
     canResizePanel,
@@ -40,13 +21,13 @@ function Game() {
     handlePanelDragMove,
     handlePanelDragEnd,
   } = useResizablePanel();
-  const { showEndGameAlert } = useGameFlow(gameContext, navigate, token);
+  const { showEndGameAlert } = useGameFlow(gameContext, navigate);
   const [leavingPlayerName, setLeavingPlayerName] = useState("");
 
-  const [myself, otherPlayers] = splitPlayers(gameContext.players);
+  const otherPlayers = gameContext.players || [];
 
   useGameSocket(
-    user.id,
+    -1,
     gameContext.gameCode,
     gameContext.setContextGame,
     setLeavingPlayerName,
@@ -54,14 +35,10 @@ function Game() {
       handleSocketAnimation(cardAnimationContext, gameContext, ...args),
   );
 
-  if (!myself.userId) {
-    return <Navigate to={`/spectate/${gameContext.gameCode}`} />;
-  }
-
   return (
     <GameBase
       otherPlayers={otherPlayers}
-      myself={myself}
+      myself={null}
       leftPanelWidth={leftPanelWidth}
       canResizePanel={canResizePanel}
       handlePanelDragStart={handlePanelDragStart}
@@ -71,10 +48,8 @@ function Game() {
       leavingPlayerName={leavingPlayerName}
       i18n={i18n}
       gameContext={gameContext}
-    >
-      <Leave userId={myself.userId} />
-    </GameBase>
+    ></GameBase>
   );
 }
 
-export default Game;
+export default Spectate;

@@ -9,10 +9,18 @@ export function useGameSocket(
 ) {
   useEffect(() => {
     if (gameCode && userId) {
-      socket.emit("listenToGame", gameCode, userId);
-      socket.on("connect", () => {
+      if (userId === -1) {
+        socket.emit("spectate", gameCode);
+        socket.on("connect", () => {
+          socket.emit("spectate", gameCode);
+        });
+      } else {
         socket.emit("listenToGame", gameCode, userId);
-      });
+        socket.on("connect", () => {
+          socket.emit("listenToGame", gameCode, userId);
+        });
+      }
+
       socket.on("processAction", (data) => {
         if (data.newGame.code === gameCode) {
           if (data.actionBy !== userId && data.target) {

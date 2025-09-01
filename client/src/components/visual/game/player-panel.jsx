@@ -14,7 +14,7 @@ function PlayerPanel({
   const containerRef = useRef(null);
   const gameContext = useContext(GameContext);
   const [needsCollapse, setNeedsCollapse] = useState(false);
-  const isMyselfJrInBus = myself.bus[0]?.rank === "Jr";
+  const isMyselfJrInBus = myself?.bus[0]?.rank === "Jr";
   const i18n = useContext(LanguageContext);
 
   useEffect(() => {

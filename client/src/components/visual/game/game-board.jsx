@@ -18,7 +18,6 @@ function getSlotCoordinates(slotId) {
   };
 }
 
-
 function GameBoard({ player }) {
   const i18n = useContext(LanguageContext);
   const gameContext = useContext(GameContext);
@@ -77,7 +76,7 @@ function GameBoard({ player }) {
           originTop: from.top,
           originLeft: from.left,
           bg: card?.bg || "blue",
-          rotateTo: 360*2 + 25
+          rotateTo: 360 * 2 + 25,
         };
         cardAnimationContext.addAndRunAnimation(animation, 1000, () => {});
       }
