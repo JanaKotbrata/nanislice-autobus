@@ -1,8 +1,6 @@
 import React, { useLayoutEffect } from "react";
-const BgColors = {
-  RED: "back-card-red",
-  BLUE: "back-card-blue",
-};
+import { CardBgClasses } from "../../../constants/game.js";
+import { Bg } from "../../../../../shared/constants/game-constants.json";
 function AnimationCard({
   x,
   y,
@@ -25,14 +23,15 @@ function AnimationCard({
 
   let backgroundColor;
   if (bg) {
-    backgroundColor = bg === "red" ? BgColors.RED : BgColors.BLUE;
+    backgroundColor = bg === Bg.RED ? CardBgClasses.RED : CardBgClasses.BLUE;
   } else {
-    backgroundColor = Math.random() < 0.5 ? BgColors.RED : BgColors.BLUE;
+    backgroundColor =
+      Math.random() < 0.5 ? CardBgClasses.RED : CardBgClasses.BLUE;
   }
 
   return (
     <div
-      className={`w-16 h-24 rounded-md shadow-md absolute z-50 border-2 ${backgroundColor} !bg-white ${style}`}
+      className={`w-11 h-16 sm:w-14 sm:h-22 md:w-16 md:h-24 rounded-md shadow-md absolute z-50 border-2 ${backgroundColor} !bg-white ${style}`}
       style={{
         top: targetCoords.y,
         left: targetCoords.x,

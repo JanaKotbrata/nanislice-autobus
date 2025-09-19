@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
-
+import { Bg } from "../../../../../shared/constants/game-constants.json";
 function CardPack({
   id = "cardpack_deck",
   text,
   onDrawCard,
   isDrawedCard,
-  bg = "blue",
+  bg = Bg.BLUE,
   count = 0,
   isInteractive = false,
 }) {

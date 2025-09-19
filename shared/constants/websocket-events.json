@@ -1,0 +1,7 @@
+{
+	"LISTEN_TO_GAME": "listenToGame",
+	"SPECTATE": "spectate",
+	"DISCONNECT": "disconnect",
+	"PLAYER_ATTEMPTED_LEAVE": "player-attempted-leave",
+	"NOTIFY_PLAYER_LEAVING": "notify-player-leaving"
+}

@@ -1,11 +1,22 @@
-import React, { useState, useContext, useRef } from "react";
+import React, { useState, useContext, useRef, useEffect } from "react";
 import LanguageContext from "../../context/language.js";
 import { FaLanguage } from "react-icons/fa6";
+
 function LangSelector({ size }) {
   const i18n = useContext(LanguageContext);
   const languageContext = useContext(LanguageContext);
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   function handleLanguageChange(langCode) {
     languageContext.setContextLanguage(langCode);

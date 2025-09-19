@@ -1,69 +1,61 @@
-const request = require('supertest');
 require("../services/setup-db");
-const ListUser = require('../../src/routes/user/list');
+
+const ListUser = require("../../src/routes/user/list");
 const Routes = require("../../../shared/constants/routes.json");
-const { userMock} = require("../helpers/default-mocks");
-const {setupTestServer, cleanup} = require("../services/test-setup");
-const IO = require("../helpers/io-mock");
+const { Roles } = require("../../../shared/constants/game-constants.json");
+const {
+  cleanupTestContext,
+  createUser,
+  apiRequestSuccess,
+} = require("../test-helpers");
+const applyBeforeAll = require("../helpers/before-all-helper");
 
-let usersCollection;
-let testUserId;
-let getToken;
-describe('GET /user/list', () => {
-    let app;
-    beforeAll(async () => {
-        const setup = await setupTestServer(() => testUserId, (app) => {
-            new ListUser(app, IO);
-        });
-        app = setup.app;
-        usersCollection = setup.usersCollection;
-        getToken = setup.getToken;
-    });
+describe("GET /user/list", () => {
+  let ctx = applyBeforeAll(ListUser);
+  afterEach(async () => {
+    const { usersCollection } = ctx;
+    await cleanupTestContext({ usersCollection });
+  });
 
-    afterEach(async () => {
-        await cleanup();
-        await usersCollection.deleteMany({});
-    });
+  it("should list all user", async () => {
+    const count = 10;
+    let user;
+    for (let i = 0; i < count; i++) {
+      user = await createUser(ctx.usersCollection);
+    }
+    ctx.setTestUserId(user.id);
+    const response = await apiRequestSuccess(
+      ctx.app,
+      "get",
+      Routes.User.LIST,
+      ctx.getToken,
+      user.id,
+      {},
+    );
 
-    it('should list all user', async () => {
-        const count = 10;
-        let user;
-        for (let i = 0; i < count; i++) {
-            const mockUser = userMock();
-            user = await usersCollection.insertOne(mockUser);
-        }
-        testUserId = user.insertedId.toString();
+    expect(response.body.list).toHaveLength(count);
+    expect(response.body.pageInfo).toBeDefined();
+    expect(response.body.pageInfo.totalCount).toBe(count);
+  });
 
-        const response = await request(app)
-            .get(Routes.User.LIST)
-            .set("Authorization", `Bearer ${await getToken()}`)
-            .send({});
+  it("should list user by role", async () => {
+    const count = 10;
+    let user;
+    for (let i = 0; i < count; i++) {
+      user = await createUser(ctx.usersCollection);
+    }
+    ctx.setTestUserId(user.id);
+    const response = await apiRequestSuccess(
+      ctx.app,
+      "get",
+      Routes.User.LIST,
+      ctx.getToken,
+      user.id,
+      { role: Roles.PLEB },
+    );
 
-        expect(response.status).toBe(200);
-        expect(response.body.list).toHaveLength(count);
-        expect(response.body.pageInfo).toBeDefined();
-        expect(response.body.pageInfo.totalCount).toBe(count);
-        expect(response.body.success).toBe(true);
-    });
-    it('should list user by role', async () => {
-        const count = 10;
-        let user;
-        for (let i = 0; i < count; i++) {
-            const mockUser = userMock();
-            user = await usersCollection.insertOne(mockUser);
-        }
-        testUserId = user.insertedId.toString();
-
-        const response = await request(app)
-            .get(Routes.User.LIST)
-            .set("Authorization", `Bearer ${await getToken()}`)
-            .query({role:"pleb"});
-
-        expect(response.status).toBe(200);
-        expect(response.body.list).toHaveLength(count);
-        expect(response.body.pageInfo).toBeDefined();
-        expect(response.body.pageInfo.totalCount).toBe(count);
-        expect(response.body.success).toBe(true);
-    });
-
+    expect(response.body.list).toHaveLength(count);
+    expect(response.body.pageInfo).toBeDefined();
+    expect(response.body.pageInfo.totalCount).toBe(count);
+  });
 });

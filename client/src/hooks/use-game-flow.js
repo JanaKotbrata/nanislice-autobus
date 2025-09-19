@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { closeGame, rematchGame } from "../services/game-service";
+import { States } from "../../../shared/constants/game-constants.json";
 import { useAuth } from "../context/auth-context.jsx";
 import { useNavigate } from "react-router-dom";
 import GameContext from "../context/game.js";
@@ -51,11 +52,11 @@ export function useGameFlow() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (gameContext?.gameState === "initial") {
+    if (gameContext?.gameState === States.INITIAL) {
       navigate(`/lobby/${gameContext?.gameCode}`);
-    } else if (gameContext?.gameState === "closed") {
+    } else if (gameContext?.gameState === States.CLOSED) {
       navigate(`/`);
-    } else if (gameContext?.gameState === "finished") {
+    } else if (gameContext?.gameState === States.FINISHED) {
       setShowEndGameAlert(true);
 
       const timer = setTimeout(() => {

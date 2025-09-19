@@ -14,6 +14,6 @@ Tato složka obsahuje serverovou část aplikace **nanislice-autobus**, která p
 1. **Nainstalujte závislosti**:
 
    Před spuštěním serveru nainstalujte všechny potřebné závislosti:
-  
+
    npm install
-...
+   ...

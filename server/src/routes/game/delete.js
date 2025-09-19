@@ -1,34 +1,51 @@
 const GamesRepository = require("../../models/games-repository");
-const validateData = require("../../services/validation-service");
-const {gDelete: schema} = require("../../data-validations/game/validation-schemas");
-const {PostResponseHandler} = require("../../services/response-handler");
+const {
+  gDelete: schema,
+} = require("../../input-validation-schemas/game/validation-schemas");
+const {
+  AuthenticatedPostResponseHandler,
+} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes.json");
+const { Roles } = require("../../../../shared/constants/game-constants.json");
 const GameErrors = require("../../errors/game/game-errors");
-const {authorizeUser, authorizePlayer} = require("../../services/auth-service");
-const {getGame} = require("../../services/game-service");
+const {
+  validateAndAuthorizeForGame,
+} = require("../../services/validation-service");
+const { getGamePlayer } = require("../../services/game-service");
+const UsersRepository = require("../../models/users-repository");
 const games = new GamesRepository();
+const users = new UsersRepository();
 
-class DeleteGame extends PostResponseHandler {
-    constructor(expressApp) {
-        super(expressApp, Routes.Game.DELETE, "delete");
+class DeleteGame extends AuthenticatedPostResponseHandler {
+  constructor(expressApp) {
+    super(expressApp, Routes.Game.DELETE, "delete");
+  }
+
+  async delete(req) {
+    const { game } = await validateAndAuthorizeForGame(
+      req,
+      schema,
+      GameErrors.UserIsNotAllowedToDeleteGame,
+    );
+    const userId = req.user.id;
+
+    const player = getGamePlayer(game, userId);
+    if (!player?.creator) {
+      const user = await users.getById(userId);
+      if (user.role !== Roles.ADMIN) {
+        throw new GameErrors.UserIsNotAllowedToDeleteGame({
+          game,
+          userId,
+        });
+      }
     }
-
-    async delete(req) {
-        const validData = validateData(req.body, schema);
-        const {id, code} = validData;
-
-        const user = await authorizeUser(req.user.id, GameErrors.UserDoesNotExist, GameErrors.UserNotAuthorized);
-
-        let game = await getGame(id, code, GameErrors.GameDoesNotExist);
-        await authorizePlayer(user, game, GameErrors.UserIsNotAllowedToDeleteGame);
-
-        try {
-            await games.deleteGame(game.id);
-            return {id: game.id, success: true};
-        } catch (e) {
-            throw new GameErrors.FailedToDeleteGame(e);
-        }
+    try {
+      const result = await games.delete(game.id);
+      return { id: result.id };
+    } catch (e) {
+      throw new GameErrors.FailedToDeleteGame(e);
     }
+  }
 }
 
 module.exports = DeleteGame;

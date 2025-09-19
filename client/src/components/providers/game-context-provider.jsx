@@ -1,39 +1,52 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, {useEffect, useRef} from "react";
 import GameContext from "../../context/game";
 import GameActions from "../../../../shared/constants/game-actions.json";
-import { getGame, processAction, setPlayer } from "../../services/game-service";
+import { getGame, setPlayer } from "../../services/game-service";
 import {
-  canPlaceInBusStop,
-  canPlaceOnGameBoard,
-  canPlaceOnGBPack,
   getPlayerAndValid,
 } from "../../services/game-validation";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/auth-context.jsx";
-import LanguageContext from "../../context/language.js";
-import { useAudio } from "./audio-context-provider.jsx";
+import { useGameState } from "../../hooks/use-game-state";
+import { useGameActions } from "../../hooks/use-game-actions";
 
-const maxHandSize = 5;
+import {
+  isCardInSource,
+} from "../../utils/card-utils";
+import { maxHandSize } from "../../constants/game";
+import { useAuth } from "../../context/auth-context.jsx";
+
+import { useAlertContext } from "./alert-context-provider.jsx";
+import {ClientGameRules} from "../../services/game-rules.js";
+import {GameError} from "../../errors/game-error.js";
 
 function GameContextProvider({ children }) {
-  const [gameCode, setGameCode] = useState(null);
-  const [game, setGame] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [showDangerAlert, setShowDangerAlert] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
-  const [startAlert, setStartAlert] = useState(false);
-  const [ready, setReady] = useState(false);
-  const [nextGame, setNextGame] = useState(false);
-  const code = useRef(null);
+  const {
+    gameCode,
+    setGameCode,
+    game,
+    setGame,
+    ready,
+    setReady,
+    nextGame,
+    setNextGame,
+    code,
+    setContextGame,
+  } = useGameState();
+
+  const { updateGameServerState, updateGameServerStateAnimated } = useGameActions(setContextGame);
+
+  const { showErrorAlert } = useAlertContext();
+  const { token, user } = useAuth();
+
   const navigate = useNavigate();
   const players = game?.playerList || [];
   const gameDeck = game?.deck || [];
   const currentPlayer = game?.currentPlayer;
   const gameBoard = game?.gameBoard || [];
   const gameState = game?.state;
-  const i18n = useContext(LanguageContext);
-  const { token } = useAuth();
-  const { playSound } = useAudio();
+
+  // keep track of temporary cards during draw animation
+  const tempCardListRef = useRef([null, null, null, null, null])
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -50,28 +63,16 @@ function GameContextProvider({ children }) {
     }
   }, [gameCode]);
 
-  function setContextGame(game) {
-    setGame(game);
-    code.current = game.code;
-    setGameCode(game.code);
-    const myself = game.playerList.find((player) => player.myself);
-    setReady(myself?.ready || false);
-    setNextGame(myself?.nextGame || false);
-  }
-
   function handleToggle(field, setter, forceValue = null) {
     const current = field === "ready" ? ready : nextGame;
     const newValue = forceValue !== null ? forceValue : !current;
 
     setter(newValue);
-    alterMyself({ [field]: newValue });
-
-    const userId = game.playerList.find((player) => player.myself)?.userId;
+    updateMyselfInGame({ [field]: newValue });
 
     setPlayer(
       {
         gameCode,
-        userId,
         [field]: newValue,
       },
       token,
@@ -82,7 +83,7 @@ function GameContextProvider({ children }) {
       .catch((err) => {
         console.error(`Chyba při nastavení ${field}:`, err);
         setter(current);
-        alterMyself({ [field]: current });
+        updateMyselfInGame({ [field]: current });
       });
   }
 
@@ -93,27 +94,12 @@ function GameContextProvider({ children }) {
   function handleNextGame() {
     handleToggle("nextGame", setNextGame);
   }
-  //TODO Dunno if is it ok
+
   function setNextGameFalse() {
     handleToggle("nextGame", setNextGame, false);
   }
 
-  function showErrorAlert(messageKey, message = "") {
-    message = i18n.translate(messageKey) + message;
-    setErrorMessage(message);
-    setShowDangerAlert(true);
-  }
-
-  function updateGameServerState(actionData, action) {
-    processAction({ ...actionData, action }, token)
-      .then(setGame)
-      .catch((err) => {
-        console.error("Chyba při updateGameServerState:", err);
-      });
-    playSound("/sounds/playing-card.mp3");
-  }
-
-  function alterMyself(changes) {
+  function updateMyselfInGame(changes) {
     setGame((prevGame) => ({
       ...prevGame,
       playerList: prevGame.playerList.map((player) =>
@@ -122,225 +108,123 @@ function GameContextProvider({ children }) {
     }));
   }
 
-  function removeCardInTarget(target, targetCard) {
-    let removed = false;
-    const newTarget = target.map((c) => {
-      if (!removed && c?.i === targetCard.i) {
-        removed = true;
-        return {};
-      }
-      return c;
-    });
-    return [newTarget, removed];
-  }
-
-  function removeCardInNestedTargets(nestedTargets, targetCard) {
-    let removed = false;
-    const newTargets = nestedTargets.map((subArray) => {
-      if (removed) return subArray;
-      const [newSubArray, wasRemoved] = removeCardInTarget(
-        subArray,
-        targetCard,
-      );
-      if (wasRemoved) {
-        removed = true;
-        return newSubArray;
-      }
-      return subArray;
-    });
-    return [newTargets, removed];
-  }
-
-  function getTargetAndAction(player, card, isStart = false) {
-    let [newHand, removed] = removeCardInTarget(player.hand, card);
-    if (removed) {
-      return {
-        newHand,
-        newBus: player.bus,
-        newBusStop: player.busStop,
-        action: isStart
-          ? GameActions.START_NEW_PACK
-          : GameActions.MOVE_CARD_TO_BOARD,
-      };
-    }
-
-    let [newBus, removedFromBus] = removeCardInTarget(player.bus, card);
-    if (removedFromBus) {
-      return {
-        newHand: player.hand,
-        newBus,
-        newBusStop: player.busStop,
-        action: isStart
-          ? GameActions.START_NEW_PACK_FROM_BUS
-          : GameActions.MOVE_CARD_TO_BOARD_FROM_BUS,
-      };
-    }
-
-    if (!isStart) {
-      let [newBusStop, removedFromBusStop] = removeCardInNestedTargets(
-        player.busStop,
-        card,
-      );
-      if (removedFromBusStop) {
-        return {
-          newHand: player.hand,
-          newBus: player.bus,
-          newBusStop,
-          action: GameActions.MOVE_CARD_TO_BOARD_FROM_BUS_STOP,
-        };
-      }
-    }
-
-    showErrorAlert(
-      "weirdAlert",
-      JSON.stringify({
-        newHand: player.hand,
-        newBus: player.bus,
-        newBusStop: player.busStop,
-        action: null,
-      }),
-    );
-    return {};
-  }
-
-  function drawCard() {
+  /**
+   * Handles drawing a card for the current player, including validation and state update.
+   */
+  function drawCard(animationPromise = null) {
     const myself = getPlayerAndValid(players, currentPlayer, showErrorAlert);
-    if (!myself) return;
-    if (myself.isCardDrawed) {
-      return showErrorAlert("notPossibleDraw");
+    if (!myself || myself.isCardDrawed) {
+      if (myself?.isCardDrawed) showErrorAlert("notPossibleDraw");
+      return null;
     }
     const handLength = myself.hand.filter((c) => c.rank).length;
-    if (handLength >= maxHandSize) return;
+    if (handLength >= maxHandSize) return null;
 
-    const newCard = { i: -1, rank: "počkej", suit: "na mě" };
+    // altering instance so setState in updateMyselfInGame updates the gameDeck as well to have the proper card removed
+    const deckCard = gameDeck.pop();
+
+    // the i is different per each drawn card to make them unique in the hand
+    const newCard = { i: -1-handLength, rank: "počkej", suit: "na mě", bg: deckCard.bg };
     const newHand = [...myself.hand];
     const index = newHand.findIndex((c) => !c.rank);
     if (index !== -1) newHand[index] = newCard;
     else newHand.push(newCard);
 
-    alterMyself({ hand: newHand });
-    updateGameServerState({ gameCode }, GameActions.DRAW_CARD);
+    // add temporary card to preserve animation consistency (prevent removal of cards during animation)
+    tempCardListRef.current[index] = newCard;
+
+    const hasCardToDraw = newHand.some((c) => !c.rank);
+
+    updateMyselfInGame({ hand: newHand, isCardDrawed: !hasCardToDraw });
+    async function setupCardsBeforeUpdate(newGame) {
+      // wait for the animation to finish before updating the game state with the new cards to prevent blinking of the cards
+      await animationPromise;
+      const myself = getPlayerAndValid(newGame.playerList, currentPlayer, showErrorAlert);
+      // inject temp cards into the new game state where the real cards are missing
+      for (const idx in myself.hand) {
+        if (!myself.hand[idx].rank && tempCardListRef.current[idx]) {
+          myself.hand[idx] = tempCardListRef.current[idx];
+        }
+      }
+      // clear temp card
+      tempCardListRef.current[index] = null;
+
+      // disable "draw card" text when all cards are scheduled
+      const hasCardToDraw = myself.hand.some((c) => !c.rank);
+      myself.isCardDrawed = !hasCardToDraw;
+      return newGame;
+    }
+    updateGameServerStateAnimated({ gameCode  }, GameActions.DRAW_CARD, setupCardsBeforeUpdate);
+    // return a stub card for immediate UI feedback (mainly the back color of the card)
+    return deckCard;
   }
 
+  /**
+   * Starts a new pack on the game board with the given card.
+   * @param {Object} card - The card to start the new pack with.
+   */
   function startNewPack(card) {
-    const myself = getPlayerAndValid(players, currentPlayer, showErrorAlert);
+    const myself = players.find((player) => player.myself)
     if (!myself) return;
-    if (!myself.isCardDrawed) {
-      showErrorAlert("drawFirst");
-      return;
-    }
-    if (!canPlaceOnGameBoard(card, myself.bus[0], showErrorAlert)) return;
 
-    const { newHand, newBus, action } = getTargetAndAction(myself, card, true);
-    if (action) {
-      setGame((prev) => ({
-        ...prev,
-        gameBoard: [...prev.gameBoard, [card]],
-      }));
-      alterMyself({ hand: newHand, bus: newBus });
-      updateGameServerState({ card, gameCode }, action);
+    if (isCardInSource(card, myself.hand)) {
+      performAction(GameActions.START_NEW_PACK, {card, userId: user.id});
+    } else if (isCardInSource(card, myself.bus)) {
+      performAction(GameActions.START_NEW_PACK_FROM_BUS, {card, userId: user.id});
     }
   }
 
-  function addToPack(card, targetIndex) {
-    const myself = getPlayerAndValid(players, currentPlayer, showErrorAlert);
-    if (!myself) return;
-    if (!myself.isCardDrawed) {
-      showErrorAlert("drawFirst");
+  function performAction(action, params) {
+    const gameRules = new ClientGameRules(game);
+    const myself = game.playerList.find((player) => player.myself);
+    let newGame;
+    try {
+      newGame = gameRules.performAction(action, {myself, ...params});
+    } catch (e) {
+      if (e instanceof GameError) {
+        showErrorAlert(e.code, ...e.params)
+      } else {
+        console.error(e);
+      }
+
       return;
     }
-    if (
-      !canPlaceOnGBPack(
-        card,
-        gameBoard,
-        targetIndex,
-        myself.bus[0],
-        showErrorAlert,
-      )
-    )
-      return;
+    setContextGame(newGame);
+    updateGameServerState({ card: params.card, gameCode, ...{ targetIndex: params.targetIndex, hand: gameRules.hand } }, action)
+  }
 
-    const { newHand, newBus, newBusStop, action } = getTargetAndAction(
-      myself,
-      card,
-    );
-    if (action) {
-      const newBoard = [...gameBoard];
-      newBoard[targetIndex].push(card);
-      setGame((prev) => ({ ...prev, gameBoard: newBoard }));
-      alterMyself({ hand: newHand, bus: newBus, busStop: newBusStop });
-      updateGameServerState({ card, targetIndex, gameCode }, action);
+  function moveCardToBus(card) {
+    performAction(GameActions.MOVE_CARD_TO_BUS, {card, userId: user.id});
+  }
+
+  function moveCardToBusStop(card, targetIndex) {
+    performAction(GameActions.MOVE_CARD_TO_BUS_STOP, {card, targetIndex, userId: user.id});
+  }
+
+  /**
+   * Adds a card to an existing pack on the game board.
+   * @param {Object} card - The card to add.
+   * @param {number} targetIndex - The index of the target pack.
+   */
+  function addToPack(card, targetIndex) {
+    const myself = players.find((player) => player.myself)
+    if (!myself) return;
+
+    if (isCardInSource(card, myself.hand)) {
+      performAction(GameActions.MOVE_CARD_TO_BOARD, {card, targetIndex, userId: user.id});
+    } else if (isCardInSource(card, myself.bus)) {
+      performAction(GameActions.MOVE_CARD_TO_BOARD_FROM_BUS, {card, targetIndex, userId: user.id});
+    } else if (isCardInSource(card, myself.busStop)) {
+      performAction(GameActions.MOVE_CARD_TO_BOARD_FROM_BUS_STOP, {card, targetIndex, userId: user.id});
     }
   }
 
   function reorderHand(card, newIndex) {
-    const myself = getPlayerAndValid(
-      players,
-      currentPlayer,
-      showErrorAlert,
-      true,
-    );
-    if (!myself) return;
-
-    const oldIndex = myself.hand.findIndex((c) => c.i === card.i);
-    if (oldIndex === -1 || newIndex < 0 || newIndex >= myself.hand.length) {
-      showErrorAlert("placeInHandError");
-      return;
-    }
-
-    const newHand = [...myself.hand];
-    const movedCard = newHand[oldIndex];
-    newHand[oldIndex] = newHand[newIndex];
-    newHand[newIndex] = movedCard;
-
-    alterMyself({ hand: newHand });
-    updateGameServerState(
-      { gameCode, hand: newHand },
-      GameActions.REORDER_HAND,
-    );
+    performAction(GameActions.REORDER_HAND, {card, targetIndex: newIndex});
   }
 
   function viewBusBottomCard() {
     updateGameServerState({ gameCode }, GameActions.VIEW_BOTTOM_BUS_CARD);
-  }
-
-  function moveCardToSlot(card, targetIndex, destination) {
-    const myself = getPlayerAndValid(players, currentPlayer, showErrorAlert);
-    if (!myself) return;
-    if (!myself.isCardDrawed) {
-      showErrorAlert("drawFirst");
-      return;
-    }
-    if (myself.bus.some((c) => c?.i === card.i)) {
-      showErrorAlert("dontCheatInBus");
-      return;
-    }
-
-    let [newHand] = removeCardInTarget(myself.hand, card);
-    let newBusStop = myself.busStop;
-    let newBus = myself.bus;
-
-    if (destination === "hand") {
-      showErrorAlert("placeInHandError");
-      return;
-    }
-
-    if (destination === "busStop") {
-      if (!canPlaceInBusStop(card, myself.busStop, targetIndex, showErrorAlert))
-        return;
-      const newStop = [...myself.busStop];
-      newStop[targetIndex] = card;
-      newBusStop = newStop;
-      updateGameServerState(
-        { targetIndex, card, gameCode },
-        GameActions.MOVE_CARD_TO_BUS_STOP,
-      );
-    } else {
-      newBus = [card, ...myself.bus];
-      updateGameServerState({ card, gameCode }, GameActions.MOVE_CARD_TO_BUS);
-    }
-
-    alterMyself({ hand: newHand, busStop: newBusStop, bus: newBus });
   }
 
   function isLoading() {
@@ -350,35 +234,31 @@ function GameContextProvider({ children }) {
   return (
     <GameContext.Provider
       value={{
+        // Actions
         setGameCode,
-        gameCode,
         setContextGame,
-        moveCardToSlot,
         drawCard,
         startNewPack,
         addToPack,
         reorderHand,
-        game,
-        players,
         handleReady,
-        ready,
         handleNextGame,
         setNextGameFalse,
-        nextGame,
+        viewBusBottomCard,
+        moveCardToBus,
+        moveCardToBusStop,
+        // Data
+        gameCode,
+        game,
+        players,
         deck: gameDeck,
         gameBoard,
         currentPlayer,
-        loading: isLoading(),
         gameState,
-        viewBusBottomCard,
-        errorMessage,
-        setErrorMessage,
-        showAlert,
-        showDangerAlert,
-        startAlert,
-        setShowAlert,
-        setShowDangerAlert,
-        setStartAlert,
+        // State
+        ready,
+        nextGame,
+        loading: isLoading(),
       }}
     >
       {children}

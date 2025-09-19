@@ -1,0 +1,61 @@
+{
+  "RANK_CARD_ORDER": [
+    "A",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "J",
+    "Q",
+    "K"
+  ],
+  "SUITS": [
+    "♥",
+    "♦",
+    "♠",
+    "♣"
+  ],
+  "JOKER_SUIT": "🃏",
+  "MIN_PACK_IN_DECK": 2,
+  "COUNT_OF_PLAYERS_FOR_EXTRA_PACK": 5,
+  "PLAYERS_PER_EXTRA_PACK": 3,
+  "JOKER": "Jr",
+  "EMPTY_BUS_STOP": [
+    [],
+    [],
+    [],
+    []
+  ],
+  "Roles": {
+    "ADMIN": "admin",
+    "VIP": "vip",
+    "PLEB": "pleb",
+    "ALL": [
+      "admin",
+      "vip",
+      "pleb"
+    ]
+  },
+  "States": {
+    "INITIAL": "initial",
+    "ACTIVE": "active",
+    "FINISHED": "finished",
+    "CLOSED": "closed"
+  },
+  "MinNumberOfPlayers": {
+    "NON_ACTIVE": 1,
+    "ACTIVE": 2
+  },
+  "Bg": {
+    "RED": "red",
+    "BLUE": "blue"
+  },
+  "MAX_ATTEMPTS": 5,
+  "CREATOR": "creator",
+  "DEFAULT_NAME": "nemo"
+}

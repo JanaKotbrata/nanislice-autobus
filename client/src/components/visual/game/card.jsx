@@ -5,6 +5,7 @@ import GameContext from "../../../context/game.js";
 import LanguageContext from "../../../context/language.js";
 import SlotContext from "../../../context/slot.js";
 import { getEmptyImage } from "react-dnd-html5-backend";
+import { useAlertContext } from "../../providers/alert-context-provider.jsx";
 
 function getEmoji(rank) {
   switch (rank) {
@@ -84,6 +85,7 @@ function Card({
   const gameContext = useContext(GameContext);
   const { getSlotRects, setActiveSlot, getActiveSlot } =
     useContext(SlotContext);
+  const { setErrorMessage, setShowDangerAlert } = useAlertContext();
   const clickTimeout = useRef(null);
   const cardSize = useRef({ width: 0, height: 0 });
   const isRedSuit = card.suit === "♥" || card.suit === "♦";
@@ -146,8 +148,8 @@ function Card({
   }, []);
 
   function showErrorAlert(message) {
-    gameContext.setErrorMessage(message);
-    gameContext.setShowDangerAlert(true);
+    setErrorMessage(message);
+    setShowDangerAlert(true);
   }
 
   function handlePointerDown(e) {

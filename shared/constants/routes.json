@@ -20,6 +20,7 @@
         "DELETE_TOKEN": "/api/user/token/delete",
         "LIST": "/api/user/list",
         "UPDATE": "/api/user/update",
+        "DELETE": "/api/user/delete",
         "DELETE_ALL_TOKEN": "/api/service/user/token/deleteAll",
         "TOKEN_GET": "/api/service/user/token/get"
     }

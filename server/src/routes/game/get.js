@@ -1,30 +1,33 @@
-const validateData = require("../../services/validation-service");
-const {get: schema} = require("../../data-validations/game/validation-schemas");
-const {GetResponseHandler} = require("../../services/response-handler");
+const { validateAndGetUser } = require("../../services/validation-service");
+const {
+  get: schema,
+} = require("../../input-validation-schemas/game/validation-schemas");
+const {
+  AuthenticatedGetResponseHandler,
+} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes.json");
-const {getGame, transformCurrentPlayerData} = require("../../services/game-service");
-const {authorizeUser} = require("../../services/auth-service");
-const GameErrors = require("../../errors/game/game-errors");
+const {
+  transformCurrentPlayerData,
+  getGameWithWarning,
+} = require("../../services/game-service");
 
+class GetGame extends AuthenticatedGetResponseHandler {
+  constructor(expressApp) {
+    super(expressApp, Routes.Game.GET, "get");
+  }
 
-class GetGame extends GetResponseHandler {
-    constructor(expressApp) {
-        super(expressApp, Routes.Game.GET, "get");
+  async get(req) {
+    const { user, validData } = await validateAndGetUser(req, schema);
+
+    const game = await getGameWithWarning(validData);
+
+    if (game && !game.warning) {
+      transformCurrentPlayerData(game, user.id);
+      return { ...game };
     }
 
-    async get(req) {
-        const validData = validateData(req.query, schema);
-        const {id, code} = validData;
-        await authorizeUser(req.user.id, GameErrors.UserDoesNotExist, GameErrors.UserNotAuthorized);
-
-        const game = await getGame(id, code, false, true)
-
-        if (game) {
-            transformCurrentPlayerData(game, req.user.id);
-
-            return {...game, success: true};
-        }
-    }
+    return { success: false, ...game };
+  }
 }
 
 module.exports = GetGame;

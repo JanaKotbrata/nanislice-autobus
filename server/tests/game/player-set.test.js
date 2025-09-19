@@ -1,99 +1,240 @@
-const request = require('supertest');
 require("../services/setup-db");
-const {setupTestServer, cleanup} = require("../services/test-setup");
-const GamePlayerSet = require('../../src/routes/game/player-set');
+const GamePlayerSet = require("../../src/routes/game/player-set");
 const Routes = require("../../../shared/constants/routes.json");
-const {initialGame, generateRandomId, userMock, basicUser, activeGame} = require("../helpers/default-mocks");
-const IO = require("../helpers/io-mock");
-let gamesCollection;
-let usersCollection;
-let getToken;
-let testUserId;
+const {
+  initialGame,
+  generateRandomId,
+  basicUser,
+  activeGame,
+} = require("../helpers/default-mocks");
+const {
+  cleanupTestContext,
+  createUser,
+  apiRequestSuccess,
+  apiRequestError,
+} = require("../test-helpers");
+const applyBeforeAll = require("../helpers/before-all-helper");
+const GamesRepository = require("../../src/models/games-repository");
+describe("POST /game/player-set all", () => {
+  describe("POST /game/player-set (standard)", () => {
+    let ctx = applyBeforeAll(GamePlayerSet);
 
-describe('POST /game/player-set', () => {
-    let app;
-    beforeAll(async () => {
-        const setup = await setupTestServer(() => testUserId, (app) => {
-            new GamePlayerSet(app, IO);
-        });
-        app = setup.app;
-        gamesCollection = setup.gamesCollection;
-        usersCollection = setup.usersCollection;
-        getToken = setup.getToken;
-    });
-  
     afterEach(async () => {
-        await cleanup();
+      const { usersCollection, gamesCollection } = ctx;
+      await cleanupTestContext({ usersCollection, gamesCollection });
     });
+
     it("should set a player to a game", async () => {
-        let mockUser = userMock();
-        delete mockUser.userId;
-        const result = await usersCollection.insertOne(mockUser);
-        const user = await usersCollection.findOne({_id: result.insertedId});
-        const mockGame = initialGame({user: basicUser({...user, userId: user._id.toString()})});
-        await gamesCollection.insertOne(mockGame);
-        const id = user._id.toString()
-        const response = await request(app)
-            .post(Routes.Game.PLAYER_SET)
-            .set("Authorization", `Bearer ${await getToken()}`)
-            .send({userId: id, gameCode: mockGame.code, ready: true});
-
-        expect(response.status).toBe(200);
-        expect(response.body.playerList).toBeDefined();
-        expect(response.body.playerList[1].userId).toBe(id);
-        expect(response.body.playerList[1].ready).toBe(true);
+      const user = await createUser(ctx.usersCollection);
+      ctx.setTestUserId(user.id);
+      const mockGame = initialGame({
+        user: basicUser({ ...user, userId: user.id }),
+      });
+      await ctx.gamesCollection.insertOne(mockGame);
+      const response = await apiRequestSuccess(
+        ctx.app,
+        "post",
+        Routes.Game.PLAYER_SET,
+        ctx.getToken,
+        user.id,
+        {
+          gameCode: mockGame.code,
+          ready: true,
+          nextGame: false,
+        },
+      );
+      expect(response.body.playerList).toBeDefined();
+      expect(response.body.playerList[1].userId).toBe(user.id);
+      expect(response.body.playerList[1].ready).toBe(true);
     });
-    it("should not set a player to active game", async () => {
-        let mockUser = userMock();
-        delete mockUser.userId;
-        const result = await usersCollection.insertOne(mockUser);
-        const user = await usersCollection.findOne({_id: result.insertedId});
-        const mockGame = activeGame({user: basicUser({...user, userId: user._id.toString()})});
-        const game = await gamesCollection.insertOne(mockGame);
-        const id = user._id.toString()
-        const response = await request(app)
-            .post(Routes.Game.PLAYER_SET)
-            .set("Authorization", `Bearer ${await getToken()}`)
-            .send({userId: id, gameId: game.insertedId.toString() , ready: true});
-
-        expect(response.body.name).toBe("GameAlreadyActive");
-    });
-    it("should not set a player which is not in a game", async () => {
-        let mockUser = userMock();
-        delete mockUser.userId;
-        const result = await usersCollection.insertOne(mockUser);
-        const user = await usersCollection.findOne({_id: result.insertedId});
-        const mockGame = initialGame();
-        const game = await gamesCollection.insertOne(mockGame);
-        const id = user._id.toString()
-        const response = await request(app)
-            .post(Routes.Game.PLAYER_SET)
-            .set("Authorization", `Bearer ${await getToken()}`)
-            .send({userId: id, gameId: game.insertedId.toString() , ready: true});
-
-        expect(response.status).toBe(400);
-        expect(response.body.name).toBe("PlayerNotInGame");
-    });
-    test("should return an error if user does not exist", async () => {
-        const mockGame = initialGame();
-        await gamesCollection.insertOne(mockGame);
-        const response = await request(app)
-            .post(Routes.Game.PLAYER_SET)
-            .set("Authorization", `Bearer ${await getToken()}`)
-            .send({userId: generateRandomId(), gameCode: mockGame.code});
-
-        expect(response.status).toBe(404);
-        expect(response.body.message).toBe("Requested user does not exist");
-    });
-    test("should return an error if game does not exist", async () => {
-        const user = await usersCollection.insertOne(userMock());
-        const id = user.insertedId.toString();
-        const response = await request(app).post(Routes.Game.PLAYER_SET).set("Authorization", `Bearer ${await getToken()}`).send({
-            userId: id,
-            gameCode: "nonexi"
+    it("failed to set a player to a game", async () => {
+      const error = {
+        status: 500,
+        name: "FailedToSetPlayer",
+        message: "Failed to set player",
+      };
+      const mocked = jest
+        .spyOn(GamesRepository.prototype, "update")
+        .mockImplementation(() => {
+          throw new Error();
         });
+      const user = await createUser(ctx.usersCollection);
+      ctx.setTestUserId(user.id);
+      const mockGame = initialGame({
+        user: basicUser({ ...user, userId: user.id }),
+      });
+      await ctx.gamesCollection.insertOne(mockGame);
+      await apiRequestError(
+        ctx.app,
+        "post",
+        Routes.Game.PLAYER_SET,
+        ctx.getToken,
+        user.id,
+        {
+          gameCode: mockGame.code,
+          ready: true,
+          nextGame: false,
+        },
+        error,
+      );
+      mocked.mockRestore();
+    });
 
-        expect(response.status).toBe(404);
-        expect(response.body.message).toBe("Requested game does not exist");
-    })
+    it("should not set a player to active game", async () => {
+      const error = {
+        status: 400,
+        name: "GameAlreadyActive",
+        message: "Game is already active is not possible to add player.",
+      };
+      const user = await createUser(ctx.usersCollection);
+      ctx.setTestUserId(user.id);
+      const mockGame = activeGame({
+        user: basicUser({ ...user, userId: user.id }),
+      });
+      const game = await ctx.gamesCollection.insertOne(mockGame);
+      await apiRequestError(
+        ctx.app,
+        "post",
+        Routes.Game.PLAYER_SET,
+        ctx.getToken,
+        user.id,
+        { gameId: game.insertedId.toString(), ready: true },
+        error,
+      );
+    });
+
+    it("should not set a player which is not in a game", async () => {
+      const error = {
+        status: 400,
+        name: "UserNotInGame",
+        message: "User is not in game",
+      };
+      const user = await createUser(ctx.usersCollection);
+      ctx.setTestUserId(user.id);
+      const mockGame = initialGame();
+      const game = await ctx.gamesCollection.insertOne(mockGame);
+      await apiRequestError(
+        ctx.app,
+        "post",
+        Routes.Game.PLAYER_SET,
+        ctx.getToken,
+        user.id,
+        { gameId: game.insertedId.toString(), ready: true },
+        error,
+      );
+    });
+
+    it("should set a player to a game", async () => {
+      const user = await createUser(ctx.usersCollection);
+      ctx.setTestUserId(user.id);
+      const mockGame = initialGame({
+        user: basicUser({ ...user, userId: user.id }),
+      });
+      await ctx.gamesCollection.insertOne(mockGame);
+      const response = await apiRequestSuccess(
+        ctx.app,
+        "post",
+        Routes.Game.PLAYER_SET,
+        ctx.getToken,
+        user.id,
+        { gameCode: mockGame.code, ready: true },
+      );
+
+      expect(response.body.playerList).toBeDefined();
+      expect(response.body.playerList[1].userId).toBe(user.id);
+      expect(response.body.playerList[1].ready).toBe(true);
+    });
+
+    it("should not set a player to active game", async () => {
+      const error = {
+        status: 400,
+        name: "GameAlreadyActive",
+        message: "Game is already active is not possible to add player.",
+      };
+      const user = await createUser(ctx.usersCollection);
+      ctx.setTestUserId(user.id);
+      const mockGame = activeGame({
+        user: basicUser({ ...user, userId: user.id }),
+      });
+      const game = await ctx.gamesCollection.insertOne(mockGame);
+      await apiRequestError(
+        ctx.app,
+        "post",
+        Routes.Game.PLAYER_SET,
+        ctx.getToken,
+        user.id,
+        { gameId: game.insertedId.toString(), ready: true },
+        error,
+      );
+    });
+
+    it("should not set a player which is not in a game", async () => {
+      const error = {
+        status: 400,
+        name: "UserNotInGame",
+        message: "User is not in game",
+      };
+      const user = await createUser(ctx.usersCollection);
+      ctx.setTestUserId(user.id);
+      const mockGame = initialGame();
+      const game = await ctx.gamesCollection.insertOne(mockGame);
+      await apiRequestError(
+        ctx.app,
+        "post",
+        Routes.Game.PLAYER_SET,
+        ctx.getToken,
+        user.id,
+        { gameId: game.insertedId.toString(), ready: true },
+        error,
+      );
+    });
+
+    test("should return an error if game does not exist", async () => {
+      const user = await createUser(ctx.usersCollection);
+      ctx.setTestUserId(user.id);
+      const error = {
+        status: 404,
+        name: "GameDoesNotExist",
+        message: "Requested game does not exist",
+      };
+      await apiRequestError(
+        ctx.app,
+        "post",
+        Routes.Game.PLAYER_SET,
+        ctx.getToken,
+        user.id,
+        { gameCode: "nonexi" },
+        error,
+      );
+    });
+  });
+  describe("POST /game/player-set (notExistUser)", () => {
+    let ctx = applyBeforeAll(GamePlayerSet, true);
+
+    afterEach(async () => {
+      const { usersCollection, gamesCollection } = ctx;
+      await cleanupTestContext({ usersCollection, gamesCollection });
+    });
+
+    test("should return an error if user does not exist", async () => {
+      const mockGame = initialGame();
+      await ctx.gamesCollection.insertOne(mockGame);
+      const randomId = generateRandomId();
+      ctx.setTestUserId(randomId);
+      const error = {
+        status: 404,
+        name: "UserDoesNotExist",
+        message: "Requested user does not exist",
+      };
+      await apiRequestError(
+        ctx.app,
+        "post",
+        Routes.Game.PLAYER_SET,
+        ctx.getToken,
+        randomId,
+        { gameCode: mockGame.code },
+        error,
+      );
+    });
+  });
 });

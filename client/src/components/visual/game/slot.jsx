@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useContext } from "react";
 import { useDrop } from "react-dnd";
 import Card from "./card.jsx";
 import SlotContext from "../../../context/slot.js";
+import CardBack from "./card-back.jsx";
 
 function Slot({
   card,
@@ -37,13 +38,12 @@ function Slot({
 
   drop(slotRef);
 
-  return (
-    <div
-      ref={slotRef}
-      id={slotIndex}
-      className={`w-11 h-16 sm:w-14 sm:h-22 md:w-16 md:h-24 border rounded flex items-center justify-center text-xs sm:text-sm relative ${border} ${isActive ? "ring-4 ring-blue-400" : ""}`}
-    >
-      {card?.rank ? (
+  let showCard = null;
+  if (card?.rank) {
+    if (card.i < 0) {
+      showCard = <CardBack card={card} />;
+    } else {
+      showCard = (
         <Card
           card={card}
           index={index}
@@ -54,7 +54,17 @@ function Slot({
           isMyselfJrInBus={isMyselfJrInBus}
           onDropCard={onDropCard}
         />
-      ) : null}
+      )
+    }
+  }
+
+  return (
+    <div
+      ref={slotRef}
+      id={slotIndex}
+      className={`w-11 h-16 sm:w-14 sm:h-22 md:w-16 md:h-24 border rounded flex items-center justify-center text-xs sm:text-sm relative ${border} ${isActive ? "ring-4 ring-blue-400" : ""}`}
+    >
+      {showCard}
     </div>
   );
 }

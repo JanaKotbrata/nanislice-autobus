@@ -1,0 +1,16 @@
+{
+  "NotYourTurn": "NotYourTurn",
+  "PlayerMustDrawCardFirst": "PlayerMustDrawCardFirst",
+  "ActionIsNotDefined": "ActionIsNotDefined",
+  "InvalidHandReorder": "InvalidHandReorder",
+  "WrongPlace": "WrongPlace",
+  "InvalidBusStopIndex": "InvalidBusStopIndex",
+  "WrongPlaceInBusStop": "WrongPlaceInBusStop",
+  "BusStopError": "BusStopError",
+  "AlreadyPlaced": "AlreadyPlaced",
+  "PlaceError": "PlaceError",
+  "InvalidCardInGameBoard": "InvalidCardInGameBoard",
+  "DestinationDoesNotExist": "DestinationDoesNotExist",
+  "InvalidHandLength": "InvalidHandLength",
+  "NotPossibleToDraw": "NotPossibleToDraw"
+}

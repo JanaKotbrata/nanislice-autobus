@@ -1,38 +1,43 @@
-const fs = require("fs");
+const fs = require("fs").promises;
 const path = require("path");
-const {GetFileResponseHandler} = require("../../services/response-handler");
+const { GetFileResponseHandler } = require("../../services/response-handler");
+const {
+  getAvatar: schema,
+} = require("../../input-validation-schemas/user/validation-schemas");
 const Routes = require("../../../../shared/constants/routes.json");
 const UserErrors = require("../../errors/user/user-errors");
-const {authorizeUser} = require("../../services/auth-service");
+const {
+  AVATAR_FOLDER,
+  getExistingAvatar,
+  DEFAULT_AVATAR,
+} = require("../../services/avatar-service");
+const { validateData } = require("../../services/validation-service");
+const { getUser } = require("../../services/user-service");
 
 class GetAvatar extends GetFileResponseHandler {
-    constructor(expressApp) {
-        super(expressApp, Routes.User.GET_AVATAR, "get");
+  constructor(expressApp) {
+    super(expressApp, Routes.User.GET_AVATAR, "get");
+  }
+
+  async get(req, res) {
+    const { userId } = validateData(req, schema);
+    await getUser(userId, UserErrors.UserDoesNotExist);
+
+    try {
+      const avatarFile = await getExistingAvatar(userId);
+      if (!avatarFile) {
+        await fs.stat(DEFAULT_AVATAR); // ensure existing file
+        return res.sendFile(DEFAULT_AVATAR);
+      }
+      const filePath = path.join(AVATAR_FOLDER, avatarFile);
+      return res.sendFile(filePath);
+    } catch (e) {
+      if (e.code === "ENOENT") {
+        throw new UserErrors.AvatarNotFound(userId);
+      }
+      throw new UserErrors.FailToDownloadAvatar(userId);
     }
-
-    async get(req, res) {
-        const userId = req.query.userId;
-        const user = await authorizeUser(userId, UserErrors.UserDoesNotExist, UserErrors.UserNotAuthorized);
-
-        try {
-            const avatarDir = path.resolve(__dirname, "../../../avatars");
-            const files = await fs.promises.readdir(avatarDir);
-
-            const avatarFile = files.find(file => file.startsWith(`${userId}.`));
-            if (!avatarFile) {
-                const filePath = path.join(avatarDir, "pig-face.png");
-                return res.sendFile(filePath);
-            }
-
-            const filePath = path.join(avatarDir, avatarFile);
-            return res.sendFile(filePath);
-        } catch (e) {
-            if (e instanceof UserErrors.AvatarNotFound) {
-                throw e;
-            }
-            throw new UserErrors.FailToDownloadAvatar(user);
-        }
-    }
+  }
 }
 
 module.exports = GetAvatar;

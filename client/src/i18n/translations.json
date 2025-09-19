@@ -14,6 +14,26 @@
     }
   ],
   "translations": {
+    "gameTitle": {
+      "cs": "Autobus",
+      "en": "Bus",
+      "sk": "Autobus"
+    },
+    "startGameTitle": {
+      "cs": "Start hry",
+      "en": "Start game",
+      "sk": "Štart hry"
+    },
+    "usersTitle": {
+      "cs": "Uživatelé",
+      "en": "Users",
+      "sk": "Používatelia"
+    },
+    "profileTitle": {
+      "cs": "Profil",
+      "en": "Profile",
+      "sk": "Profil"
+    },
     "busTitle": {
       "cs": "Autobusácí",
       "en": "Bus Crew",

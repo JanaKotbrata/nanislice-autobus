@@ -1,60 +1,56 @@
 const GamesRepository = require("../../models/games-repository");
-const validateData = require("../../services/validation-service");
-const {playerSet: schema} = require("../../data-validations/game/validation-schemas");
-const {PostResponseHandler} = require("../../services/response-handler");
+const { validateAndGetGame } = require("../../services/validation-service");
+const {
+  playerSet: schema,
+} = require("../../input-validation-schemas/game/validation-schemas");
+const {
+  AuthenticatedPostResponseHandler,
+} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
-const {transformCurrentPlayerData, getGame} = require("../../services/game-service");
-const {States} = require("../../utils/game-constants");
-const {authorizeUser} = require("../../services/auth-service");
+const {
+  transformCurrentPlayerData,
+
+  getPlayerIndexOrError,
+} = require("../../services/game-service");
+const { States } = require("../../../../shared/constants/game-constants");
 const games = new GamesRepository();
 
-class SetGamePlayer extends PostResponseHandler {
-    constructor(expressApp, io) {
-        super(expressApp, Routes.Game.PLAYER_SET, "set");
-        this.io = io;
+class SetGamePlayer extends AuthenticatedPostResponseHandler {
+  constructor(expressApp, websocketService) {
+    super(expressApp, Routes.Game.PLAYER_SET, "set");
+    this.websocketService = websocketService;
+  }
+
+  async set(req) {
+    let { validData, game, user } = await validateAndGetGame(req, schema);
+    const userId = user.id;
+
+    if (game.state === States.ACTIVE) {
+      throw new GameErrors.GameAlreadyActive(validData);
     }
 
-    async set(req) {
-        const validData = validateData(req.body, schema); //TODO ---- userId - user/update
-        const {userId, gameCode, gameId} = validData;
+    //validation of playerList using helper
+    const playerIndex = getPlayerIndexOrError(game, userId);
 
-        let game = await getGame(gameId, gameCode, GameErrors.GameDoesNotExist);
-
-        if (game.state === States.ACTIVE) {
-            throw new GameErrors.GameAlreadyActive(validData);
-        }
-
-         await authorizeUser(userId, GameErrors.UserDoesNotExist, GameErrors.UserNotAuthorized);
-
-        //validation of playerList
-        const playerIndex = game.playerList.findIndex((player) =>
-            player.userId === userId
-        );
-        if (playerIndex === -1) {
-            throw new GameErrors.PlayerNotInGame(validData);
-        }
-        let newPlayerList = structuredClone(game.playerList);
-        newPlayerList[playerIndex].ready = validData.ready;
-        if("nextGame" in validData){
-            newPlayerList[playerIndex].nextGame = validData.nextGame;
-        }
-        try {
-            const updatedGame = await games.updateGame(game.id, {playerList: newPlayerList, sys: game.sys});
-            updatedGame.playerList.forEach(player => {
-                const playerId = player.userId;
-                const playerGame = structuredClone(updatedGame);
-                transformCurrentPlayerData(playerGame, playerId);
-                console.log(`Emitting playerAdded event to ${gameCode}_${playerId}`);
-                this.io.to(`${gameCode}_${playerId}`).emit("playerAdded", playerGame);
-            })
-            transformCurrentPlayerData(updatedGame, userId);
-            return {...updatedGame, success: true};
-        } catch (error) {
-            console.error("Failed to add player:", error);
-            throw new GameErrors.FailedToSetPlayer(error);
-        }
+    let newPlayerList = structuredClone(game.playerList);
+    newPlayerList[playerIndex].ready = validData.ready;
+    if ("nextGame" in validData) {
+      newPlayerList[playerIndex].nextGame = validData.nextGame;
     }
+    try {
+      const updatedGame = await games.update(game.id, {
+        playerList: newPlayerList,
+        sys: game.sys,
+      });
+      this.websocketService.emitPlayerAdded(updatedGame);
+      transformCurrentPlayerData(updatedGame, userId);
+      return { ...updatedGame };
+    } catch (error) {
+      console.error("Failed to set player:", error);
+      throw new GameErrors.FailedToSetPlayer(error);
+    }
+  }
 }
 
 module.exports = SetGamePlayer;

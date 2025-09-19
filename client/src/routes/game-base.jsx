@@ -27,6 +27,18 @@ function GameBase({
 }) {
   const [counter, setCounter] = useState(30);
   const { playSound } = useAudio();
+  // Local state for closing InfoAlert about a leaving player
+  const [showLeavingAlert, setShowLeavingAlert] = useState(false);
+  const [leavingName, setLeavingName] = useState("");
+
+  // Show alert every time leavingPlayerName changes (even if the same)
+  useEffect(() => {
+    if (leavingPlayerName) {
+      setLeavingName(leavingPlayerName);
+      setShowLeavingAlert(true);
+    }
+  }, [leavingPlayerName]);
+
   useEffect(() => {
     let timer;
     let interval;
@@ -89,10 +101,10 @@ function GameBase({
             }
           />
         )}
-        {!!leavingPlayerName && (
+        {showLeavingAlert && (
           <InfoAlert
-            onClose={() => {}}
-            message={`${leavingPlayerName} ${i18n.translate("tryToLeave")}`}
+            onClose={() => setShowLeavingAlert(false)}
+            message={`${leavingName} ${i18n.translate("tryToLeave")}`}
           />
         )}
       </DndProvider>

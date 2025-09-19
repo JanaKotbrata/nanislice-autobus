@@ -10,6 +10,7 @@ import {
   Outlet,
 } from "react-router-dom";
 import GameContextProvider from "./components/providers/game-context-provider.jsx";
+import { AlertContextProvider } from "./components/providers/alert-context-provider.jsx";
 import Lobby from "./routes/lobby.jsx";
 import Welcome from "./routes/welcome.jsx";
 import Game from "./routes/game.jsx";
@@ -116,9 +117,11 @@ function App() {
               <Route
                 element={
                   <ProtectedRoute>
-                    <GameContextProvider>
-                      <Outlet />
-                    </GameContextProvider>
+                    <AlertContextProvider>
+                      <GameContextProvider>
+                        <Outlet />
+                      </GameContextProvider>
+                    </AlertContextProvider>
                   </ProtectedRoute>
                 }
               >

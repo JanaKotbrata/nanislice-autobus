@@ -50,7 +50,10 @@ function Game() {
     user.id,
     gameContext.gameCode,
     gameContext.setContextGame,
-    setLeavingPlayerName,
+    (playerName) => {
+      setLeavingPlayerName("");
+      setTimeout(() => setLeavingPlayerName(playerName), 10);
+    },
     (target, actionBy, isShuffled, finishedPackIndex, animationCallBack) =>
       handleSocketAnimation(
         cardAnimationContext,

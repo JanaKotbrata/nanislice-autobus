@@ -1,21 +1,22 @@
-const { MongoClient } = require('mongodb');
+const { MongoClient } = require("mongodb");
 const config = require("../../config/config.json");
 
 let db;
+let client;
 const uri = config.db_uri;
+
 async function connectToDb() {
-    if (db) return db;
-    //ošetření proti znovu připojení do db
-    db = new Promise(async (resolve, reject) => {
-        const client = new MongoClient(uri);
-        await client.connect();
-
-        const selectedDb = client.db(config.db_name);
-        console.log(`Connected to: ${config.db_name}`);
-        resolve(selectedDb);
-    })
-
-    return db;
+  if (db) return db;
+  // fill db variable so everyone gets the same connection one it is ready
+  db = new Promise(async (res) => {
+    client = new MongoClient(uri);
+    await client.connect();
+    res(client.db(config.db_name)); // resolve the db promise when connected
+    console.log(`Connected to: ${config.db_name}`);
+  })
+  return db;
 }
 
-module.exports = connectToDb;
+module.exports = {
+  connectToDb,
+};

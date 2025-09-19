@@ -1,6 +1,6 @@
 import Routes from "../../../shared/constants/routes.json";
 import { get, post } from "./http-method-service";
-//TODO errors
+//TODO REV ASK errors
 export async function getGameByUser(token) {
   try {
     const response = await get(Routes.Game.GET_BY_USER, token);
@@ -11,8 +11,8 @@ export async function getGameByUser(token) {
   }
 }
 
-export async function addPlayer({ userId, gameCode, gameId }, token) {
-  const params = { userId };
+export async function addPlayer({ gameCode, gameId }, token) {
+  const params = { };
   if (gameId) {
     params.gameId = gameId;
   } else {

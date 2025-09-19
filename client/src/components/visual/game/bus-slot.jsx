@@ -1,6 +1,7 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
 import Slot from "./slot.jsx";
 import GameContext from "../../../context/game.js";
+import { useAlertContext } from "../../providers/alert-context-provider.jsx";
 import LanguageContext from "../../../context/language.js";
 
 function BusSlot({
@@ -21,11 +22,10 @@ function BusSlot({
 
   let pulse = "";
 
+  const { setErrorMessage, setShowDangerAlert } = useAlertContext();
   function tooManyViewOfBottomCard() {
-    gameContext.setErrorMessage(
-      i18n.translate("bottomBusCardNotAvailable"),
-    );
-    gameContext.setShowDangerAlert(true);
+    setErrorMessage(i18n.translate("bottomBusCardNotAvailable"));
+    setShowDangerAlert(true);
   }
 
   useEffect(() => {

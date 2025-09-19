@@ -1,70 +1,86 @@
-const {ObjectId} = require('mongodb');
-const Model = require('./model');
-const collectionName = 'users';
+const { ObjectId } = require("mongodb");
+const { Roles } = require("../../../shared/constants/game-constants.json");
+const Model = require("./model");
+const collectionName = "users";
 
 class UsersRepository extends Model {
-    _getCollectionName() {
-        return collectionName;
-    }
+  _getCollectionName() {
+    return collectionName;
+  }
 
-    async createIndexes() {
-        await this.collection.createIndex({email: 1}, {unique: true});
-        await this.collection.createIndex({googleId: 1}, {
-            unique: true,
-            partialFilterExpression: {googleId: {$exists: true}}
-        });
-        await this.collection.createIndex({discordId: 1}, {
-            unique: true,
-            partialFilterExpression: {discordId: {$exists: true}}
-        });
+  async createIndexes() {
+    await this.collection.createIndex({ email: 1 }, { unique: true });
+    await this.collection.createIndex(
+      { googleId: 1 },
+      {
+        unique: true,
+        partialFilterExpression: { googleId: { $exists: true } },
+      },
+    );
+    await this.collection.createIndex(
+      { discordId: 1 },
+      {
+        unique: true,
+        partialFilterExpression: { discordId: { $exists: true } },
+      },
+    );
+  }
 
-    }
+  async create(
+    serviceId = {},
+    email,
+    name,
+    picture,
+    level = 0,
+    role = Roles.PLEB,
+  ) {
+    let userData = { ...serviceId, email, name, picture, level, role };
+    return this.insertOne(userData);
+  }
 
-    async createUser(serviceId={},email,name,picture, level=0, role="pleb") {
-        let userData = {...serviceId, email,name,picture,level,role}
-        return this.create(userData)
-    }
+  async getById(id) {
+    return this.findOne({ id });
+  }
 
-    async getUserById(id) {
-        return this.get({id});
-    }
+  async getByGoogleId(googleId) {
+    return this.findOne({ googleId });
+  }
 
-    async getUserByGoogleId(googleId) {
-        return this.get({googleId});
-    }
+  async getByDiscordId(discordId) {
+    return this.findOne({ discordId });
+  }
+  async getBySeznamId(discordId) {
+    return this.findOne({ discordId });
+  }
 
-    async getUserByDiscordId(discordId) {
-        return this.get({discordId});
-    }
+  async getByEmail(email) {
+    return this.findOne({ email });
+  }
 
-    async getUserByEmail(email) {
-        return this.get({email});
-    }
+  async list(pageInfo) {
+    return this.find(pageInfo, {});
+  }
 
-    async listUser(pageInfo) {
-        return this.list(pageInfo, {});
-    }
+  async listByRole(role, pageInfo) {
+    return this.find(pageInfo, { role });
+  }
 
-    async listUserByRole(role, pageInfo) {
-        return this.list(pageInfo, {role});
-    }
+  async addXP(userId, amount) {
+    const result = await this.collection.findOneAndUpdate(
+      { _id: new ObjectId(userId) },
+      { $inc: { xp: amount } },
+      { returnDocument: "after" },
+    );
+    return result.xp;
+  }
+  async update(id, updateData) {
+    return this.updateOne(id, updateData);
+  }
 
-    async addUserXP(userId, amount){
-        const result = await this.collection.findOneAndUpdate(
-            {_id: new ObjectId(userId)},
-            {$inc: {xp: amount}},
-            {returnDocument: 'after'}
-        );
-        return result.xp;
-    }
-    async updateUser(id, updateData) {
-        return this.update(id, updateData);
-    }
-
-    async deleteUser(id) {
-        const result = await this.collection.deleteOne({_id: new ObjectId(id)});
-        return result.deletedCount;
-    }
+  async delete(id) {
+    const result = await this.collection.deleteOne({ _id: new ObjectId(id) });
+    return result.deletedCount;
+  }
 }
 
 module.exports = UsersRepository;

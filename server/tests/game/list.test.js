@@ -1,65 +1,62 @@
-const request = require('supertest');
 require("../services/setup-db");
-const ListGame = require('../../src/routes/game/list');
+const ListGame = require("../../src/routes/game/list");
 const Routes = require("../../../shared/constants/routes.json");
-const {activeGame, userMock} = require("../helpers/default-mocks");
-const IO = require("../helpers/io-mock");
-const {setupTestServer, cleanup} = require("../services/test-setup");
-let gamesCollection;
-let usersCollection;
-let testUserId;
-let getToken;
+const {
+  Roles,
+  States,
+} = require("../../../shared/constants/game-constants.json");
+const { activeGame } = require("../helpers/default-mocks");
+const {
+  cleanupTestContext,
+  createUser,
+  apiRequestSuccess,
+} = require("../test-helpers");
+const applyBeforeAll = require("../helpers/before-all-helper");
 
-describe('GET /game/list', () => {
-    let app;
-    beforeAll(async () => {
-        const setup = await setupTestServer(() => testUserId, (app) => {
-            new ListGame(app, IO);
-        });
-        app = setup.app;
-        usersCollection = setup.usersCollection;
-        gamesCollection = setup.gamesCollection;
-        getToken = setup.getToken;
-    });
-    afterEach(async () => {
-        await cleanup();
-    });
-    afterEach(async () => {
-        await gamesCollection.deleteMany({});
-        jest.clearAllMocks();
-    })
+describe("GET /game/list", () => {
+  let ctx = applyBeforeAll(ListGame);
 
-    it('should list all game', async () => {
-        const user = await usersCollection.insertOne(userMock({role: "admin"}));
-        testUserId = user.insertedId.toString();
-        const count = 10;
-        for (let i = 0; i < count; i++) {
-            const mockGame = activeGame();
-            await gamesCollection.insertOne(mockGame);
-        }
+  afterEach(async () => {
+    const { usersCollection, gamesCollection } = ctx;
+    await cleanupTestContext({ usersCollection, gamesCollection });
+  });
 
-        const response = await request(app)
-            .get(Routes.Game.LIST)
-            .set("Authorization", `Bearer ${await getToken()}`)
+  it("should list all game", async () => {
+    const user = await createUser(ctx.usersCollection, { role: Roles.ADMIN });
+    ctx.setTestUserId(user.id);
+    const count = 10;
+    for (let i = 0; i < count; i++) {
+      const mockGame = activeGame();
+      await ctx.gamesCollection.insertOne(mockGame);
+    }
+    const response = await apiRequestSuccess(
+      ctx.app,
+      "get",
+      Routes.Game.LIST,
+      ctx.getToken,
+      user.id,
+      {},
+    );
 
-        expect(response.status).toBe(200);
-        expect(response.body.list).toHaveLength(count);
-        expect(response.body.pageInfo).toBeDefined();
-        expect(response.body.pageInfo.totalCount).toBe(count);
-        expect(response.body.success).toBe(true);
-    });
-    test('should return empty list', async () => {
-        const user = await usersCollection.insertOne(userMock({role: "admin"}));
-        testUserId = user.insertedId.toString();
-        const response = await request(app)
-            .get(Routes.Game.LIST)
-            .set("Authorization", `Bearer ${await getToken()}`)
-            .query({state: "active"})
+    expect(response.body.list).toHaveLength(count);
+    expect(response.body.pageInfo).toBeDefined();
+    expect(response.body.pageInfo.totalCount).toBe(count);
+  });
 
-        expect(response.status).toBe(200);
-        expect(response.body.list.length).toBe(0);
-        expect(response.body.pageInfo).toBeDefined();
-        expect(response.body.pageInfo.totalCount).toBe(0);
-        expect(response.body.success).toBe(true);
-    });
+  test("should return empty list", async () => {
+    const user = await createUser(ctx.usersCollection, { role: Roles.ADMIN });
+    ctx.setTestUserId(user.id);
+    const response = await apiRequestSuccess(
+      ctx.app,
+      "get",
+      Routes.Game.LIST,
+      ctx.getToken,
+      user.id,
+      { state: States.ACTIVE },
+    );
+
+    expect(response.body.list.length).toBe(0);
+    expect(response.body.pageInfo).toBeDefined();
+    expect(response.body.pageInfo.totalCount).toBe(0);
+  });
 });

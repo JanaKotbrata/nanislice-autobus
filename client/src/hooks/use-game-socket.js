@@ -36,6 +36,10 @@ export function useGameSocket(
 
       socket.on("processAction", (data) => {
         if (data.newGame.code === gameCode) {
+          if (data.actionBy === userId) {
+            // do nothing, own actions are handled as server response
+            return;
+          }
           if (data.actionBy !== userId && data.target) {
             animateToSlot(
               data.target,

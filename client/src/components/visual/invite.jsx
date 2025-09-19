@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import GameContext from "../../context/game.js";
+import { useAlertContext } from "../providers/alert-context-provider.jsx";
 import Button from "./button.jsx";
 import LanguageContext from "../../context/language.js";
 
@@ -7,7 +8,8 @@ function Invite() {
   const i18n = useContext(LanguageContext);
   const [copied, setCopied] = useState(null);
   const gameContext = useContext(GameContext);
-  const pulsing = gameContext.startAlert
+  const { startAlert } = useAlertContext();
+  const pulsing = startAlert
     ? "bg-gray-500/40 animate-[pulse_1s_ease-in-out_infinite]"
     : "";
   async function handleCopy() {

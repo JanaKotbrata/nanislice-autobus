@@ -26,7 +26,7 @@ function Player({
   let bottomCard;
 
   function handleDropCard(card, dropIndex) {
-    gameContext.moveCardToSlot(card, dropIndex, "busStop");
+    gameContext.moveCardToBusStop(card, dropIndex);
   }
 
   if (player.myself) {
@@ -96,9 +96,9 @@ function Player({
             <BusSlot
               index={0}
               card={player?.bus?.[0]}
-              onDropCard={(card, dropIndex) =>
-                gameContext.moveCardToSlot(card, dropIndex, "bus")
-              }
+              onDropCard={(card) => {
+                gameContext.moveCardToBus(card);
+              }}
               prefix={`player_bus_${player.userId}_`}
               count={player?.bus?.length}
               bottomCard={bottomCard}

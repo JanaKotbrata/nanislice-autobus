@@ -1,81 +1,77 @@
 const GamesRepository = require("../../models/games-repository");
-const validateData = require("../../services/validation-service");
-const {playerSetOrder:schema} = require("../../data-validations/game/validation-schemas");
-const { PostResponseHandler} = require("../../services/response-handler");
+const { validateAndGetGame } = require("../../services/validation-service");
+const {
+  playerSetOrder: schema,
+} = require("../../input-validation-schemas/game/validation-schemas");
+const {
+  AuthenticatedPostResponseHandler,
+} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
-const {transformCurrentPlayerData} = require("../../services/game-service");
-const {States} = require("../../utils/game-constants");
-const {authorizeUser} = require("../../services/auth-service");
-const {getGame} = require("../../services/game-service");
+const {
+  transformCurrentPlayerData,
+  getGamePlayerOrError,
+} = require("../../services/game-service");
+const { States } = require("../../../../shared/constants/game-constants");
 const games = new GamesRepository();
 
-class SetOrderPlayer extends PostResponseHandler {
-    constructor(expressApp, io) {
-        super(expressApp, Routes.Game.PLAYER_SET_ORDER, "setOrder");
-        this.io = io;
+class SetOrderPlayer extends AuthenticatedPostResponseHandler {
+  constructor(expressApp, websocketService) {
+    super(expressApp, Routes.Game.PLAYER_SET_ORDER, "setOrder");
+    this.websocketService = websocketService;
+  }
+
+  async setOrder(req) {
+    let { validData, game, user } = await validateAndGetGame(req, schema);
+
+    const { playerList, gameCode } = validData;
+    const userId = user.id;
+
+    if (game.state === States.ACTIVE) {
+      throw new GameErrors.GameAlreadyActive(validData);
+    }
+    const isPlayerInGame = getGamePlayerOrError(game, userId);
+
+    if (!isPlayerInGame.creator) {
+      throw new GameErrors.UserCanNotSetPlayers(validData);
     }
 
-    async setOrder(req) {
-        const validData = validateData(req.body, schema);
-        const {playerList, gameCode, gameId} = validData;
-        const userId = req.user.id;
-        await authorizeUser(userId, GameErrors.UserDoesNotExist, GameErrors.UserNotAuthorized);
+    this.validatePlayerList(game.playerList, playerList);
 
-        let game = await getGame(gameId, gameCode, GameErrors.GameDoesNotExist);
-
-        if(game.state === States.ACTIVE){
-            throw new GameErrors.GameAlreadyActive(validData);
-        }
-
-        //validation of playerList
-        this.validatePlayerList(game.playerList, playerList);
-        const isPlayerInGame = game.playerList.find((player) =>
-            player.userId === userId
-        );
-        if (!isPlayerInGame) {
-            throw new GameErrors.PlayerNotInGame(validData);
-        }
-        if(!isPlayerInGame.creator){
-            throw new GameErrors.UserCanNotSetPlayers(validData);
-        }
-
-        try {
-            const updatedGame = await games.updateGame(game.id, {playerList, sys: game.sys});
-            updatedGame.playerList.forEach(player => {
-                const playerId = player.userId;
-                const playerGame = structuredClone(updatedGame);
-                transformCurrentPlayerData(playerGame, playerId);
-                console.log(`Emitting playerSetOrder event to ${gameCode}_${playerId}`);
-                this.io.to(`${gameCode}_${playerId}`).emit("playerSetOrder", playerGame);
-            })
-            transformCurrentPlayerData(updatedGame,userId)
-            return {...updatedGame, success: true};
-        } catch (error) {
-            console.error("Failed to set players order:", error);
-            throw new GameErrors.FailedToSetPlayersOrder(error);
-        }
+    try {
+      const updatedGame = await games.update(game.id, {
+        playerList,
+        sys: game.sys,
+      });
+      this.websocketService.emitPlayerSetOrder(updatedGame);
+      transformCurrentPlayerData(updatedGame, userId);
+      return { ...updatedGame };
+    } catch (error) {
+      console.error("Failed to set players order:", error);
+      throw new GameErrors.FailedToSetPlayersOrder(error);
     }
-    validatePlayerList(originalPlayerList, inputtedPlayerList){
-            if (originalPlayerList.length !== inputtedPlayerList.length){
-                throw new GameErrors.InvalidPlayerList(inputtedPlayerList);
-            }
+  }
 
-            const serialize = obj => JSON.stringify(Object.fromEntries(Object.entries(obj).sort()));
-
-            const normalizedArr1 = originalPlayerList.map(serialize);
-            const normalizedArr2 = inputtedPlayerList.map(serialize);
-
-            normalizedArr1.sort();
-            normalizedArr2.sort();
-
-            for (let i = 0; i < normalizedArr1.length; i++) {
-                if(!normalizedArr2[i].myself) {
-                    if (normalizedArr1[i] !== normalizedArr2[i]) {
-                        throw new GameErrors.InvalidPlayerList(inputtedPlayerList);
-                    }
-                }
-            }
+  validatePlayerList(originalPlayerList, inputtedPlayerList) {
+    if (originalPlayerList.length !== inputtedPlayerList.length) {
+      throw new GameErrors.InvalidPlayerList(inputtedPlayerList);
     }
+    // Ensure both lists contain the same player objects (deep equality, order doesn't matter)
+    // by serializing, sorting, and comparing them.
+    const serialize = (obj) => {
+      const sortedEntries = Object.entries(obj).sort(([a], [b]) =>
+        a.localeCompare(b),
+      );
+      return JSON.stringify(Object.fromEntries(sortedEntries));
+    };
+    const origSerialized = originalPlayerList.map(serialize).sort();
+    const inputSerialized = inputtedPlayerList.map(serialize).sort();
+    for (let i = 0; i < origSerialized.length; i++) {
+      if (origSerialized[i] !== inputSerialized[i]) {
+        throw new GameErrors.InvalidPlayerList(inputtedPlayerList);
+      }
+    }
+  }
 }
+
 module.exports = SetOrderPlayer;

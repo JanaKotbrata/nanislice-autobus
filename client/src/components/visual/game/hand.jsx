@@ -29,6 +29,9 @@ function Hand({ player, isActivePlayer = false }) {
     };
   }, [isActivePlayer]);
 
+  function handleReorderHand(card, index) {
+    gameContext.reorderHand(card, index);
+  }
   return (
     <div
       className={`flex flex-row items-center justify-center ${
@@ -47,7 +50,7 @@ function Hand({ player, isActivePlayer = false }) {
                     key={`gb_slot_nocard_${index}`}
                     prefix="empty_hand_"
                     index={index}
-                    onDropCard={(card) => gameContext.reorderHand(card, index)}
+                    onDropCard={(card) => handleReorderHand(card, index)}
                   />
                 );
               }
@@ -57,7 +60,7 @@ function Hand({ player, isActivePlayer = false }) {
                   card={card}
                   prefix="hand_"
                   index={index}
-                  onDropCard={(card) => gameContext.reorderHand(card, index)}
+                  onDropCard={(card) => handleReorderHand(card, index)}
                 />
               );
             })

@@ -1,90 +1,102 @@
-const request = require('supertest');
 require("../services/setup-db");
-const CloseGame = require('../../src/routes/game/close');
+const CloseGame = require("../../src/routes/game/close");
 const Routes = require("../../../shared/constants/routes.json");
-const {activeGame, userMock, generateRandomCode} = require("../helpers/default-mocks");
-const {setupTestServer, cleanup} = require("../services/test-setup");
-const IO = require("../helpers/io-mock");
-const GameActions = require("../../../shared/constants/game-actions.json");
-let gamesCollection;
-let usersCollection;
-let testUserId;
-let getToken;
-describe('POST /game/close', () => {
-    let app;
-    beforeAll(async () => {
-        const setup = await setupTestServer(() => testUserId, (app) => {
-            new CloseGame(app, IO);
-        });
-        app = setup.app;
-        gamesCollection = setup.gamesCollection;
-        usersCollection = setup.usersCollection;
-        getToken = setup.getToken;
+const { States } = require("../../../shared/constants/game-constants.json");
+const { activeGame, generateRandomCode } = require("../helpers/default-mocks");
+const applyBeforeAll = require("../helpers/before-all-helper");
+const {
+  cleanupTestContext,
+  createUser,
+  apiRequestSuccess,
+  apiRequestError,
+} = require("../test-helpers");
+
+describe("POST /game/close", () => {
+  let ctx = applyBeforeAll(CloseGame);
+
+  afterEach(async () => {
+    const { usersCollection, gamesCollection } = ctx;
+    await cleanupTestContext({ usersCollection, gamesCollection });
+  });
+
+  it("should close a game by CODE", async () => {
+    const user = await createUser(ctx.usersCollection);
+    ctx.setTestUserId(user.id);
+    const mockGame = activeGame({
+      user: { ...user, userId: user.id, creator: true },
     });
-  
-    afterEach(async () => {
-        await cleanup();
-    });
+    await ctx.gamesCollection.insertOne(mockGame);
+    const response = await apiRequestSuccess(
+      ctx.app,
+      "post",
+      Routes.Game.CLOSE,
+      ctx.getToken,
+      user.id,
+      { gameCode: mockGame.code },
+    );
 
-    it('should close a game by CODE', async () => {
-        const result = await usersCollection.insertOne(userMock({}, ));
-        const user = await usersCollection.findOne({_id: result.insertedId});
-        testUserId = user._id.toString();
+    expect(response.body.state).toBe(States.CLOSED);
+    expect(response.body.code).toBe(mockGame.code + "-#closed#");
+  });
 
-        const mockGame = activeGame({user:{...user,userId:testUserId, creator:true}});
-            await gamesCollection.insertOne(mockGame);
+  it("should not close a game by CODE- UserIsNotAllowedToCloseGame", async () => {
+    const error = {
+      status: 403,
+      name: "UserIsNotAllowedToCloseGame",
+      message: "User is not allowed to close this game",
+    };
+    const user = await createUser(ctx.usersCollection);
+    ctx.setTestUserId(user.id);
+    const mockGame = activeGame({ user: { ...user, userId: user.id } });
+    await ctx.gamesCollection.insertOne(mockGame);
+    await apiRequestError(
+      ctx.app,
+      "post",
+      Routes.Game.CLOSE,
+      ctx.getToken,
+      user.id,
+      { gameCode: mockGame.code },
+      error,
+    );
+  });
 
-        const response = await request(app)
-            .post(Routes.Game.CLOSE)
-            .set("Authorization", `Bearer ${await getToken()}`)
-            .send({gameCode: mockGame.code})
+  test("CODE must be string with length 6", async () => {
+    const error = {
+      status: 400,
+      name: "InvalidDataError",
+      message: '"gameCode" must be a string',
+    };
+    const user = await createUser(ctx.usersCollection);
+    ctx.setTestUserId(user.id);
+    await apiRequestError(
+      ctx.app,
+      "post",
+      Routes.Game.CLOSE,
+      ctx.getToken,
+      user.id,
+      {
+        gameCode: 1,
+      },
+      error,
+    );
+  });
 
-        expect(response.status).toBe(200);
-        expect(response.body.success).toBe(true);
-        expect(response.body.state).toBe("closed");
-        expect(response.body.code).toBe(mockGame.code + "-#closed#");
-
-    });
-    it('should not close a game by CODE- UserIsNotAllowedToCloseGame', async () => {
-        const result = await usersCollection.insertOne(userMock({}, ));
-        const user = await usersCollection.findOne({_id: result.insertedId});
-        testUserId = user._id.toString();
-
-        const mockGame = activeGame({user:{...user,userId:testUserId}});
-        await gamesCollection.insertOne(mockGame);
-
-        const response = await request(app)
-            .post(Routes.Game.CLOSE)
-            .set("Authorization", `Bearer ${await getToken()}`)
-            .send({gameCode: mockGame.code})
-
-        expect(response.status).toBe(403);
-        expect(response.body.name).toBe("UserIsNotAllowedToCloseGame");
-
-    });
-    test('CODE must be string with length 6', async () => {
-        const user = await usersCollection.insertOne(userMock({}, ));
-        testUserId = user.insertedId.toString();
-        const response = await request(app)
-            .post(Routes.Game.CLOSE)
-            .set("Authorization", `Bearer ${await getToken()}`)
-            .send({gameCode: 1})
-
-        expect(response.status).toBe(400);
-        expect(response.body.name).toBe("InvalidDataError");
-        expect(response.body.message).toBe(`\"gameCode\" must be a string`);
-
-    });
-    it('should return an error if game does not exist', async () => {
-        const user = await usersCollection.insertOne(userMock());
-        testUserId = user.insertedId.toString();
-        const response = await request(app)
-            .post(Routes.Game.CLOSE)
-            .set("Authorization", `Bearer ${await getToken(testUserId)}`)
-            .send({gameCode: generateRandomCode()});
-
-        expect(response.status).toBe(404);
-        expect(response.body.message).toBe("Requested game does not exist");
-    });
-
+  it("should return an error if game does not exist", async () => {
+    const error = {
+      status: 404,
+      name: "GameDoesNotExist",
+      message: "Requested game does not exist",
+    };
+    const user = await createUser(ctx.usersCollection);
+    ctx.setTestUserId(user.id);
+    await apiRequestError(
+      ctx.app,
+      "post",
+      Routes.Game.CLOSE,
+      ctx.getToken,
+      user.id,
+      { gameCode: generateRandomCode() },
+      error,
+    );
+  });
 });

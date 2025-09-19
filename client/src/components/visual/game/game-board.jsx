@@ -1,6 +1,11 @@
 import React, { useContext, useRef, useEffect, useState } from "react";
 import CardPack from "./card-pack.jsx";
 import GameContext from "../../../context/game.js";
+import { useAlertContext } from "../../providers/alert-context-provider.jsx";
+import {
+  canPlaceOnGBPack,
+  canPlaceOnGameBoard,
+} from "../../../services/game-validation";
 import DangerAlert from "../alerts/danger-alert.jsx";
 import GameBoardSlot from "./game-board-slot.jsx";
 import LanguageContext from "../../../context/language.js";
@@ -8,6 +13,7 @@ import Hand from "./hand.jsx";
 import CardAnimationContext from "../../../context/card-animation.js";
 import { handleSocketAnimation } from "../../../utils/animation-utils.js";
 import { useAudio } from "../../providers/audio-context-provider.jsx";
+import { Bg } from "../../../../../shared/constants/game-constants.json";
 
 function getSlotCoordinates(slotId) {
   const slotElement = document.getElementById(slotId);
@@ -19,6 +25,8 @@ function getSlotCoordinates(slotId) {
 function GameBoard({ player }) {
   const i18n = useContext(LanguageContext);
   const gameContext = useContext(GameContext);
+  const { showDangerAlert, errorMessage, setShowDangerAlert, showErrorAlert } =
+    useAlertContext();
   const cardAnimationContext = useContext(CardAnimationContext);
   const { playSound } = useAudio();
   const boardRef = useRef(null);
@@ -55,7 +63,7 @@ function GameBoard({ player }) {
           left: to.left,
           originTop: from.top,
           originLeft: from.left,
-          bg: card?.bg || "blue",
+          bg: card?.bg || Bg.BLUE,
           rotateTo: 360 * 2 + 25,
         };
         cardAnimationContext.addAndRunAnimation(
@@ -70,23 +78,30 @@ function GameBoard({ player }) {
   }, [gameContext.gameBoard]);
 
   function handleDraw() {
-    const deckBefore = gameContext.deck;
     const deckLenBefore = deckLength;
-    gameContext.drawCard();
+    // create promise to wait for animation end before setting context with new cards to prevent blinking of the cards
+    let animationPromiseResolver;
+    const animationPromise = new Promise((resolve) => {
+      animationPromiseResolver = resolve;
+    });
+    const drawnCardStub = gameContext.drawCard(animationPromise);
+    if (!drawnCardStub) {
+      animationPromiseResolver(); // resolve the promise to not block anything
+      return;
+    }
     const from = getSlotCoordinates(`cardpack_deck`);
     let to;
     for (let i = 0; i < 5; i++) {
       to = getSlotCoordinates(`empty_hand_${i}`);
       if (to) break;
     }
-    const cardBG = deckBefore[deckBefore.length - 1]?.bg;
     const animation = {
       top: to.top,
       left: to.left,
       originTop: from.top,
       originLeft: from.left,
-      bg: cardBG || "blue",
-      rotateTo: 360 * 2 + 25,
+      bg: drawnCardStub.bg || Bg.BLUE,
+      rotateTo: 360 * 2,
     };
 
     if (deckLenBefore <= 6) {
@@ -106,9 +121,62 @@ function GameBoard({ player }) {
     cardAnimationContext.addAndRunAnimation(
       animation,
       1000,
-      () => {},
+      () => {
+        animationPromiseResolver(); // resolve the promise to signal end of animation
+      },
       () => playSound("/sounds/playing-card.mp3"),
     );
+  }
+
+  // Validace před voláním addToPack
+  function handleAddToPack(card, targetIndex) {
+    const allPlayers = gameContext.players;
+    const currentPlayer = allPlayers?.[gameContext.currentPlayer];
+    const myPlayer = allPlayers?.find((p) => p.myself);
+    if (!currentPlayer || !myPlayer) {
+      showErrorAlert("notYourTurn");
+      return;
+    }
+    if (!currentPlayer.myself) {
+      showErrorAlert("notYourTurn");
+      return;
+    }
+    if (myPlayer.isCardDrawed === false) {
+      showErrorAlert("drawCard");
+      return;
+    }
+    if (
+      !canPlaceOnGBPack(
+        card,
+        gameContext.gameBoard,
+        targetIndex,
+        myPlayer?.bus?.[0],
+        showErrorAlert,
+      )
+    )
+      return;
+    gameContext.addToPack(card, targetIndex);
+  }
+
+  // Validace před voláním startNewPack
+  function handleStartNewPack(card) {
+    const allPlayers = gameContext.players;
+    const currentPlayer = allPlayers?.[gameContext.currentPlayer];
+    const myPlayer = allPlayers?.find((p) => p.myself);
+    if (!currentPlayer || !myPlayer) {
+      showErrorAlert("notYourTurn");
+      return;
+    }
+    if (!currentPlayer.myself) {
+      showErrorAlert("notYourTurn");
+      return;
+    }
+    if (myPlayer.isCardDrawed === false) {
+      showErrorAlert("drawCard");
+      return;
+    }
+    if (!canPlaceOnGameBoard(card, myPlayer?.bus?.[0], showErrorAlert)) return;
+    gameContext.startNewPack(card);
   }
 
   return (
@@ -146,10 +214,10 @@ function GameBoard({ player }) {
           </div>
         </div>
         <div className="game-board flex flex-wrap justify-center gap-4 w-full max-w-full">
-          {gameContext.showDangerAlert && (
+          {showDangerAlert && (
             <DangerAlert
-              message={gameContext.errorMessage}
-              onClose={() => gameContext.setShowDangerAlert(false)}
+              message={errorMessage}
+              onClose={() => setShowDangerAlert(false)}
             />
           )}
           {gameContext.gameBoard.map((pack, index) => {
@@ -160,7 +228,7 @@ function GameBoard({ player }) {
                 key={`gb_card_${card.i}`}
                 index={index}
                 card={card}
-                onDropCard={gameContext.addToPack}
+                onDropCard={handleAddToPack}
                 count={pack.length}
                 packLength={pack.length - 1}
               />
@@ -170,7 +238,7 @@ function GameBoard({ player }) {
             id={`gb_nocard_`}
             key={`gb_nocard_${gameContext.gameBoard.length}`}
             index={gameContext.gameBoard.length}
-            onDropCard={gameContext.startNewPack}
+            onDropCard={handleStartNewPack}
           />
         </div>
       </div>

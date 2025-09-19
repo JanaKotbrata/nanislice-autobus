@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
 import Member from "../components/visual/game/member.jsx";
@@ -7,6 +7,7 @@ import Start from "../components/visual/game/start.jsx";
 import nanislice from "../assets/nanislice.svg";
 import Instructions from "../components/visual/instructions.jsx";
 import GameContext from "../context/game.js";
+import { useAlertContext } from "../components/providers/alert-context-provider.jsx";
 import { useLobbySocket } from "../hooks/use-lobby-socket.js";
 import {
   addPlayer,
@@ -18,32 +19,44 @@ import { useAuth } from "../context/auth-context.jsx";
 import { getAvatar } from "../services/user-service.jsx";
 import Button from "../components/visual/button.jsx";
 import InfoAlert from "../components/visual/alerts/info-alert.jsx";
-import LogOut from "../components/visual/login/log-out.jsx";
 import LanguageContext from "../context/language.js";
-import LangSelector from "../components/visual/lang-selector.jsx";
 import DraggableItem from "../components/visual/draggable-item.jsx";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import VolumeSettings from "../components/visual/volume-settings.jsx";
+import PageContainer from "../components/visual/page-container.jsx";
+import { States } from "../../../shared/constants/game-constants.json";
 
 function Lobby() {
   const i18n = useContext(LanguageContext);
   const navigate = useNavigate();
   const gameContext = useContext(GameContext);
+  const { startAlert, setStartAlert } = useAlertContext();
   const { user, token } = useAuth();
   const [orderedPlayers, setOrderedPlayers] = React.useState(
     gameContext.players,
   );
+  // Ref to always have the latest orderedPlayers for DnD handlers
+  const orderedPlayersRef = useRef(orderedPlayers);
+  useEffect(() => {
+    orderedPlayersRef.current = orderedPlayers;
+  }, [orderedPlayers]);
   const myself = gameContext.players.find((player) => player.myself);
 
   useLobbySocket(user.id, gameContext.gameCode, gameContext.setContextGame);
 
   useEffect(() => {
     setOrderedPlayers(gameContext.players);
+    orderedPlayersRef.current = gameContext.players;
   }, [gameContext.players]);
 
+  // On mount, force a no-op reorder to stabilize the DOM. Without this, the first drag can misbehave.
   useEffect(() => {
-    if (gameContext.gameState === "active") {
+    setOrderedPlayers((players) => [...players]);
+    orderedPlayersRef.current = [...orderedPlayersRef.current];
+  }, []);
+
+  useEffect(() => {
+    if (gameContext.gameState === States.ACTIVE) {
       navigate(`/game/${gameContext.gameCode}`);
     }
   }, [gameContext.gameState]);
@@ -53,12 +66,10 @@ function Lobby() {
       const isPlayerInGame = gameContext.players.some(
         (player) => player.userId === user.id,
       );
-
       if (!isPlayerInGame) {
         const game = await addPlayer(
           {
             gameCode: gameContext.gameCode,
-            userId: user.id,
           },
           token,
         );
@@ -88,14 +99,7 @@ function Lobby() {
     }
   }
 
-  async function handleRemovePlayer(userId) {
-    try {
-      await removePlayer({ gameCode: gameContext.gameCode, userId }, token);
-      navigate(`/`);
-    } catch (e) {
-      console.error("Jejda", JSON.stringify(e));
-    }
-  }
+  const shouldRender = !!myself?.creator;
 
   if (!gameContext?.players) {
     return (
@@ -105,128 +109,131 @@ function Lobby() {
     );
   }
 
-  const shouldRender = !!myself?.creator;
-  return (
-    <section className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-4xl z-10">
-        <div className="flex flex-row gap-6 justify-end">
-          <div className="p-2">
-            <VolumeSettings size={32} />
-          </div>
-          <div className="p-2">
-            <LangSelector size={32} />
-          </div>
-          <LogOut />
-        </div>
-        <div className="!bg-gray-950/80 !border-black rounded-2xl shadow-2xl p-6">
-          {/* Header */}
-          <div className="h-12 flex justify-between items-center border-b border-cyan-400/50 mb-10">
-            <div>
-              <div className="text-xl font-bold text-gray-300">
-                Lobby {gameContext.gameCode}
-              </div>
-              <div className="text-sm font-base text-gray-500">
-                {i18n.translate("waitForPlayers")}
-              </div>
-            </div>
-            <div className="flex items-center justify-center w-full shadow-md rounded-full max-w-[3rem]">
-              <img className="h-12 w-12" src={nanislice} alt="logo" />
-            </div>
-          </div>
+  function handleRemovePlayer(userId) {
+    try {
+      const game = removePlayer(
+        {
+          userId,
+          gameCode: gameContext.gameCode,
+        },
+        token,
+      );
+      if (!game || !Array.isArray(game.players)) {
+        navigate("/");
+      } else {
+        gameContext.setContextGame(game);
+      }
+    } catch (error) {
+      console.error("Chyba při odchodu ze hry:", error);
+      navigate("/");
+    }
+  }
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {/* Left box - Players */}
-            <div className="flex flex-col items-center border-b sm:border-b-0 sm:border-r-2 border-cyan-400/50 sm:pr-4 gap-4 w-full ">
-              <div
-                className={
-                  "flex flex-col sm:max-h-[50vh] max-h-[25vh] overflow-y-auto pr-0 -mr-0 sm:pr-10 sm:-mr-20"
-                }
-              >
-                <DndProvider backend={HTML5Backend}>
-                  {orderedPlayers.map((player, index) => {
-                    const avatarUri = getAvatar(
-                      player.userId,
-                      player.rev || gameContext.gameCode,
-                    );
-
-                    return (
-                      <DraggableItem
-                        key={player.userId}
-                        index={index}
-                        moveItem={movePlayer}
-                        canDrag={shouldRender}
-                      >
-                        <div className="flex items-center justify-between w-full max-w-[280px] gap-2">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <Member
-                              isCreator={!!player.creator}
-                              isMyself={!!player.myself}
-                              picture={avatarUri}
-                            >
-                              <span className="truncate">{player.name}</span>
-                            </Member>
-                          </div>
-                          <div className="shrink-0 flex items-center gap-2">
-                            {player.myself && (
-                              <FaSignOutAlt
-                                className="text-gray-500 hover:text-red-500 cursor-pointer"
-                                onClick={async () =>
-                                  await handleRemovePlayer(player.userId)
-                                }
-                                title={i18n.translate("leaveGame")}
-                                size={18}
-                              />
-                            )}
-                            {player.ready && (
-                              <FaCheck
-                                className="text-green-300/50"
-                                title={i18n.translate("playerIsReady")}
-                                size={18}
-                              />
-                            )}
-                          </div>
-                        </div>
-                      </DraggableItem>
-                    );
-                  })}
-                </DndProvider>
-              </div>
-
-              <Invite />
-
-              {shouldRender && (
-                <Start
-                  gameCode={gameContext.gameCode}
-                  playerList={gameContext.players}
-                />
-              )}
-              {gameContext.startAlert && (
-                <InfoAlert
-                  onClose={() => gameContext.setStartAlert(false)}
-                  message={i18n.translate("lackOfPlayers")}
-                />
-              )}
-              {!shouldRender && (
-                <div
-                  className={`p-6 bg-gray-500/40 ${gameContext?.ready || myself?.ready ? "" : "animate-[pulse_2s_ease-in-out_infinite]"} rounded-lg`}
-                >
-                  <Button onClick={() => gameContext.handleReady()}>
-                    {gameContext?.ready || myself?.ready ? (
-                      <FaCheck className="w-5 h-5 mx-auto" />
-                    ) : (
-                      i18n.translate("iCanPlay")
-                    )}
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            {/* Right box - Instructions */}
-            <Instructions />
-          </div>
-        </div>
+  const header = (
+    <div className="flex items-center justify-between px-10 pt-8 pb-6 border-b border-cyan-700/30 bg-gray-950/60 rounded-t-3xl shadow-md">
+      <div className="flex items-center gap-4">
+        <img src={nanislice} alt="Nanislice logo" className="w-12 h-12" />
+        <span className="text-3xl font-bold tracking-wide text-white drop-shadow">
+          Lobby
+        </span>
       </div>
-    </section>
+      <div className="flex items-center gap-2 bg-gray-800/70 px-5 py-2 rounded-xl text-xl font-mono border border-cyan-700/30 shadow">
+        <span className="text-cyan-300">Code:</span>
+        <span className="text-white font-bold select-all">
+          {gameContext.gameCode}
+        </span>
+      </div>
+    </div>
+  );
+
+  return (
+    <PageContainer header={header}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-10 pt-8">
+        <div className="flex flex-col items-center border-b md:border-b-0 md:border-r-2 border-cyan-400/30 md:pr-6 gap-6 w-full">
+          <div
+            className={
+              "flex flex-col sm:max-h-[50vh] max-h-[25vh] overflow-y-auto pr-0 -mr-0 sm:pr-10 sm:-mr-20"
+            }
+          >
+            <DndProvider backend={HTML5Backend}>
+              {orderedPlayers.map((player, index) => {
+                const avatarUri = getAvatar(
+                  player.userId,
+                  player.rev || gameContext.gameCode,
+                );
+                return (
+                  <DraggableItem
+                    key={player.userId}
+                    userId={player.userId}
+                    orderedPlayersRef={orderedPlayersRef}
+                    moveItem={movePlayer}
+                    canDrag={shouldRender}
+                  >
+                    <div className="flex items-center justify-between w-full max-w-[280px] gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Member
+                          isCreator={!!player.creator}
+                          isMyself={!!player.myself}
+                          picture={avatarUri}
+                        >
+                          <span className="truncate">{player.name}</span>
+                        </Member>
+                      </div>
+                      <div className="shrink-0 flex items-center gap-2">
+                        {player.myself && (
+                          <FaSignOutAlt
+                            className="text-gray-500 hover:text-red-500 cursor-pointer"
+                            onClick={async () =>
+                              await handleRemovePlayer(player.userId)
+                            }
+                            title={i18n.translate("leaveGame")}
+                            size={18}
+                          />
+                        )}
+                        {player.ready && (
+                          <FaCheck
+                            className="text-green-300/50"
+                            title={i18n.translate("playerIsReady")}
+                            size={18}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </DraggableItem>
+                );
+              })}
+            </DndProvider>
+          </div>
+          <Invite />
+          {shouldRender && (
+            <Start
+              gameCode={gameContext.gameCode}
+              playerList={gameContext.players}
+            />
+          )}
+          {startAlert && (
+            <InfoAlert
+              onClose={() => setStartAlert(false)}
+              message={i18n.translate("lackOfPlayers")}
+            />
+          )}
+          {!shouldRender && (
+            <div
+              className={`p-6 bg-gray-500/40 ${gameContext?.ready || myself?.ready ? "" : "animate-[pulse_2s_ease-in-out_infinite]"} rounded-lg`}
+            >
+              <Button onClick={() => gameContext.handleReady()}>
+                {gameContext?.ready || myself?.ready ? (
+                  <FaCheck className="w-5 h-5 mx-auto" />
+                ) : (
+                  i18n.translate("iCanPlay")
+                )}
+              </Button>
+            </div>
+          )}
+        </div>
+        <Instructions />
+      </div>
+    </PageContainer>
   );
 }
 

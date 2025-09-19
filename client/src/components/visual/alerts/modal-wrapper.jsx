@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Rnd } from "react-rnd";
 
 function ModalWrapper({ children }) {
@@ -11,8 +12,8 @@ function ModalWrapper({ children }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  return (
-    <div className="fixed inset-0 flex items-center justify-center !bg-gray-700/50 z-40">
+  return createPortal(
+    <div className="fixed inset-0 flex items-center justify-center !bg-gray-700/50 z-[9999]">
       {isMobile ? (
         children
       ) : (
@@ -31,7 +32,8 @@ function ModalWrapper({ children }) {
           {children}
         </Rnd>
       )}
-    </div>
+    </div>,
+    document.body
   );
 }
 

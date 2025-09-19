@@ -1,10 +1,18 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import commonjs from "vite-plugin-commonjs";
 import Config from "../shared/config/config.json";
-// https://vite.dev/config/
+import path from "node:path";
+
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    commonjs({
+      include: [path.resolve(__dirname, "../shared/validation/game-rules.js")],
+    }),
+    tailwindcss(),
+  ],
   server: {
     proxy: {
       "/api": {

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { startGame } from "../../../services/game-service.jsx";
 import { useAuth } from "../../../context/auth-context.jsx";
 import GameContext from "../../../context/game.js";
+import { useAlertContext } from "../../providers/alert-context-provider.jsx";
 import Button from "../button.jsx";
 import LanguageContext from "../../../context/language.js";
 import InfoAlert from "../alerts/info-alert.jsx";
@@ -30,7 +31,8 @@ function Start({ gameCode, playerList }) {
         navigate(`/game/${res.code}`);
       }
     } else {
-      gameContext.setStartAlert(true);
+      const { setStartAlert } = useAlertContext();
+      setStartAlert(true);
     }
   }
 

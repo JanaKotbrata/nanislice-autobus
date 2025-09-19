@@ -1,3 +1,4 @@
+import { Bg } from "../../../shared/constants/game-constants.json";
 const ANIMATION_DURATION = 1000;
 
 export function getSlotCoordinates(slotId) {
@@ -54,7 +55,7 @@ export function handleSocketAnimation(
     originCoords = getSlotCoordinates(`gb_card_${finishedPackIndex}`);
     coords = getSlotCoordinates("completed_cardpack_deck");
     const finishedPack = gameContext?.game?.gameBoard || [];
-    bg = finishedPack[0]?.bg || "blue";
+    bg = finishedPack[0]?.bg || Bg.BLUE;
 
     if (coords && originCoords) {
       finishedPackAnimation = {

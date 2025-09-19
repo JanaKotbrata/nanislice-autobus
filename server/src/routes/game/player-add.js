@@ -1,57 +1,57 @@
 const GamesRepository = require("../../models/games-repository");
-const validateData = require("../../services/validation-service");
-const {playerAdd:schema} = require("../../data-validations/game/validation-schemas");
-const { PostResponseHandler} = require("../../services/response-handler");
+const {
+  playerAdd: schema,
+} = require("../../input-validation-schemas/game/validation-schemas");
+const {
+  AuthenticatedPostResponseHandler,
+} = require("../../services/response-handler");
 const Routes = require("../../../../shared/constants/routes.json");
 const GameErrors = require("../../errors/game/game-errors");
-const {transformCurrentPlayerData, getGame} = require("../../services/game-service");
-const {States} = require("../../utils/game-constants");
-const {authorizeUser} = require("../../services/auth-service");
+const {
+  transformCurrentPlayerData,
+  isPlayerInGame,
+} = require("../../services/game-service");
+const { States } = require("../../../../shared/constants/game-constants");
+const { validateAndGetGame } = require("../../services/validation-service");
 const games = new GamesRepository();
 
-class AddGamePlayer extends PostResponseHandler {
-    constructor(expressApp, io) {
-        super(expressApp, Routes.Game.PLAYER_ADD, "add");
-        this.io = io;
+class AddGamePlayer extends AuthenticatedPostResponseHandler {
+  constructor(expressApp, websocketService) {
+    super(expressApp, Routes.Game.PLAYER_ADD, "add");
+    this.websocketService = websocketService;
+  }
+
+  async add(req) {
+    const userId = req.user.id;
+    let { validData, game, user } = await validateAndGetGame(req, schema);
+
+    if (game.state !== States.INITIAL) {
+      throw new GameErrors.GameAlreadyActive(validData);
     }
 
-    async add(req) {
-        const validData = validateData(req.body, schema);
-        const {userId, gameCode, gameId} = validData;
-        const user = await authorizeUser(userId, GameErrors.UserDoesNotExist, GameErrors.UserNotAuthorized);
-
-        let game = await getGame(gameId, gameCode, GameErrors.GameDoesNotExist);
-
-        if(game.state === States.ACTIVE){
-            throw new GameErrors.GameAlreadyActive(validData);
-        }
-
-        //validation of playerList
-        const isPlayerInGame = game.playerList.find((player) =>
-            player.userId === userId
-        );
-        if (isPlayerInGame) {
-            throw new GameErrors.PlayerAlreadyInGame(validData);
-        }
-
-        const newPlayers = {
-            playerList: [...game.playerList, {userId, name: user.name, creator: false, rev: user.sys.rev }],
-        };
-        try {
-            const updatedGame = await games.updateGame(game.id, {...newPlayers, sys: game.sys});
-            updatedGame.playerList.forEach(player => {
-                const playerId = player.userId;
-                const playerGame = structuredClone(updatedGame);
-                transformCurrentPlayerData(playerGame, playerId);
-                console.log(`Emitting playerAdded event to ${gameCode}_${playerId}`);
-                this.io.to(`${gameCode}_${playerId}`).emit("playerAdded", playerGame);
-            })
-            transformCurrentPlayerData(updatedGame,userId)
-            return {...updatedGame, success: true};
-        } catch (error) {
-            console.error("Failed to add player:", error);
-            throw new GameErrors.FailedToAddPlayer(error);
-        }
+    if (isPlayerInGame(game, userId)) {
+      throw new GameErrors.PlayerAlreadyInGame(validData);
     }
+
+    const newPlayerList = {
+      playerList: [
+        ...game.playerList,
+        { userId, name: user.name, creator: false, rev: user.sys.rev },
+      ],
+    };
+    try {
+      const updatedGame = await games.update(game.id, {
+        ...newPlayerList,
+        sys: game.sys,
+      });
+      this.websocketService.emitPlayerAdded(updatedGame);
+      transformCurrentPlayerData(updatedGame, userId);
+      return { ...updatedGame };
+    } catch (error) {
+      console.error("Failed to add player:", error);
+      throw new GameErrors.FailedToAddPlayer(error);
+    }
+  }
 }
+
 module.exports = AddGamePlayer;

@@ -1,0 +1,33 @@
+require("../services/setup-db");
+
+const TokenGet = require("../../src/routes/service/token-get");
+const Routes = require("../../../shared/constants/routes.json");
+const { Roles } = require("../../../shared/constants/game-constants.json");
+const {
+  cleanupTestContext,
+  createUser,
+  apiRequestSuccess,
+} = require("../test-helpers");
+const applyBeforeAll = require("../helpers/before-all-helper");
+
+describe("GET /user/token/get", () => {
+  let ctx = applyBeforeAll(TokenGet);
+
+  afterEach(async () => {
+    const { usersCollection, gamesCollection } = ctx;
+    await cleanupTestContext({ usersCollection, gamesCollection });
+  });
+
+  it("should get token", async () => {
+    const user = await createUser(ctx.usersCollection, { role: Roles.ADMIN });
+    ctx.setTestUserId(user.id);
+    await apiRequestSuccess(
+      ctx.app,
+      "get",
+      Routes.User.TOKEN_GET,
+      ctx.getToken,
+      user.id,
+      {},
+    );
+  });
+});
