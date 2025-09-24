@@ -45,7 +45,6 @@ export function handleSocketAnimation(
 
   let finishedPackAnimation;
   if (finishedPackIndex !== null) {
-    duration /= 2;
     originCoords = getSlotCoordinates(
       `${SlotTargets.GAMEBOARD_CARD}${finishedPackIndex}`,
     );
@@ -54,6 +53,7 @@ export function handleSocketAnimation(
     bg = finishedPack[0]?.bg || Bg.BLUE;
 
     if (coords && originCoords) {
+      duration /= 2;
       finishedPackAnimation = {
         top: coords.top,
         left: coords.left,

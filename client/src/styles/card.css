@@ -1,329 +1,67 @@
-.aard-br {
-        bottom: 4px;
-        right: 4px;
-        background-image: url('../assets/aard.svg');
-}
-
-.card-sign-icon {
-        position: absolute;
-                width: 8px;
-                height: 8px;
-        z-index: 2;
-        pointer-events: none;
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: center;
-        opacity: 0.97;
-}
-.axie-sign {
-        top: 0%;
-        left: 12%;
-        background-image: url('../assets/axie.svg');
-}
-.igni-sign {
-        top: 33%;
-        left: 12%;
-        background-image: url('../assets/igni.svg');
-}
-.quen-sign {
-        top: 66%;
-        left: 12%;
-        background-image: url('../assets/quen.svg');
-}
-.aard-sign {
-        top: 100%;
-        left: 12%;
-        transform: translateY(-100%);
-        background-image: url('../assets/aard.svg');
-}
-.card-corner-aard {
-        position: absolute;
-        width: 12px;
-        height: 12px;
-        z-index: 2;
-        pointer-events: none;
-        background: url('../assets/aard.svg') center center/contain no-repeat;
-}
-
-
-
-.aard-tl { top: 4px; left: 4px; }
-.aard-tr { top: 4px; right: 4px; }
-.aard-bl { bottom: 4px; left: 4px; }
-.aard-br { bottom: 4px; right: 4px; }
-.card-corner-dot {
-        position: absolute;
-        width: 10px;
-        height: 10px;
-        background: #ffd600;
-        border-radius: 50%;
-        box-shadow: 0 0 4px 1px #ffd60099;
-        z-index: 2;
-}
-@keyframes yrden-pulse-blue {
-        0% {
-                filter: drop-shadow(0 0 8px #74b9ff) drop-shadow(0 0 16px #74b9ffaa);
-        }
-        50% {
-                filter: drop-shadow(0 0 24px #74b9ff) drop-shadow(0 0 48px #74b9ffcc);
-        }
-        100% {
-                filter: drop-shadow(0 0 8px #74b9ff) drop-shadow(0 0 16px #74b9ffaa);
-        }
-}
-
-.yrden-glow-pulse {
-        animation: yrden-pulse 10s infinite ease-in-out;
-}
-
-@keyframes yrden-pulse {
-        0% {
-                filter: drop-shadow(0 0 8px #e17055) drop-shadow(0 0 16px #e17055aa);
-        }
-        50% {
-                filter: drop-shadow(0 0 24px #e17055) drop-shadow(0 0 48px #e17055cc);
-        }
-        100% {
-                filter: drop-shadow(0 0 8px #e17055) drop-shadow(0 0 16px #e17055aa);
-        }
-}
-.witcher-card-back--red {
-        background: radial-gradient(ellipse at center, #3a1a1a 60%, #1a0606 100%);
-        border-radius: 0.4em;
-        overflow: hidden;
-        border: 6px solid rgba(140,110,80,0.95); /* lighter aged brown edge */
-       }
-
-.witcher-card-back--blue {
-        background: radial-gradient(ellipse at center, #1a233a 60%, #06101a 100%);
-        border-radius: 0.4em;
-        overflow: hidden;
-        border: 6px solid rgba(130,100,70,0.95); /* lighter aged brown edge for blue variant */
-        box-shadow: 0 6px 18px rgba(0,0,0,0.6), inset 0 0 0 4px rgba(255,255,255,0.02);
-
-      }
-.witcher-card-back--red:hover,
-.witcher-card-back--blue:hover {
-        /* keep a faint border on hover so aged edge remains visible */
-        border-color: rgba(160,130,90,0.55) !important;
-}
-.witcher-card-back--red:hover {
-        border-color: rgba(236, 215, 187, 0.55) !important;
-}
-
- .witcher-card-back--red::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 28px;
-        height: 25px;
-        background-image: url('../assets/yrden.svg');
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: center;
-        pointer-events: none;
-        z-index: 0;
-        opacity: 1;
-        animation: yrden-pulse 10s infinite ease-in-out;
-        transition: transform 0.3s cubic-bezier(.4,2,.6,1);
-}
-
-
-.witcher-card-back {
-        background: radial-gradient(ellipse at center, #23272b 60%, #111 100%);
-        border: 2px solid rgba(253, 234, 202, 0.85); /* lighter subtle aged thin border */
-        box-shadow: 0 2px 8px 0 #000a, 0 0 0 6px rgba(60,40,20,0.14) inset;
-        /* create subtle paper grain using a pseudo-element */
-}
-
-/* Paper texture overlay for all witcher backs */
-.witcher-card-back::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        z-index: 3;
-        background-image:
-                linear-gradient(rgba(255,255,255,0.02), rgba(255,255,255,0.02)), /* slight overall sheen */
-                repeating-linear-gradient(0deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 1px, transparent 1px, transparent 6px), /* fine horizontal grain */
-                radial-gradient(ellipse at 10% 10%, rgba(0,0,0,0.04), transparent 18%),
-                radial-gradient(ellipse at 90% 90%, rgba(255,255,255,0.02), transparent 18%);
-        background-blend-mode: overlay;
-        opacity: 0.45;
-}
-
-/* Slight worn edges effect using another pseudo-element */
-.witcher-card-back::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        z-index: 4;
-        background:
-                radial-gradient(60% 40% at 2% 98%, rgba(0,0,0,0.18), transparent 18%), /* bottom-left scuff */
-                radial-gradient(60% 40% at 98% 2%, rgba(0,0,0,0.14), transparent 18%), /* top-right scuff */
-                linear-gradient(180deg, rgba(255,255,255,0.015), rgba(0,0,0,0.02));
-        mix-blend-mode: multiply;
-        opacity: 0.9;
-}
-
-/* make sure center emblem and subtle medallion are above texture */
-.witcher-card-back--blue::before,
-.witcher-card-back--red::before {
-        z-index: 6;
-}
-
-
-.witcher-card-back--blue::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 28px;
-        height: 25px;
-        background-image: url('../assets/yrden-blue.svg');
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: center;
-        pointer-events: none;
-        z-index: 4; /* keep emblem above subtle medallion */
-        opacity: 1;
-        animation: yrden-pulse-blue 10s infinite ease-in-out;
-        transition: transform 0.3s cubic-bezier(.4,2,.6,1);
-}
-.witcher-card-back--red:hover::before,
-.witcher-card-back--blue:hover::before {
-        transform: translate(-50%, -50%) scale(1.25);
-}
-.witcher-card-back--blue::after {
-        /* much subtler medallion: small dashed ring and faint sheen */
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 36%;
-        height: 44%;
-        border-radius: 50% / 55%;
-        pointer-events: none;
-        z-index: 1; /* behind emblem */
-        background: radial-gradient(circle at 40% 35%, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.01) 8%, transparent 30%);
-        border: 1px dashed rgba(255,255,255,0.03);
-        opacity: 0.6;
-        box-shadow: none;
-}
-
-/* subtle repeating texture over the whole back to feel like cloth/paper */
-.witcher-card-back--blue .card-texture {
-        position: absolute;
-        inset: 0;
-        background-image: linear-gradient(transparent 0px, rgba(255,255,255,0.015) 1px);
-        background-size: 100% 3px;
-        mix-blend-mode: overlay;
-        pointer-events: none;
-        z-index: 1;
-        opacity: 0.55;
-}
-
-/* decorative corner medallions */
-.card-medallion {
-        position: absolute;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.06), rgba(255,255,255,0.02) 20%, transparent 40%), linear-gradient(135deg, rgba(255,255,255,0.02), rgba(0,0,0,0.25));
-        box-shadow: 0 2px 6px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
-        z-index: 2;
-        pointer-events: none;
-        border: 1px solid rgba(255,255,255,0.03);
-        opacity: 0.95;
-}
-.card-medallion.tl { top: 12px; left: 12px; }
-.card-medallion.tr { top: 12px; right: 12px; }
-.card-medallion.bl { bottom: 12px; left: 12px; }
-.card-medallion.br { bottom: 12px; right: 12px; }
-
-.back-card-blue {
-    border: #ede2e2 4px solid;
-    background-image:
-            repeating-linear-gradient(
-                    45deg,
-                    #1432b6 0px,
-                    #2548e1 1px,
-                    transparent 1px,
-                    transparent 2px
-            ),
-            repeating-linear-gradient(
-                    -45deg,
-                    #ffffff 0px,
-                    #ffffff 0px,
-                    transparent 1px,
-                    transparent 1px
-            ),
-            repeating-linear-gradient(
-                    -45deg,
-                    #02135e 0px,
-                    #1c84c6 1px,
-                    transparent 1px,
-                    transparent 2px
-            ),
-            repeating-linear-gradient(
-                    45deg,
-                    #1432b6 0px,
-                    #1432b6 2px,
-                    transparent 2px,
-                    transparent 12px
-            ),
-            repeating-linear-gradient(
-                    -45deg,
-                    #1432b6 0px,
-                    #1432b6 2px,
-                    transparent 2px,
-                    transparent 12px
-            )
-}
+.back-card-blue,
 .back-card-red {
     border: #ede2e2 4px solid;
-    background-image:
-            repeating-linear-gradient(
-                    45deg,
-                    #A10404FF 0px,
-                    #ca0909 1px,
-                    transparent 1px,
-                    transparent 2px
-            ),
-            repeating-linear-gradient(
-                    -45deg,
-                    #ffffff 0px,
-                    #ffffff 0px,
-                    transparent 1px,
-                    transparent 1px
-            ),
-            repeating-linear-gradient(
-                    -45deg,
-                    #500101 0px,
-                    #aa2727 1px,
-                    transparent 1px,
-                    transparent 2px
-            ),
-            repeating-linear-gradient(
-                    45deg,
-                    #A10404FF 0px,
-                    #A10404FF 2px,
-                    transparent 2px,
-                    transparent 12px
-            ),
-            repeating-linear-gradient(
-                    -45deg,
-                    #A10404FF 0px,
-                    #A10404FF 2px,
-                    transparent 2px,
-                    transparent 12px
-            )
 }
+
+.back-card-blue,
+.back-card-red {
+    background-image:
+                repeating-linear-gradient(
+            45deg,
+            var(--card-main, #1432b6) 0px,
+            var(--card-accent, #2548e1) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+                repeating-linear-gradient(
+            -45deg,
+            #ffffff 0px,
+            #ffffff 0px,
+            transparent 1px,
+            transparent 1px
+        ),
+                repeating-linear-gradient(
+            -45deg,
+            var(--card-shadow, #02135e) 0px,
+            var(--card-shadow-accent, #1c84c6) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+                repeating-linear-gradient(
+            45deg,
+            var(--card-main, #1432b6) 0px,
+            var(--card-main, #1432b6) 2px,
+            transparent 2px,
+            transparent 12px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            var(--card-main, #1432b6) 0px,
+            var(--card-main, #1432b6) 2px,
+            transparent 2px,
+            transparent 12px
+        );
+}
+
+.back-card-blue {
+    --card-main: #1432b6;
+    --card-accent: #2548e1;
+    --card-shadow: #02135e;
+    --card-shadow-accent: #1c84c6;
+}
+
+.back-card-red {
+    --card-main: #A10404FF;
+    --card-accent: #ca0909;
+    --card-shadow: #500101;
+    --card-shadow-accent: #aa2727;
+}
+
+.back-card-blue .card-sign-icon,
+.back-card-red .card-sign-icon {
+    display: none;
+}
+
 .card {
-        padding: 0.5em;
+    padding: 0.5em;
 }

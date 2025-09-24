@@ -32,7 +32,7 @@ function Spectate() {
     (playerName) => {
       setInfoMessage(`${playerName} ${i18n.translate("tryToLeave")}`);
     },
-    (target, actionBy, isShuffled, finishedPackIndex, animationCallBack) =>
+    ({ target, actionBy, isShuffled, finishedPackIndex, animationCallBack }) =>
       handleSocketAnimation(
         cardAnimationContext,
         gameContext,

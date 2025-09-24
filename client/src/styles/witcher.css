@@ -1,0 +1,103 @@
+.card-sign-icon {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    z-index: 2;
+    pointer-events: none;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.97;
+    left: 12%;
+}
+.axie-sign {
+    top: 0%;
+    background-image: url('../assets/axie.svg');
+}
+.igni-sign {
+    top: 33%;
+    background-image: url('../assets/igni.svg');
+}
+.quen-sign {
+    top: 66%;
+    background-image: url('../assets/quen.svg');
+}
+.aard-sign {
+    top: 100%;
+    transform: translateY(-100%);
+    background-image: url('../assets/aard.svg');
+}
+
+@keyframes yrden-pulse-blue {
+    0% {
+        filter: drop-shadow(0 0 8px #74b9ff) drop-shadow(0 0 16px #74b9ffaa);
+    }
+    50% {
+        filter: drop-shadow(0 0 24px #74b9ff) drop-shadow(0 0 48px #74b9ffcc);
+    }
+    100% {
+        filter: drop-shadow(0 0 8px #74b9ff) drop-shadow(0 0 16px #74b9ffaa);
+    }
+}
+
+@keyframes yrden-pulse {
+    0% {
+        filter: drop-shadow(0 0 8px #e17055) drop-shadow(0 0 16px #e17055aa);
+    }
+    50% {
+        filter: drop-shadow(0 0 24px #e17055) drop-shadow(0 0 48px #e17055cc);
+    }
+    100% {
+        filter: drop-shadow(0 0 8px #e17055) drop-shadow(0 0 16px #e17055aa);
+    }
+}
+.witcher-card-back--red,
+.witcher-card-back--blue {
+    border-radius: 0.4em;
+    overflow: hidden;
+    border: 6px solid rgba(130,100,70,0.95);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.6), inset 0 0 0 4px rgba(255,255,255,0.02);
+}
+.witcher-card-back--red {
+    background: radial-gradient(ellipse at center, #3a1a1a 60%, #1a0606 100%);
+}
+.witcher-card-back--blue {
+    background: radial-gradient(ellipse at center, #1a233a 60%, #06101a 100%);
+}
+.witcher-card-back--red:hover,
+.witcher-card-back--blue:hover {
+    border-color: rgba(160,130,90,0.55) !important;
+}
+.witcher-card-back--red:hover {
+    border-color: rgba(236, 215, 187, 0.55) !important;
+}
+
+.witcher-card-back--red::before,
+.witcher-card-back--blue::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 28px;
+    height: 25px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    pointer-events: none;
+    z-index: 6;
+    opacity: 1;
+    transition: transform 0.3s cubic-bezier(.4,2,.6,1);
+}
+.witcher-card-back--red::before {
+    background-image: url('../assets/yrden.svg');
+    animation: yrden-pulse 10s infinite ease-in-out;
+}
+.witcher-card-back--blue::before {
+    background-image: url('../assets/yrden-blue.svg');
+    animation: yrden-pulse-blue 10s infinite ease-in-out;
+}
+.witcher-card-back--red:hover::before,
+.witcher-card-back--blue:hover::before {
+    transform: translate(-50%, -50%) scale(1.25);
+}
