@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
 import LanguageContext from "../../context/language.js";
 import translations from "../../i18n/translations.json";
-import UserContext from "../../context/user.js";
-import { useAuth } from "../../context/auth-context.jsx";
+import { useAuth } from "./auth-context-provider.jsx";
 
 function detectBrowserBaseLang() {
   const list = navigator.languages?.length

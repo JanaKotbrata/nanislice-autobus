@@ -2,7 +2,7 @@ const { authorizeUser, authorizePlayer } = require("./auth/auth-service");
 const { getGame } = require("./game-service");
 const InvalidDataError = require("../errors/invalid-data");
 const GameErrors = require("../errors/game/game-errors");
-const { Roles } = require("../../../shared/constants/game-constants");
+const { Roles, States } = require("../../../shared/constants/game-constants");
 const { getUser } = require("./user-service");
 
 /**
@@ -129,10 +129,65 @@ async function validateAndAuthorizeForGame(
   return { validData, user, game };
 }
 
+/**
+ * Validates request data, authorizes user, fetches game, and checks conditions for closing the game.
+ *
+ * - Verifies that the user is in playerList, otherwise throws PlayerNotAuthorized.
+ * - If at least 2 other players have ready: true, throws PlayerNotAuthorized.
+ * - If no one has ready: true, no one has the 'ready' key, and there are more than 2 other players, throws PlayerNotAuthorized.
+ * - If there are only 2 players in the game (including the user), no error is thrown.
+ *
+ * @param {object} req - Express request object
+ * @param {object} schema - Validation schema
+ * @param {Function} PlayerNotAuthorized - Error to throw if player is not authorized
+ * @param {string[]} [roles] - Optional roles to check (default: Roles.ALL)
+ * @returns {Promise<{validData: object, user: object, game: object}>}
+ */
+async function validateAndAuthorizeForCloseGame(
+  req,
+  schema,
+  PlayerNotAuthorized,
+  roles = Roles.ALL,
+) {
+  const { validData, user, game } = await validateAndGetGame(
+    req,
+    schema,
+    roles,
+  );
+
+  // If user is admin, skip all validation and authorize
+  if (user.role === Roles.ADMIN) {
+    return { validData, user, game };
+  }
+
+  // Game must be in 'finished' state for non-admins
+  if (game.state !== States.FINISHED) {
+    throw new PlayerNotAuthorized(validData);
+  }
+
+  let userFound = false;
+  let readyCount = 0;
+
+  for (let player of game.playerList) {
+    if (player.userId === user.id) {
+      userFound = true;
+      continue;
+    }
+    if (player.ready === true) readyCount++;
+  }
+
+  if (!userFound || readyCount >= 2) {
+    throw new PlayerNotAuthorized(validData);
+  }
+
+  return { validData, user, game };
+}
+
 module.exports = {
   validateData,
   validateAndGetGame,
   validateAndGetUser,
   validateAndAuthorizeForGame,
+  validateAndAuthorizeForCloseGame,
   getUseCaseAuthorizedUser,
 };

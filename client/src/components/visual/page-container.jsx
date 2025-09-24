@@ -1,11 +1,16 @@
-import React from "react";
 import TopRightControls from "./top-right-controls.jsx";
-import { useAuth } from "../../context/auth-context.jsx";
+import { useAuth } from "../providers/auth-context-provider.jsx";
 
 /**
  * Universal page container for centered content with consistent background, border, shadow, and padding.
  */
-function PageContainer({ children, showVolume = true, showLang = true, header, footer }) {
+function PageContainer({
+  children,
+  showVolume = true,
+  showLang = true,
+  header,
+  footer,
+}) {
   const { user } = useAuth();
   const isLoggedIn = !!user;
   return (
@@ -21,7 +26,7 @@ function PageContainer({ children, showVolume = true, showLang = true, header, f
             />
           </div>
         </div>
-        <div className="flex justify-center items-start w-full flex-1">
+        <div className="flex justify-center items-center w-full flex-1">
           <div className="w-full max-w-6xl mt-8 rounded-3xl shadow-2xl bg-gray-950/40 border border-cyan-900/40 backdrop-blur-md px-0 pb-8 relative">
             {header && <div>{header}</div>}
             {children}

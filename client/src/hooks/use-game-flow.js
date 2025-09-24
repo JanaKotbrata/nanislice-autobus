@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { closeGame, rematchGame } from "../services/game-service";
 import { States } from "../../../shared/constants/game-constants.json";
-import { useAuth } from "../context/auth-context.jsx";
+import { useAuth } from "../components/providers/auth-context-provider.jsx";
 import { useNavigate } from "react-router-dom";
 import GameContext from "../context/game.js";
 
@@ -12,23 +12,25 @@ function finishGame(currentUserId, players, gameCode, token, navigate) {
       return player.userId === currentUserId;
     });
     if (!playerWantToContinue) {
-      return navigate(`/`);
+      return navigate(`/start-game`);
     }
     if (playersWithYes[0].userId !== currentUserId) {
       return; // do nothing, it will be triggered by another player
     }
     if (token) {
-      rematchGame({ gameCode }, token).then(() =>
-        navigate(`/lobby/${gameCode}`),
+      rematchGame({ gameCode }, token).then((data) =>
+        navigate(`/lobby/${data.code}`),
       );
     } else {
-      return navigate(`/`);
+      return navigate(`/start-game`);
     }
   } else {
     if (token) {
-      return closeGame({ gameCode }, token).finally(() => navigate(`/`));
+      return closeGame({ gameCode }, token).finally(() =>
+        navigate(`/start-game`),
+      );
     } else {
-      return navigate(`/`);
+      return navigate(`/start-game`);
     }
   }
 }

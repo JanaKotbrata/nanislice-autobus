@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
+import { useCountdown } from "../hooks/use-countdown.js";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import SlotContextProvider from "../components/providers/slot-context-provider.jsx";
@@ -9,7 +10,9 @@ import LangSelector from "../components/visual/lang-selector.jsx";
 import EndGameAlert from "../components/visual/alerts/end-game-alert.jsx";
 import InfoAlert from "../components/visual/alerts/info-alert.jsx";
 import { useAudio } from "../components/providers/audio-context-provider.jsx";
+import { useTickingSound } from "../hooks/use-ticking-sound.js";
 import VolumeSettings from "../components/visual/volume-settings.jsx";
+import AlertContext from "../context/alert.js";
 
 function GameBase({
   otherPlayers,
@@ -21,47 +24,14 @@ function GameBase({
   handlePanelDragEnd,
   children,
   showEndGameAlert,
-  leavingPlayerName,
   i18n,
   gameContext,
 }) {
-  const [counter, setCounter] = useState(30);
   const { playSound } = useAudio();
-  // Local state for closing InfoAlert about a leaving player
-  const [showLeavingAlert, setShowLeavingAlert] = useState(false);
-  const [leavingName, setLeavingName] = useState("");
+  const { infoMessage, setInfoMessage } = useContext(AlertContext);
+  useTickingSound(showEndGameAlert, playSound, "/sounds/ticking.mp3", true);
 
-  // Show alert every time leavingPlayerName changes (even if the same)
-  useEffect(() => {
-    if (leavingPlayerName) {
-      setLeavingName(leavingPlayerName);
-      setShowLeavingAlert(true);
-    }
-  }, [leavingPlayerName]);
-
-  useEffect(() => {
-    let timer;
-    let interval;
-    let audio;
-    if (showEndGameAlert) {
-      setCounter(30);
-      audio = playSound("/sounds/ticking.mp3", true);
-      timer = setTimeout(() => {
-        audio.stopAndRemove();
-      }, 29000);
-      interval = setInterval(
-        () => setCounter((prev) => (prev > 0 ? prev - 1 : 0)),
-        1000,
-      );
-    } else {
-      setCounter(30);
-    }
-    return () => {
-      clearTimeout(timer);
-      clearInterval(interval);
-      if (audio) audio.stopAndRemove();
-    };
-  }, [showEndGameAlert]);
+  const [counter] = useCountdown(showEndGameAlert, 30);
 
   return (
     <SlotContextProvider>
@@ -101,11 +71,8 @@ function GameBase({
             }
           />
         )}
-        {showLeavingAlert && (
-          <InfoAlert
-            onClose={() => setShowLeavingAlert(false)}
-            message={`${leavingName} ${i18n.translate("tryToLeave")}`}
-          />
+        {infoMessage && (
+          <InfoAlert onClose={() => setInfoMessage("")} message={infoMessage} />
         )}
       </DndProvider>
     </SlotContextProvider>

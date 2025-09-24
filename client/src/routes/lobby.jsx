@@ -15,12 +15,12 @@ import {
   setPlayersOrder,
 } from "../services/game-service.jsx";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/auth-context.jsx";
-import { getAvatar } from "../services/user-service.jsx";
+import { useAuth } from "../components/providers/auth-context-provider.jsx";
+import { getAvatar } from "../services/user-service.js";
 import Button from "../components/visual/button.jsx";
 import InfoAlert from "../components/visual/alerts/info-alert.jsx";
 import LanguageContext from "../context/language.js";
-import DraggableItem from "../components/visual/draggable-item.jsx";
+import DraggableLobbyPlayer from "../components/visual/draggable-lobby-player.jsx";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import PageContainer from "../components/visual/page-container.jsx";
@@ -92,6 +92,7 @@ function Lobby() {
       await setPlayersOrder(
         {
           gameCode: gameContext.gameCode,
+          // eslint-disable-next-line no-unused-vars
           playerList: playerList.map(({ myself, ...rest }) => rest),
         },
         token,
@@ -156,13 +157,13 @@ function Lobby() {
             }
           >
             <DndProvider backend={HTML5Backend}>
-              {orderedPlayers.map((player, index) => {
+              {orderedPlayers.map((player) => {
                 const avatarUri = getAvatar(
                   player.userId,
                   player.rev || gameContext.gameCode,
                 );
                 return (
-                  <DraggableItem
+                  <DraggableLobbyPlayer
                     key={player.userId}
                     userId={player.userId}
                     orderedPlayersRef={orderedPlayersRef}
@@ -199,7 +200,7 @@ function Lobby() {
                         )}
                       </div>
                     </div>
-                  </DraggableItem>
+                  </DraggableLobbyPlayer>
                 );
               })}
             </DndProvider>

@@ -1,7 +1,7 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { startGame } from "../../../services/game-service.jsx";
-import { useAuth } from "../../../context/auth-context.jsx";
+import { useAuth } from "../../providers/auth-context-provider.jsx";
 import GameContext from "../../../context/game.js";
 import { useAlertContext } from "../../providers/alert-context-provider.jsx";
 import Button from "../button.jsx";
@@ -12,6 +12,7 @@ function Start({ gameCode, playerList }) {
   const navigate = useNavigate();
   const gameContext = useContext(GameContext);
   const [infoAlert, setInfoAlert] = useState(false);
+  const { setStartAlert } = useAlertContext();
   const { token } = useAuth();
   async function handleStartClick() {
     if (playerList.length > 1) {
@@ -31,7 +32,6 @@ function Start({ gameCode, playerList }) {
         navigate(`/game/${res.code}`);
       }
     } else {
-      const { setStartAlert } = useAlertContext();
       setStartAlert(true);
     }
   }

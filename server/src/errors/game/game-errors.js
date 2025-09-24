@@ -120,6 +120,14 @@ class InvalidCardInBusStop extends CommonError {
   }
 }
 
+class InvalidBusCard extends CommonError {
+  constructor(params) {
+    super("InvalidBusCard", "Invalid bus card");
+    this.status = 400;
+    this.params = params;
+  }
+}
+
 class DestinationDoesNotExist extends CommonError {
   constructor(params) {
     super("DestinationDoesNotExist", "Destination does not exist");
@@ -355,4 +363,5 @@ module.exports = {
   UserNotInPreviousGame,
   FailedToRematchGame,
   GameIsNotFinished,
+  InvalidBusCard,
 };

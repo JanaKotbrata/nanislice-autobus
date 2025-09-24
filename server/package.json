@@ -44,5 +44,8 @@
       "text-summary"
     ],
     "testEnvironment": "node"
+  },
+  "prettier": {
+    "endOfLine": "auto"
   }
 }

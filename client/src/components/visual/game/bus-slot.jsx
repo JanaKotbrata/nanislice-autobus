@@ -1,8 +1,14 @@
-import React, { useState, useRef, useContext, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
+import { useShowCounts } from "../../../hooks/use-show-counts.js";
 import Slot from "./slot.jsx";
 import GameContext from "../../../context/game.js";
 import { useAlertContext } from "../../providers/alert-context-provider.jsx";
+import CardCount from "./card-count.jsx";
 import LanguageContext from "../../../context/language.js";
+import {
+  JOKER,
+  SlotTargets,
+} from "../../../../../shared/constants/game-constants.json";
 
 function BusSlot({
   card,
@@ -10,19 +16,19 @@ function BusSlot({
   index,
   count,
   bottomCard,
-  prefix = "bus_",
+  prefix = SlotTargets.BUS,
   isDraggable,
   isMyself,
 }) {
   const i18n = useContext(LanguageContext);
   const gameContext = useContext(GameContext);
   const [showBottomCard, setShowBottomCard] = useState(false);
-  const [showCount, setShowCount] = useState(false);
-  const countTimeoutRef = useRef(null);
+  const [showCount, triggerShowCount] = useShowCounts();
 
   let pulse = "";
 
   const { setErrorMessage, setShowDangerAlert } = useAlertContext();
+
   function tooManyViewOfBottomCard() {
     setErrorMessage(i18n.translate("bottomBusCardNotAvailable"));
     setShowDangerAlert(true);
@@ -51,18 +57,10 @@ function BusSlot({
   }
 
   function handleClick() {
-    setShowCount(true);
-
-    if (countTimeoutRef.current) {
-      clearTimeout(countTimeoutRef.current);
-    }
-
-    countTimeoutRef.current = setTimeout(() => {
-      setShowCount(false);
-    }, 2000);
+    triggerShowCount();
   }
 
-  if (card?.rank === "Jr") {
+  if (card?.rank === JOKER) {
     pulse = "animate-[pulse_2s_ease-in-out_infinite]";
   }
 
@@ -72,18 +70,7 @@ function BusSlot({
       onDoubleClick={handleDoubleClick}
       onClick={handleClick}
     >
-      {count && (
-        <div
-          className={`absolute top-1 left-1 text-xs bg-red-500 text-white px-1 py-0.5 rounded transition-opacity duration-200 z-30
-            ${
-              showCount
-                ? "opacity-100 visible"
-                : "opacity-0 invisible group-hover:opacity-100 group-hover:visible"
-            }`}
-        >
-          <div>{count}</div>
-        </div>
-      )}
+      <CardCount count={count} show={showCount} />
 
       <Slot
         card={showBottomCard ? bottomCard : card}

@@ -1,7 +1,6 @@
-import React, { useContext, useRef, useEffect } from "react";
+import { useContext, useRef, useEffect } from "react";
 import { useDrag, useDragLayer } from "react-dnd";
 import RANK_CARD_ORDER from "../../../../../shared/constants/rank-card-order.json";
-import GameContext from "../../../context/game.js";
 import LanguageContext from "../../../context/language.js";
 import SlotContext from "../../../context/slot.js";
 import { getEmptyImage } from "react-dnd-html5-backend";
@@ -79,10 +78,8 @@ function Card({
   isDraggable = true,
   isMyself = false,
   isMyselfJrInBus = false,
-  onDropCard,
 }) {
   const i18n = useContext(LanguageContext);
-  const gameContext = useContext(GameContext);
   const { getSlotRects, setActiveSlot, getActiveSlot } =
     useContext(SlotContext);
   const { setErrorMessage, setShowDangerAlert } = useAlertContext();

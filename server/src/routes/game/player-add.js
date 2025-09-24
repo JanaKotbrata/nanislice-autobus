@@ -10,6 +10,7 @@ const GameErrors = require("../../errors/game/game-errors");
 const {
   transformCurrentPlayerData,
   isPlayerInGame,
+  getPlayersNotFinishedGame,
 } = require("../../services/game-service");
 const { States } = require("../../../../shared/constants/game-constants");
 const { validateAndGetGame } = require("../../services/validation-service");
@@ -31,6 +32,11 @@ class AddGamePlayer extends AuthenticatedPostResponseHandler {
 
     if (isPlayerInGame(game, userId)) {
       throw new GameErrors.PlayerAlreadyInGame(validData);
+    }
+
+    const existingGame = await getPlayersNotFinishedGame(userId);
+    if (existingGame) {
+      return { ...existingGame };
     }
 
     const newPlayerList = {

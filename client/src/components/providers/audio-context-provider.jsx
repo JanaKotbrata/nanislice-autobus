@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import AudioContext from "../../context/audio.js";
-import { useAuth } from "../../context/auth-context.jsx";
+import { useAuth } from "./auth-context-provider.jsx";
 
 function AudioProvider({ children }) {
   const { user } = useAuth();

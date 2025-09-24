@@ -4,16 +4,21 @@ import LanguageContext from "../context/language.js";
 import PageContainer from "../components/visual/page-container.jsx";
 
 function TechnologiesList({ i18n }) {
+  const techKeys = [
+    "technologyReact",
+    "technologyTailwind",
+    "technologySocketio",
+    "technologyExpress",
+    "technologyMongoDB",
+    "technologyPassport",
+    "technologyAxios",
+    "technologyJest",
+  ];
   return (
     <ul className="list-disc list-inside text-gray-300 space-y-2">
-      <li>{i18n.translate("firstTechnology")}</li>
-      <li>{i18n.translate("secondTechnology")}</li>
-      <li>{i18n.translate("thirdTechnology")}</li>
-      <li>{i18n.translate("fourthTechnology")}</li>
-      <li>{i18n.translate("fifthTechnology")}</li>
-      <li>{i18n.translate("sixthTechnology")}</li>
-      <li>{i18n.translate("seventhTechnology")}</li>
-      <li>{i18n.translate("eighthTechnology")}</li>
+      {techKeys.map((key) => (
+        <li key={key}>{i18n.translate(key)}</li>
+      ))}
     </ul>
   );
 }

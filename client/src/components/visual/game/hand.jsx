@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import Slot from "./slot.jsx";
 import GameContext from "../../../context/game.js";
 import LanguageContext from "../../../context/language.js";

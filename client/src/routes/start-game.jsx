@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Instructions from "../components/visual/instructions.jsx";
-import { useAuth } from "../context/auth-context.jsx";
+import { useAuth } from "../components/providers/auth-context-provider.jsx";
 import {
   addPlayer,
   createGame,
@@ -15,6 +15,7 @@ import Avatar from "../components/visual/user/avatar.jsx";
 import LanguageContext from "../context/language.js";
 import InfoAlert from "../components/visual/alerts/info-alert.jsx";
 import PageContainer from "../components/visual/page-container.jsx";
+import PageHeader from "../components/visual/page-header.jsx";
 import { States } from "../../../shared/constants/game-constants.json";
 
 function StartGame() {
@@ -25,19 +26,20 @@ function StartGame() {
   const [gameCode, setGameCode] = useState("");
   const [infoAlert, setInfoAlert] = useState(false);
 
+  function handleGameResponse(response) {
+    if (!response) return;
+    gameContext.setContextGame(response);
+    if (response.state === States.ACTIVE) {
+      navigate(`/game/${response.code}`);
+    } else if (response.state === States.INITIAL) {
+      navigate(`/lobby/${response.code}`);
+    }
+  }
+
   useEffect(() => {
     getGameByUser(token)
-      .then((response) => {
-        if (response) {
-          gameContext.setContextGame(response);
-          if (response.state === States.ACTIVE) {
-            navigate(`/game/${response.code}`);
-          } else if (response.state === States.INITIAL) {
-            navigate(`/lobby/${response.code}`);
-          }
-        }
-      })
-      .catch((error) => {
+      .then(handleGameResponse)
+      .catch(() => {
         // do nothing
       });
   }, []);
@@ -45,12 +47,7 @@ function StartGame() {
   async function startGame() {
     try {
       const response = await createGame({}, token);
-      gameContext.setContextGame(response); //TODO constants
-      if (response.state === States.ACTIVE) {
-        navigate(`/game/${response.code}`);
-      } else {
-        navigate(`/lobby/${response.code}`);
-      }
+      handleGameResponse(response);
     } catch (error) {
       if (error.response?.data?.name === "UserAlreadyInGame") {
         const game = await getGame(
@@ -83,13 +80,7 @@ function StartGame() {
     }
   }
 
-  const header = (
-    <div className="flex items-center justify-center px-10 pt-8 pb-6 border-b border-cyan-700/30 bg-gray-950/60 rounded-t-3xl shadow-md">
-      <span className="text-3xl font-bold tracking-wide text-white drop-shadow text-center w-full">
-        {i18n.translate("startGameTitle")}
-      </span>
-    </div>
-  );
+  const header = <PageHeader>{i18n.translate("startGameTitle")}</PageHeader>;
 
   return (
     <PageContainer header={header}>

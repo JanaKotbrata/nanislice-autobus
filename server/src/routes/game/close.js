@@ -8,7 +8,7 @@ const {
 const GameErrors = require("../../errors/game/game-errors");
 const { closeGame } = require("../../services/game-service");
 const {
-  validateAndAuthorizeForGame,
+  validateAndAuthorizeForCloseGame,
 } = require("../../services/validation-service");
 
 class CloseGame extends AuthenticatedPostResponseHandler {
@@ -17,7 +17,7 @@ class CloseGame extends AuthenticatedPostResponseHandler {
   }
 
   async close(req) {
-    const { game } = await validateAndAuthorizeForGame(
+    const { game } = await validateAndAuthorizeForCloseGame(
       req,
       schema,
       GameErrors.UserIsNotAllowedToCloseGame,

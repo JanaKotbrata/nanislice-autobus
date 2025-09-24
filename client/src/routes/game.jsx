@@ -1,9 +1,10 @@
-import React, { useContext, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { Navigate } from "react-router-dom";
 import GameContext from "../context/game.js";
 import CardAnimationContext from "../context/card-animation.js";
 import LanguageContext from "../context/language.js";
-import { useAuth } from "../context/auth-context.jsx";
+import AlertContext from "../context/alert.js";
+import { useAuth } from "../components/providers/auth-context-provider.jsx";
 import { useGameSocket } from "../hooks/use-game-socket.js";
 import { useResizablePanel } from "../hooks/use-game-layout.js";
 import { useGameFlow } from "../hooks/use-game-flow.js";
@@ -32,7 +33,7 @@ function Game() {
   const gameContext = useContext(GameContext);
   const cardAnimationContext = useContext(CardAnimationContext);
   const i18n = useContext(LanguageContext);
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const { playSound } = useAudio();
   const {
     leftPanelWidth,
@@ -42,19 +43,16 @@ function Game() {
     handlePanelDragEnd,
   } = useResizablePanel();
   const { showEndGameAlert } = useGameFlow();
-  const [leavingPlayerName, setLeavingPlayerName] = useState("");
 
   const [myself, otherPlayers] = splitPlayers(gameContext.players);
+  const { setInfoMessage } = useContext(AlertContext);
 
   useGameSocket(
     user.id,
-    gameContext.gameCode,
-    gameContext.setContextGame,
     (playerName) => {
-      setLeavingPlayerName("");
-      setTimeout(() => setLeavingPlayerName(playerName), 10);
+      setInfoMessage(`${playerName} ${i18n.translate("tryToLeave")}`);
     },
-    (target, actionBy, isShuffled, finishedPackIndex, animationCallBack) =>
+    ({ target, actionBy, isShuffled, finishedPackIndex, animationCallBack }) =>
       handleSocketAnimation(
         cardAnimationContext,
         gameContext,
@@ -81,7 +79,6 @@ function Game() {
       handlePanelDragMove={handlePanelDragMove}
       handlePanelDragEnd={handlePanelDragEnd}
       showEndGameAlert={showEndGameAlert}
-      leavingPlayerName={leavingPlayerName}
       i18n={i18n}
       gameContext={gameContext}
     >

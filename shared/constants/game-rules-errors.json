@@ -12,5 +12,9 @@
   "InvalidCardInGameBoard": "InvalidCardInGameBoard",
   "DestinationDoesNotExist": "DestinationDoesNotExist",
   "InvalidHandLength": "InvalidHandLength",
-  "NotPossibleToDraw": "NotPossibleToDraw"
+  "NotPossibleToDraw": "NotPossibleToDraw",
+  "BusJrFirst": "BusJrFirst",
+  "FirstPlaceError": "FirstPlaceError",
+  "PlaceRankError": "PlaceRankError",
+  "InvalidBusCard": "InvalidBusCard"
 }

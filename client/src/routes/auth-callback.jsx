@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useAuth } from "../context/auth-context";
+import { useAuth } from "../components/providers/auth-context-provider.jsx";
 import { getGameByUser } from "../services/game-service.jsx";
 import LanguageContext from "../context/language.js";
 import { States } from "../../../shared/constants/game-constants.json";

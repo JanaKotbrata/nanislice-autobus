@@ -1,6 +1,6 @@
-import { getAvatar } from "../../../services/user-service.jsx";
+import { getAvatar } from "../../../services/user-service.js";
 import { FaPencilAlt, FaSignInAlt } from "react-icons/fa";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import LanguageContext from "../../../context/language.js";
 
 function Avatar({
@@ -43,7 +43,7 @@ function Avatar({
     return (
       <img
         src={avatarUri}
-        alt={isMyself ? i18n.translate("editProfile") : "avatar"}
+        alt={"avatar"}
         className={`${size} rounded-full object-cover shadow-md ${user && "border-2 border-cyan-300/50 mb-4"}`}
       />
     );

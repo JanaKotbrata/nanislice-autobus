@@ -1,4 +1,4 @@
-const {JOKER, RANK_CARD_ORDER} = require("../../shared/constants/game-constants");
+const {JOKER, RANK_CARD_ORDER, SlotTargets} = require("../../shared/constants/game-constants");
 const GameActions = require("../../shared/constants/game-actions.json");
 const GameRulesErrors = require("../../shared/constants/game-rules-errors.json");
 const {getCardIndex} = require("../../server/src/services/card-service");
@@ -86,7 +86,7 @@ class CommonGameRules {
     this.removeCardFromHand(myself.hand, card);
     this.addCardTo(myself.bus, card);
     myself.isCardDrawed = false;
-    this.target = `player_bus_${userId}_0`;
+    this.target = `${SlotTargets.PLAYER_BUS}${userId}_0`;
     this.nextRound();
   }
 
@@ -95,7 +95,7 @@ class CommonGameRules {
     this.removeCardFromHand(myself.hand, card);
     this.addCardTo(myself.busStop[targetIndex], card);
     myself.isCardDrawed = false;
-    this.target = `player_slot_${userId}_${targetIndex}`;
+    this.target = `${SlotTargets.PLAYER_SLOT}${userId}_${targetIndex}`;
     this.nextRound();
   }
 
@@ -104,30 +104,37 @@ class CommonGameRules {
   }
 
   startNewPack({ myself, card }) {
+    this.validateJokerFirst(card, myself.bus[0]);
     this.validateNewDestination(card);
     this.game.gameBoard.push([card]);
     this.removeCardFromHand(myself.hand, card);
   }
 
   startNewPackFromBus({ myself, card }) {
+    this.validateJokerFirst(card, myself.bus[0]);
+    this.validateBusCard(card, myself.bus[0]);
     this.validateNewDestination(card);
     this.game.gameBoard.push([card]);
     this.removeCardFrom(myself.bus, card);
   }
 
   moveCardToBoard({ myself, targetIndex, card }) {
+    this.validateJokerFirst(card, myself.bus[0]);
     this.validateGameBoard(targetIndex, card);
     this.removeCardFromHand(myself.hand, card);
     this.addCardTo(this.game.gameBoard[targetIndex], card);
   }
 
   moveCardToBoardFromBus({ myself, targetIndex, card }) {
+    this.validateJokerFirst(card, myself.bus[0]);
+    this.validateBusCard(card, myself.bus[0]);
     this.validateGameBoard(targetIndex, card);
     this.removeCardFrom(myself.bus, card);
     this.addCardTo(this.game.gameBoard[targetIndex], card);
   }
 
   moveCardToBoardFromBusStop({ myself, targetIndex, card }) {
+    this.validateJokerFirst(card, myself.bus[0]);
     this.validateGameBoard(targetIndex, card);
     this.removeCardFromBusStop(myself.busStop, card);
     this.addCardTo(this.game.gameBoard[targetIndex], card);
@@ -180,10 +187,10 @@ class CommonGameRules {
       existingIndexWithSameRank !== -1 &&
       existingIndexWithSameRank !== targetIndex
     ) {
-      this.throwError(GameRulesErrors.WrongPlace, card.rank); // TODO
+      this.throwError(GameRulesErrors.WrongPlace, card.rank);
     }
     if (targetIndex > 3) {
-      this.throwError(GameRulesErrors.InvalidBusStopIndex, targetIndex); // TODO
+      this.throwError(GameRulesErrors.InvalidBusStopIndex, targetIndex);
     }
     if ([JOKER, RANK_CARD_ORDER[0]].includes(card.rank)) {
       this.throwError(GameRulesErrors.BusStopError, card.rank);
@@ -198,21 +205,33 @@ class CommonGameRules {
 
   }
 
-  validateNewDestination(card) {
-    if (card.rank !== RANK_CARD_ORDER[0] && card.rank !== JOKER) {
-      this.throwError(GameRulesErrors.InvalidCardInGameBoard, card)
+  validateJokerFirst(card, busCard) {
+    if (busCard?.rank === JOKER && card.i !== busCard?.i) {
+      this.throwError(GameRulesErrors.BusJrFirst)
     }
   }
 
-  validateGameBoard(tagetIndex, card) {
-    if (!this.game.gameBoard[tagetIndex]) {
-      this.throwError(GameRulesErrors.DestinationDoesNotExist, { tagetIndex, card })
+  validateBusCard(card, busCard) {
+    if (card.i !== busCard?.i) {
+      this.throwError(GameRulesErrors.InvalidBusCard)
+    }
+  }
+
+  validateNewDestination(card) {
+    if (card.rank !== RANK_CARD_ORDER[0] && card.rank !== JOKER) {
+      this.throwError(GameRulesErrors.FirstPlaceError, card)
+    }
+  }
+
+  validateGameBoard(targetIndex, card) {
+    if (!this.game.gameBoard[targetIndex]) {
+      this.throwError(GameRulesErrors.DestinationDoesNotExist, { targetIndex, card })
     }
     if (
-      card.rank !== RANK_CARD_ORDER[this.game.gameBoard[tagetIndex].length] &&
+      card.rank !== RANK_CARD_ORDER[this.game.gameBoard[targetIndex].length] &&
       card.rank !== JOKER
     ) {
-      this.throwError(GameRulesErrors.InvalidCardInGameBoard, { tagetIndex, card })
+      this.throwError(GameRulesErrors.PlaceRankError, { targetIndex, card })
     }
     return true;
   }
@@ -233,89 +252,6 @@ class CommonGameRules {
   }
 }
 
-
-
-// Player turn validation
-function validatePlayerTurn(gamePlayers, currentPlayer, isReorderHand = false) {
-	const playerIndex = gamePlayers.findIndex((player) => player.myself);
-	if (playerIndex !== currentPlayer && !isReorderHand) {
-		return { error: "notYourTurn" };
-	}
-	return true;
-}
-
-// Validation for placing the first card on the game board
-function validatePlaceOnGameBoard(card, busCard) {
-	if (busCard?.rank === JOKER && card.i !== busCard?.i) {
-		return { error: "busJrFirst" };
-	}
-	if ([JOKER, RANK_CARD_ORDER[0]].includes(card.rank)) {
-		return true;
-	}
-	return { error: "firstPlaceError" };
-}
-
-// Validation for placing a card into a pack on the game board
-function validatePlaceOnGBPack(card, gameBoard, gameBoardIndex, busCard) {
-	if (busCard?.rank === JOKER && card.i !== busCard?.i) {
-		return { error: "busJrFirst" };
-	}
-	if (!gameBoard[gameBoardIndex]) {
-		return { error: "somethingWentWrong" };
-	}
-	if (
-		card.rank !== RANK_CARD_ORDER[gameBoard[gameBoardIndex].length] &&
-		card.rank !== JOKER
-	) {
-		return { error: "placeRankError", details: card.rank };
-	}
-	return true;
-}
-
-function validateBusStopUnified(card, busStop, targetIndex) {
-    const existingIndexWithSameRank = busStop?.findIndex(
-        (stack) => stack.length > 0 && stack[0].rank === card.rank
-    );
-    if (
-        existingIndexWithSameRank !== -1 &&
-        existingIndexWithSameRank !== targetIndex
-    ) {
-        return {
-            error: "wrongPlace",
-            details: card.rank,
-        };
-    }
-    if (targetIndex > 3) {
-        return { error: "invalidBusStopIndex", details: targetIndex };
-    }
-    if ([JOKER, RANK_CARD_ORDER[0]].includes(card.rank)) {
-        return {
-            error: "busStopError",
-            details: card.rank,
-        };
-    }
-    if (
-        busStop?.[targetIndex]?.length > 0 &&
-        busStop?.[targetIndex]?.[0].rank !== card.rank
-    ) {
-        return {
-            error: "wrongPlaceInBusStop",
-            details: card.rank,
-        };
-    }
-    if (
-        busStop[targetIndex]?.[busStop[targetIndex].length - 1]?.i === card.i
-    ) {
-        return { error: "alreadyPlaced" };
-    }
-    return true;
-}
-
-
 module.exports = {
-  CommonGameRules,
-	validatePlayerTurn,
-	validatePlaceOnGameBoard,
-	validatePlaceOnGBPack,
-	validateBusStopUnified,
+  CommonGameRules
 };

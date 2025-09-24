@@ -1,19 +1,16 @@
 import React from "react";
 import UserContext from "../../context/user";
-import { useAuth } from "../../context/auth-context.jsx";
-import { updateUser } from "../../services/user-service.jsx";
+import { useAuth } from "./auth-context-provider.jsx";
+import { updateUser } from "../../services/user-service.js";
 
 function UserContextProvider({ children }) {
   const { user: authUser, token } = useAuth();
   const [user, setUser] = React.useState(authUser);
 
-  function setContextUser(user) {
-    setUser(user);
-  }
   async function update(formData) {
     try {
       const updatedUser = await updateUser(formData, token);
-      setContextUser(updatedUser);
+      setUser(updatedUser);
       return updatedUser;
     } catch (err) {
       console.error("Failed to update user:", err);
@@ -21,7 +18,7 @@ function UserContextProvider({ children }) {
   }
 
   return (
-    <UserContext.Provider value={{ setContextUser, user, update }}>
+    <UserContext.Provider value={{ setUser, user, update }}>
       {children}
     </UserContext.Provider>
   );

@@ -1,16 +1,14 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { socket } from "../services/create-socket.js";
 import { useNavigate } from "react-router-dom";
-export function useGameSocket(
-  userId,
-  gameCode,
-  setContextGame,
-  showAlert,
-  animateToSlot,
-) {
+import GameContext from "../context/game.js";
+
+export function useGameSocket(userId, showAlert, animateToSlot) {
   const navigate = useNavigate();
+  const gameContext = useContext(GameContext);
 
   useEffect(() => {
+    const gameCode = gameContext.gameCode;
     if (gameCode && userId) {
       if (userId === -1) {
         socket.emit("spectate", gameCode);
@@ -30,7 +28,7 @@ export function useGameSocket(
 
       socket.on("playerAdded", (data) => {
         if (data.code === gameCode) {
-          setContextGame(data);
+          gameContext.setContextGame(data);
         }
       });
 
@@ -41,18 +39,20 @@ export function useGameSocket(
             return;
           }
           if (data.actionBy !== userId && data.target) {
-            animateToSlot(
-              data.target,
-              data.actionBy,
-              data.isShuffled,
-              data.finishedPack,
-              () => {
-                setContextGame(data.newGame);
+            animateToSlot({
+              target: data.target,
+              actionBy: data.actionBy,
+              isShuffled: data.isShuffled,
+              finishedPack: data.finishedPack,
+              animationCallBack: () => {
+                gameContext.setContextGame(data.newGame);
               },
-            );
+            });
           } else {
-            animateToSlot(null, null, null, null, () => {
-              setContextGame(data.newGame);
+            animateToSlot({
+              animationCallBack: () => {
+                gameContext.setContextGame(data.newGame);
+              },
             });
           }
         }
@@ -60,7 +60,7 @@ export function useGameSocket(
 
       socket.on("playerRemoved", (data) => {
         if (data.code.startsWith(gameCode)) {
-          setContextGame(data);
+          gameContext.setContextGame(data);
         }
       });
     }
@@ -75,7 +75,7 @@ export function useGameSocket(
       socket.off("playerRemoved");
       socket.off("notify-player-leaving");
     };
-  }, [userId, gameCode]);
+  }, [userId, gameContext]);
 
   return socket;
 }

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import nanislice from "../assets/nanislice.svg";
 import DiscordLogin from "../components/visual/login/discord-login.jsx";
 import GoogleLogin from "../components/visual/login/google-login.jsx";

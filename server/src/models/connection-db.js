@@ -13,7 +13,7 @@ async function connectToDb() {
     await client.connect();
     res(client.db(config.db_name)); // resolve the db promise when connected
     console.log(`Connected to: ${config.db_name}`);
-  })
+  });
   return db;
 }
 

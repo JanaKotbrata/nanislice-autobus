@@ -1,7 +1,7 @@
 const { ObjectId } = require("mongodb");
 const Model = require("./model");
 const collectionName = "games";
-
+const { States } = require("../../../shared/constants/game-constants.json");
 class GamesRepository extends Model {
   _getCollectionName() {
     return collectionName;
@@ -87,7 +87,7 @@ class GamesRepository extends Model {
         },
       },
       state: {
-        $nin: ["closed"],
+        $nin: [States.CLOSED, States.FINISHED],
       },
     });
 

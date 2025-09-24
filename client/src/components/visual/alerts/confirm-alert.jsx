@@ -1,4 +1,3 @@
-import React from "react";
 import BaseAlert from "./base-alert.jsx";
 import ModalWrapper from "./modal-wrapper.jsx";
 

@@ -1,37 +1,28 @@
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
 import { socket } from "../services/create-socket.js";
+import GameContext from "../context/game.js";
 
-export function useLobbySocket(userId, gameCode, setContextGame) {
+export function useLobbySocket(userId, gameCode, setContextGameParam) {
+  const gameContext = useContext(GameContext);
+  const setContextGame = setContextGameParam || gameContext?.setContextGame;
+
   useEffect(() => {
-    if (gameCode && userId) {
+    if (gameCode && userId && setContextGame) {
       socket.emit("listenToGame", gameCode, userId);
       socket.on("connect", () => {
         socket.emit("listenToGame", gameCode, userId);
       });
-      socket.on("playerAdded", (data) => {
-        if (data.code === gameCode) {
-          setContextGame(data);
-        }
-      });
 
-      socket.on("playerRemoved", (data) => {
+      function handleGameUpdate(data) {
         if (data.code === gameCode) {
           setContextGame(data);
         }
-      });
+      }
 
-      socket.on("gameStarted", (data) => {
-        if (data.code === gameCode) {
-          if (setContextGame) {
-            setContextGame(data);
-          }
-        }
-      });
-      socket.on("playerSetOrder", (data) => {
-        if (data.code === gameCode) {
-          setContextGame(data);
-        }
-      });
+      socket.on("playerAdded", handleGameUpdate);
+      socket.on("playerRemoved", handleGameUpdate);
+      socket.on("gameStarted", handleGameUpdate);
+      socket.on("playerSetOrder", handleGameUpdate);
     }
 
     return () => {
@@ -41,7 +32,7 @@ export function useLobbySocket(userId, gameCode, setContextGame) {
       socket.off("gameStarted");
       socket.off("playerSetOrder");
     };
-  }, [userId, gameCode]);
+  }, [userId, gameCode, setContextGame]);
 
   return socket;
 }

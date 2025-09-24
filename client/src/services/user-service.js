@@ -53,3 +53,14 @@ export function getAvatar(userId, cacheBreaker = "") {
   }
   return target;
 }
+// Helper for updating user data (name, picture, language, ...)
+// type: string (e.g. "name", "picture", "language")
+// value: value to set (string or File)
+// onSuccess: optional callback after successful update
+export function updateUserData(userContext, type, value, onSuccess) {
+  const formData = new FormData();
+  formData.append(type, value);
+  return userContext.update(formData).then(() => {
+    if (onSuccess) onSuccess();
+  });
+}

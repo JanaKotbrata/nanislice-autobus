@@ -57,5 +57,21 @@
   },
   "MAX_ATTEMPTS": 5,
   "CREATOR": "creator",
-  "DEFAULT_NAME": "nemo"
+  "DEFAULT_NAME": "nemo",
+  "SlotTargets": {
+    "HAND": "hand",
+    "BUS": "bus_",
+    "EMPTY_HAND": "empty_hand_",
+    "PLAYER": "player_",
+    "PLAYER_BUS": "player_bus_",
+    "PLAYER_SLOT": "player_slot_",
+    "MYSELF": "myself_",
+    "CARDPACK_DECK": "cardpack_deck",
+    "COMPLETED_CARDPACK_DECK": "completed_cardpack_deck",
+    "GAMEBOARD_CARD": "gb_card_",
+    "GAMEBOARD_NO_CARD": "gb_nocard_"
+  },
+  "MIN_ZOOM": 0.5,
+  "MAX_ZOOM": 1.25,
+  "ZOOM_STEP": 0.1
 }

@@ -4,7 +4,7 @@ import LeaveAlert from "../alerts/leave-alert.jsx";
 import GameContext from "../../../context/game.js";
 import { useAlertContext } from "../../providers/alert-context-provider.jsx";
 import { removePlayer } from "../../../services/game-service.jsx";
-import { useAuth } from "../../../context/auth-context.jsx";
+import { useAuth } from "../../providers/auth-context-provider.jsx";
 import LanguageContext from "../../../context/language.js";
 import { socket } from "../../../services/create-socket.js";
 
@@ -14,7 +14,7 @@ function Leave({ userId }) {
   const { showAlert, setShowAlert } = useAlertContext();
   const { token } = useAuth();
   async function handleLeave() {
-  setShowAlert(false);
+    setShowAlert(false);
     removePlayer({ gameCode: gameContext.gameCode, userId }, token)
       .then((game) => {
         gameContext.setContextGame(game);

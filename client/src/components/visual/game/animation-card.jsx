@@ -1,6 +1,6 @@
-import React, { useLayoutEffect } from "react";
-import { CardBgClasses } from "../../../constants/game.js";
-import { Bg } from "../../../../../shared/constants/game-constants.json";
+import React, { useLayoutEffect, useContext } from "react";
+import CardStyleContext from "../../../context/card-style-context.js";
+
 function AnimationCard({
   x,
   y,
@@ -11,6 +11,7 @@ function AnimationCard({
   bg,
   style = "",
 }) {
+  const { getCardBgClass } = useContext(CardStyleContext);
   const [targetCoords, setTargetCoords] = React.useState({
     x: startX,
     y: startY,
@@ -21,13 +22,7 @@ function AnimationCard({
     setTargetCoords({ x: x, y: y, rotate: rotateTo });
   }, []);
 
-  let backgroundColor;
-  if (bg) {
-    backgroundColor = bg === Bg.RED ? CardBgClasses.RED : CardBgClasses.BLUE;
-  } else {
-    backgroundColor =
-      Math.random() < 0.5 ? CardBgClasses.RED : CardBgClasses.BLUE;
-  }
+  const backgroundColor = getCardBgClass(bg);
 
   return (
     <div

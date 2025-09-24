@@ -14,7 +14,7 @@ function generateRandomCode(length = 6) {
     .substring(2, 2 + length);
   return randomString
     .split("")
-    .map((char, index) => (Math.random() > 0.5 ? char.toUpperCase() : char))
+    .map((char) => (Math.random() > 0.5 ? char.toUpperCase() : char))
     .join("");
 }
 
@@ -131,7 +131,7 @@ function getPlayerListAndDeck(playersNumber = 1, user, win = false, params) {
       (card) => card.rank === params.preferredRankInBus,
     );
     if (preferredRankCard) {
-      players[players.length - 1].bus.push(preferredRankCard);
+      players[players.length - 1].bus.unshift(preferredRankCard);
       const index = deck.findIndex((card) => card.i === preferredRankCard.i);
       deck.splice(index, 1);
     }

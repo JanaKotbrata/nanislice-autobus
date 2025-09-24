@@ -210,6 +210,14 @@ function removePlayer(game, playerIndex) {
   return { newPlayers, newDeck };
 }
 
+async function getPlayersNotFinishedGame(userId) {
+  const activeGameWithUser = await games.findNotClosedGameByUserId(userId);
+  if (activeGameWithUser) {
+    transformCurrentPlayerData(activeGameWithUser, userId);
+    return { ...activeGameWithUser };
+  }
+}
+
 module.exports = {
   transformCurrentPlayerData,
   getGame,
@@ -222,4 +230,5 @@ module.exports = {
   getGameWithWarning,
   initializeAndDealDeck,
   removePlayer,
+  getPlayersNotFinishedGame,
 };

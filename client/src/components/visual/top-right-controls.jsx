@@ -1,4 +1,3 @@
-import React from "react";
 import VolumeSettings from "./volume-settings.jsx";
 import LangSelector from "./lang-selector.jsx";
 import LogOut from "./login/log-out.jsx";

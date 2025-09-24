@@ -1,5 +1,3 @@
-import React from "react";
-
 function Button({ children, onClick, disabled = false }) {
   return (
     <button

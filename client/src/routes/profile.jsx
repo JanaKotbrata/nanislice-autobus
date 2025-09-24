@@ -1,10 +1,11 @@
-export default Profile;
 import React, { useContext, useEffect, useState } from "react";
-import { getAvatar } from "../services/user-service.jsx";
+import { updateUserData } from "../services/user-service.js";
+import { getAvatar } from "../services/user-service.js";
 import UserContext from "../context/user.js";
 import { FaPencilAlt } from "react-icons/fa";
 import LanguageContext from "../context/language.js";
 import PageContainer from "../components/visual/page-container.jsx";
+import CardStyleSelector from "../components/visual/profile-card-style-selector.jsx";
 import {
   Roles,
   DEFAULT_NAME,
@@ -30,61 +31,45 @@ function Profile() {
   );
   const languageContext = useContext(LanguageContext);
 
-  // Update jména
+  // name
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (name && name !== userContext.user.name) {
-        const formData = new FormData();
-        formData.append("name", name);
         setIsSubmitting(true);
-        userContext
-          .update(formData)
-          .then(() => {})
-          .finally(() => setIsSubmitting(false));
+        updateUserData(userContext, "name", name).finally(() =>
+          setIsSubmitting(false),
+        );
       }
     }, 600);
     return () => clearTimeout(timeout);
   }, [name]);
 
-  // Upload avataru
+  // avataru
   useEffect(() => {
     if (!selectedFile) return;
-    const formData = new FormData();
-    formData.append("picture", selectedFile);
     setIsSubmitting(true);
-    userContext
-      .update(formData)
-      .then(() => {
-        setSelectedFile(null);
-      })
-      .finally(() => setIsSubmitting(false));
+    updateUserData(userContext, "picture", selectedFile, () =>
+      setSelectedFile(null),
+    ).finally(() => setIsSubmitting(false));
   }, [selectedFile]);
 
-  // Ukládání preferovaného jazyka
+  // language
   useEffect(() => {
     if (!preferLang) {
       if (userContext.user.language !== null) {
-        const formData = new FormData();
-        formData.append("language", null);
         setIsSubmitting(true);
-        userContext.update(formData).finally(() => setIsSubmitting(false));
+        updateUserData(userContext, "language", null).finally(() =>
+          setIsSubmitting(false),
+        );
       }
       setSelectedLang(null);
       return;
     }
     if (selectedLang && selectedLang !== userContext.user.language) {
-      const formData = new FormData();
-      formData.append("language", selectedLang);
       setIsSubmitting(true);
-      userContext
-        .update(formData)
-        .then(() => {
-          setSelectedFile(null);
-        })
-        .finally(() => {
-          setIsSubmitting(false);
-          languageContext.setContextLanguage(selectedLang);
-        });
+      updateUserData(userContext, "language", selectedLang, () =>
+        languageContext.setContextLanguage(selectedLang),
+      ).finally(() => setIsSubmitting(false));
     }
   }, [preferLang, selectedLang, userContext.user.language]);
 
@@ -93,25 +78,6 @@ function Profile() {
     const file = e.target.files[0];
     if (file) setSelectedFile(file);
   }
-
-  // Ukládání preferovaného jazyka na backend
-  useEffect(() => {
-    if (preferLang) {
-      if (selectedLang && selectedLang !== userContext.user.language) {
-        const formData = new FormData();
-        formData.append("language", selectedLang);
-        setIsSubmitting(true);
-        userContext.update(formData).finally(() => setIsSubmitting(false));
-      }
-    } else if (userContext.user.language) {
-      // Pokud uživatel odškrtne preferovaný jazyk, smažeme ho
-      const formData = new FormData();
-      formData.append("language", "");
-      setIsSubmitting(true);
-      userContext.update(formData).finally(() => setIsSubmitting(false));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedLang, preferLang]);
 
   return (
     <PageContainer>
@@ -188,20 +154,23 @@ function Profile() {
           </div>
           <p className="text-xs text-gray-400 text-right mt-1">{xp} XP</p>
         </div>
-        <label className="inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            className="sr-only peer"
-            checked={preferLang}
-            onChange={(e) => setPreferLang(e.target.checked)}
-          />
-          <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
-          <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-            {selectedLang
-              ? i18n.translate("preferredLanguage") + " " + selectedLang
-              : i18n.translate("setPrefLang")}
-          </span>
-        </label>
+        <div className="flex items-center gap-3 mb-2">
+          <label className="inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              className="sr-only peer"
+              checked={preferLang}
+              onChange={(e) => setPreferLang(e.target.checked)}
+            />
+            <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+            <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+              {selectedLang
+                ? i18n.translate("preferredLanguage") + " " + selectedLang
+                : i18n.translate("setPrefLang")}
+            </span>
+          </label>
+          <CardStyleSelector />
+        </div>
         {preferLang && (
           <select
             value={selectedLang || ""}
@@ -223,3 +192,4 @@ function Profile() {
     </PageContainer>
   );
 }
+export default Profile;

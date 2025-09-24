@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import ModalWrapper from "./modal-wrapper.jsx";
 import BaseAlert from "./base-alert.jsx";
 import LanguageContext from "../../../context/language.js";

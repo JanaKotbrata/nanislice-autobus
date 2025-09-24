@@ -24,7 +24,7 @@ class SetOrderPlayer extends AuthenticatedPostResponseHandler {
   async setOrder(req) {
     let { validData, game, user } = await validateAndGetGame(req, schema);
 
-    const { playerList, gameCode } = validData;
+    const { playerList } = validData;
     const userId = user.id;
 
     if (game.state === States.ACTIVE) {

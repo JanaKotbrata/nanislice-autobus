@@ -1,7 +1,8 @@
-import React, { useContext, useState } from "react";
+import { useContext } from "react";
 import GameContext from "../context/game.js";
 import CardAnimationContext from "../context/card-animation.js";
 import LanguageContext from "../context/language.js";
+import AlertContext from "../context/alert.js";
 import { useGameSocket } from "../hooks/use-game-socket.js";
 import { useResizablePanel } from "../hooks/use-game-layout.js";
 import { useGameFlow } from "../hooks/use-game-flow.js";
@@ -22,15 +23,15 @@ function Spectate() {
     handlePanelDragEnd,
   } = useResizablePanel();
   const { showEndGameAlert } = useGameFlow();
-  const [leavingPlayerName, setLeavingPlayerName] = useState("");
+  const { setInfoMessage } = useContext(AlertContext);
 
   const otherPlayers = gameContext.players || [];
 
   useGameSocket(
     -1,
-    gameContext.gameCode,
-    gameContext.setContextGame,
-    setLeavingPlayerName,
+    (playerName) => {
+      setInfoMessage(`${playerName} ${i18n.translate("tryToLeave")}`);
+    },
     (target, actionBy, isShuffled, finishedPackIndex, animationCallBack) =>
       handleSocketAnimation(
         cardAnimationContext,
@@ -54,7 +55,6 @@ function Spectate() {
       handlePanelDragMove={handlePanelDragMove}
       handlePanelDragEnd={handlePanelDragEnd}
       showEndGameAlert={showEndGameAlert}
-      leavingPlayerName={leavingPlayerName}
       i18n={i18n}
       gameContext={gameContext}
     ></GameBase>

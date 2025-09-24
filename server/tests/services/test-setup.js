@@ -15,6 +15,7 @@ function injectUserEvenIfNotExists(req, res, next) {
     req.user = { _id: payload.id };
     next();
   } catch (e) {
+    console.log(e);
     return res.sendStatus(401);
   }
 }

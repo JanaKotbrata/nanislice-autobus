@@ -46,9 +46,9 @@ class WebSocketService {
   emitRematch(oldGameCode, playerList, newGameCode) {
     playerList.forEach((player) => {
       const playerId = player.userId;
-      this.emitToPlayer(oldGameCode, playerId, "rematch", () => ({
+      this.emitToPlayer(oldGameCode, playerId, "rematch", {
         gameCode: newGameCode,
-      }));
+      });
     });
   }
 

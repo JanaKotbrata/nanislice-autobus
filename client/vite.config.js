@@ -9,6 +9,7 @@ export default defineConfig({
   plugins: [
     react(),
     commonjs({
+      // eslint-disable-next-line no-undef
       include: [path.resolve(__dirname, "../shared/validation/game-rules.js")],
     }),
     tailwindcss(),

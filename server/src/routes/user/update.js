@@ -32,14 +32,12 @@ class UpdateUser extends PostFormDataResponseHandler {
       UserErrors.UserNotAuthorized,
       UserErrors.UserDoesNotExist,
     );
-    const { name, language, picture, volume } = validData;
+    const { name, language, picture } = validData;
 
     const activeGameWithUser = await games.findNotClosedGameByUserId(userId);
 
-    let toUpdate = { sys: user.sys };
-    if (name) {
-      toUpdate.name = name;
-    }
+    let toUpdate = { ...validData, sys: user.sys };
+
     if (language) {
       if (language === "null") {
         toUpdate.language = null;
@@ -47,9 +45,7 @@ class UpdateUser extends PostFormDataResponseHandler {
         toUpdate.language = language;
       }
     }
-    if (volume) {
-      toUpdate.volume = volume;
-    }
+
     try {
       user = await users.update(userId, toUpdate);
     } catch (e) {

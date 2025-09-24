@@ -1,7 +1,6 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import { initAuth } from "../services/user-service.jsx"; // Adjust the import path as necessary
-
-const AuthContext = createContext(null);
+import { useState, useEffect, useContext } from "react";
+import AuthContext from "../../context/auth.js";
+import { initAuth } from "../../services/user-service.js";
 
 const LOCAL_TOKEN_KEY = "userToken";
 
@@ -9,6 +8,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(null);
+
   function logout() {
     setUser(null);
     setToken(null);

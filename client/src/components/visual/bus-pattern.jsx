@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 function BusPattern() {
   const cardWidth = 20;
   const cardHeight = 40;
-  const gapX = 4; // mezera mezi sloupci
-  const gapY = 6; // mezera mezi řádky
+  const gapX = 4; // gap between columns
+  const gapY = 6; // gap between rows
 
   const cellWidth = cardWidth + gapX;
   const cellHeight = cardHeight + gapY;
@@ -35,7 +35,7 @@ function BusPattern() {
   const rows = Math.ceil(windowSize.height / cellHeight) + 1;
 
   function renderBus(x, y, key) {
-    const busScale = 0.17; // upraveno experimentálně tak, aby měl výšku cca 40
+    const busScale = 0.17; // experimentally adjusted to have height ~40
 
     return (
       <g key={key} transform={`translate(${x}, ${y}) scale(${busScale})`}>

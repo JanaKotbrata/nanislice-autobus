@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Rnd } from "react-rnd";
 
@@ -33,7 +33,7 @@ function ModalWrapper({ children }) {
         </Rnd>
       )}
     </div>,
-    document.body
+    document.body,
   );
 }
 

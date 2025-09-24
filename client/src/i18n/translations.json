@@ -59,6 +59,26 @@
       "en": "SPECTATOR",
       "sk": "DIVÁK"
     },
+    "zoomIn": {
+      "cs": "Přiblížit",
+      "en": "Zoom in",
+      "sk": "Priblížiť"
+    },
+    "zoomOut": {
+      "cs": "Oddálit",
+      "en": "Zoom out",
+      "sk": "Oddialiť"
+    },
+    "expandAll": {
+      "cs": "Rozbalit vše",
+      "en": "Expand all",
+      "sk": "Rozbaliť všetko"
+    },
+    "collapseAll": {
+      "cs": "Sbalit vše",
+      "en": "Collapse all",
+      "sk": "Zbaliť všetko"
+    },
     "bottomBusCardNotAvailable": {
       "cs": "Ha!ha! No prostě sem nemůžeš čumět furt.",
       "en": "Haha! No peeking at the bottom card forever.",
@@ -424,6 +444,11 @@
       "en": "Preferred game language",
       "sk": "Preferovaný jazyk hry"
     },
+    "setCardStyle": {
+      "cs": "Nastavit preferovaný styl karet",
+      "en": "Set preferred card style",
+      "sk": "Nastaviť preferovaný štýl kariet"
+    },
     "setPrefLang": {
       "cs": "Nastavit preferovaný jazyk hry",
       "en": "Set preferred game language",
@@ -434,10 +459,27 @@
       "en": "Volume",
       "sk": "Hlasitosť"
     },
-    "saveVolume": {
+    "savePermanently": {
       "cs": "Uložit trvale",
       "en": "Save permanently",
       "sk": "Uložiť natrvalo"
+    },
+    "cardStyle": {
+      "unlock": {
+        "en": "Unlock at level ",
+        "cs": "Odemkne se v levelu ",
+        "sk": "Odomkne sa na levele "
+      },
+      "classic": {
+        "cs": "Klasické",
+        "en": "Classic",
+        "sk": "Klasické"
+      },
+      "witcher": {
+        "cs": "Zaklínač",
+        "en": "Witcher",
+        "sk": "Zaklínač"
+      }
     },
     "saveVolumeTitle": {
       "cs": "Po kliknutí se nastavení uloží ke tvému účtu. Pokud to neuložíš, tak se ti to po refreshi dá na defaultní hodnotu.",
@@ -509,42 +551,42 @@
       "en": "I’m not a frontend specialist, so please excuse any visual imperfections. Thanks for understanding.",
       "sk": "Nie som frontend špecialista, takže prosím ospravedlňte prípadné vizuálne nedokonalosti. Ďakujem za pochopenie."
     },
-    "firstTechnology": {
+    "technologyReact": {
       "cs": "React (včetně knihoven jako React Router a React DnD)",
       "en": "React (including libraries like React Router and React DnD)",
       "sk": "React (vrátane knižníc ako React Router a React DnD)"
     },
-    "secondTechnology": {
+    "technologyTailwind": {
       "cs": "TailwindCSS pro stylování",
       "en": "TailwindCSS for styling",
       "sk": "TailwindCSS pre štýlovanie"
     },
-    "thirdTechnology": {
+    "technologySocketio": {
       "cs": "Socket.IO pro real-time komunikaci",
       "en": "Socket.IO for real-time communication",
       "sk": "Socket.IO pre real-time komunikáciu"
     },
-    "fourthTechnology": {
+    "technologyExpress": {
       "cs": "Express.js pro backend",
       "en": "Express.js for the backend",
       "sk": "Express.js pre backend"
     },
-    "fifthTechnology": {
+    "technologyMongoDB": {
       "cs": "MongoDB pro databázi",
       "en": "MongoDB for the database",
       "sk": "MongoDB pre databázu"
     },
-    "sixthTechnology": {
+    "technologyPassport": {
       "cs": "Passport.js pro autentizaci",
       "en": "Passport.js for authentication",
       "sk": "Passport.js pre autentifikáciu"
     },
-    "seventhTechnology": {
+    "technologyAxios": {
       "cs": "Axios pro HTTP požadavky",
       "en": "Axios for HTTP requests",
       "sk": "Axios pre HTTP požiadavky"
     },
-    "eighthTechnology": {
+    "technologyJest": {
       "cs": "Jest pro testování backendu",
       "en": "Jest for backend testing",
       "sk": "Jest pre testovanie backendu"

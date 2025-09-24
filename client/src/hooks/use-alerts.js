@@ -8,6 +8,8 @@ export function useAlerts() {
   const [showDangerAlert, setShowDangerAlert] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [startAlert, setStartAlert] = useState(false);
+  // Info alert state
+  const [infoMessage, setInfoMessage] = useState("");
 
   function showErrorAlert(messageKey, message = "") {
     const translatedMessage = i18n.translate(messageKey) + message;
@@ -25,5 +27,8 @@ export function useAlerts() {
     startAlert,
     setStartAlert,
     showErrorAlert,
+    // Info alert API
+    infoMessage,
+    setInfoMessage,
   };
 }

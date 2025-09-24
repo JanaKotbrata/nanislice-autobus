@@ -1,25 +1,18 @@
-import Config from "../../../../../shared/config/config.json";
 import google from "../../../assets/google.svg";
-import Button from "../button.jsx";
+import Config from "../../../../../shared/config/config.json";
+import LoginButton from "./login-button.jsx";
 
 function GoogleLogin({ message = "", consentGiven = false, onBlockedClick }) {
-  function handleGoogleLogin(e) {
-    e.preventDefault();
-    if (!consentGiven) {
-      onBlockedClick?.();
-      return;
-    }
-    const redirectUrl = encodeURIComponent(
-      `${Config.CLIENT_URI}/auth-callback`,
-    );
-    window.location.href = `${Config.SERVER_URI}/auth/google?redirect_uri=${redirectUrl}`;
-  }
-
   return (
-    <Button onClick={handleGoogleLogin}>
-      <img className="mr-2" src={google || ""} alt="logo" />
-      <span>{message}</span>
-    </Button>
+    <LoginButton
+      message={message}
+      icon={google}
+      loginUrl={`${Config.SERVER_URI}/auth/google`}
+      consentGiven={consentGiven}
+      onBlockedClick={onBlockedClick}
+      useRedirectParam={true}
+    />
   );
 }
+
 export default GoogleLogin;

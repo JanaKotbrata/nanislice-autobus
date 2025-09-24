@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useContext } from "react";
+import { useRef, useEffect, useContext } from "react";
 import { useDrop } from "react-dnd";
 import Card from "./card.jsx";
 import SlotContext from "../../../context/slot.js";
@@ -54,7 +54,7 @@ function Slot({
           isMyselfJrInBus={isMyselfJrInBus}
           onDropCard={onDropCard}
         />
-      )
+      );
     }
   }
 

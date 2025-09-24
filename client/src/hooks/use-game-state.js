@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
 
 export function useGameState() {
+  // TODO REV - ve stavu staci jen game, zbytek se da odvodit a kdyz uz, tak by mel byt pres useRef
+  //    takze treba metoda setReady(ready) by mela menit game.playerList.find(p => p.myself).ready = ready pres setGame
   const [gameCode, setGameCode] = useState(null);
   const [game, setGame] = useState(null);
   const [ready, setReady] = useState(false);

@@ -1,10 +1,9 @@
-import React, { useState, useContext, useRef, useEffect } from "react";
+import { useState, useContext, useRef, useEffect } from "react";
 import LanguageContext from "../../context/language.js";
 import { FaMusic, FaVolumeMute } from "react-icons/fa";
 import { useAudio } from "../providers/audio-context-provider.jsx";
-import { useAuth } from "../../context/auth-context.jsx";
-import UserContext from "../../context/user.js";
-import { updateUser } from "../../services/user-service.jsx";
+import { useAuth } from "../providers/auth-context-provider.jsx";
+import { updateUser } from "../../services/user-service.js";
 
 function VolumeSettings({ size }) {
   const i18n = useContext(LanguageContext);
@@ -99,7 +98,7 @@ function VolumeSettings({ size }) {
               title={i18n.translate("saveVolumeTitle")}
               className="mt-3 w-full px-3 py-1 rounded bg-green-700 text-white hover:bg-green-800 transition"
             >
-              {i18n.translate("saveVolume")}
+              {i18n.translate("savePermanently")}
             </button>
           )}
         </div>

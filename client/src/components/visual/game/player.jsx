@@ -1,9 +1,12 @@
-import React, { useContext, useState, useRef, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
+import { useShowCounts } from "../../../hooks/use-show-counts.js";
 import GameContext from "../../../context/game.js";
 import Slot from "./slot.jsx";
 import BusSlot from "./bus-slot.jsx";
-import { getAvatar } from "../../../services/user-service.jsx";
+import { getAvatar } from "../../../services/user-service.js";
 import Avatar from "../user/avatar.jsx";
+import { SlotTargets } from "../../../../../shared/constants/game-constants.json";
+import CardCount from "./card-count.jsx";
 
 function Player({
   player,
@@ -16,8 +19,7 @@ function Player({
 }) {
   const gameContext = useContext(GameContext);
   const [expanded, setExpanded] = useState(!defaultCollapsed);
-  const [showCounts, setShowCounts] = useState(false);
-  const countTimeoutRef = useRef(null);
+  const [showCounts, triggerShowCounts] = useShowCounts();
   const avatarUri = getAvatar(
     player.userId,
     player.rev || gameContext.gameCode,
@@ -39,23 +41,16 @@ function Player({
   }
 
   function handleShowCountsTemporary() {
-    setShowCounts(true);
-    if (countTimeoutRef.current) {
-      clearTimeout(countTimeoutRef.current);
-    }
-    countTimeoutRef.current = setTimeout(() => {
-      setShowCounts(false);
-    }, 2000);
+    triggerShowCounts();
   }
 
-  // FIX: sync expanded state with defaultCollapsed both ways
   useEffect(() => {
     setExpanded(!defaultCollapsed);
   }, [defaultCollapsed]);
 
   return (
     <div
-      id={`player_${player.userId}`}
+      id={`${SlotTargets.PLAYER}${player.userId}`}
       className={`w-full transition-all duration-300 ease-in-out rounded-xl border-b border-gray-600
         ${isActivePlayer ? "bg-gray-900 animate-[pulse_5s_ease-in-out_infinite]" : "bg-gray-800 hover:bg-gray-700"}`}
     >
@@ -99,7 +94,7 @@ function Player({
               onDropCard={(card) => {
                 gameContext.moveCardToBus(card);
               }}
-              prefix={`player_bus_${player.userId}_`}
+              prefix={`${SlotTargets.PLAYER_BUS}${player.userId}_`}
               count={player?.bus?.length}
               bottomCard={bottomCard}
               isDraggable={isDraggable}
@@ -113,24 +108,15 @@ function Player({
               {player?.busStop?.map((slot, index) => (
                 <div
                   className="relative group"
-                  key={`player_slot_${index}`}
+                  key={`${SlotTargets.PLAYER_SLOT}${index}`}
                   onClick={handleShowCountsTemporary}
                 >
-                  <div
-                    className={`absolute top-1 left-1 text-[0.6rem] bg-red-500 text-white px-1 rounded transition-opacity duration-200 z-30
-                      ${
-                        showCounts
-                          ? "opacity-100 visible"
-                          : "opacity-0 invisible group-hover:opacity-100 group-hover:visible"
-                      }`}
-                  >
-                    {slot.length}
-                  </div>
+                  <CardCount count={slot.length} show={showCounts} />
                   <Slot
                     card={slot[slot.length - 1]}
                     index={index}
                     {...extraProps}
-                    prefix={`player_slot_${player.userId}_`}
+                    prefix={`${SlotTargets.PLAYER_SLOT}${player.userId}_`}
                     isDraggable={isDraggable}
                     isMyself={isMyself}
                     isMyselfJrInBus={isMyselfJrInBus}

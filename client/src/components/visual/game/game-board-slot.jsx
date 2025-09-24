@@ -1,5 +1,5 @@
 import Slot from "./slot.jsx";
-import React, { forwardRef } from "react";
+import { forwardRef } from "react";
 
 const GameBoardSlot = forwardRef(
   ({ id, card, onDropCard, index, packLength }, ref) => {
@@ -19,5 +19,7 @@ const GameBoardSlot = forwardRef(
     );
   },
 );
+
+GameBoardSlot.displayName = "GameBoardSlot";
 
 export default GameBoardSlot;

@@ -13,7 +13,10 @@ const {
   States,
   MAX_ATTEMPTS,
 } = require("../../../../shared/constants/game-constants");
-const { transformCurrentPlayerData } = require("../../services/game-service");
+const {
+  transformCurrentPlayerData,
+  getPlayersNotFinishedGame,
+} = require("../../services/game-service");
 const games = new GamesRepository();
 
 class CreateGame extends AuthenticatedPostResponseHandler {
@@ -25,10 +28,9 @@ class CreateGame extends AuthenticatedPostResponseHandler {
     const { user } = await validateAndGetUser(req, schema);
     const userId = user.id;
 
-    const activeGameWithUser = await games.findNotClosedGameByUserId(userId);
-    if (activeGameWithUser) {
-      transformCurrentPlayerData(activeGameWithUser, userId);
-      return { ...activeGameWithUser };
+    const existingGame = await getPlayersNotFinishedGame(userId);
+    if (existingGame) {
+      return { ...existingGame };
     }
 
     try {

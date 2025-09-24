@@ -12,7 +12,10 @@ const deleteUser = Joi.object().keys({
   userId: id.required(),
 });
 const tDelete = Joi.object().keys({});
-const getAvatar = Joi.object().keys({ userId: id.required(), cacheBreaker: Joi.string().optional() });
+const getAvatar = Joi.object().keys({
+  userId: id.required(),
+  cacheBreaker: Joi.string().optional(),
+});
 const update = Joi.object()
   .keys({
     userId: id,
@@ -20,6 +23,7 @@ const update = Joi.object()
     language: Joi.string().valid("cs", "sk", "en", "null").optional(),
     picture: Joi.string().optional(),
     volume: Joi.number().optional(),
+    cardStyle: Joi.string().optional(),
   })
-  .or("name", "picture", "language", "volume");
+  .or("name", "picture", "language", "volume", "cardStyle");
 module.exports = { list, update, deleteUser, getAvatar, tDelete };

@@ -1,23 +1,16 @@
-import React from "react";
-import Button from "../button.jsx";
 import seznam from "../../../assets/seznam-cz.png";
 import Config from "../../../../../shared/config/config.json";
+import LoginButton from "./login-button.jsx";
 
 function SeznamLogin({ message = "", consentGiven = false, onBlockedClick }) {
-  function handleSeznamLogin(e) {
-    e.preventDefault();
-    if (!consentGiven) {
-      onBlockedClick?.();
-      return;
-    }
-    window.location.href = `${Config.SERVER_URI}/auth/seznam`;
-  }
-
   return (
-    <Button onClick={(e) => handleSeznamLogin(e)}>
-      <img className="mr-2" src={seznam} alt="logo" />
-      <span>{message}</span>
-    </Button>
+    <LoginButton
+      message={message}
+      icon={seznam}
+      loginUrl={`${Config.SERVER_URI}/auth/seznam`}
+      consentGiven={consentGiven}
+      onBlockedClick={onBlockedClick}
+    />
   );
 }
 

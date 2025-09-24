@@ -1,5 +1,3 @@
-import React from "react";
-
 function InfoAlert({ message, onClose }) {
   return (
     <div

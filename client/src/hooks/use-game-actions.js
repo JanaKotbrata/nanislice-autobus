@@ -1,5 +1,4 @@
-import { useAuth } from "../context/auth-context.jsx";
-import { useGameState } from "./use-game-state";
+import { useAuth } from "../components/providers/auth-context-provider.jsx";
 import { useAudio } from "../components/providers/audio-context-provider.jsx";
 import { processAction } from "../services/game-service";
 
@@ -16,7 +15,11 @@ export function useGameActions(setContextGame) {
     playSound("/sounds/playing-card.mp3");
   }
 
-  function updateGameServerStateAnimated(actionData, action, animationCallback) {
+  function updateGameServerStateAnimated(
+    actionData,
+    action,
+    animationCallback,
+  ) {
     if (!animationCallback) {
       console.error("Invalid animationPromise provided.");
       return;
@@ -35,6 +38,6 @@ export function useGameActions(setContextGame) {
 
   return {
     updateGameServerState,
-    updateGameServerStateAnimated
+    updateGameServerStateAnimated,
   };
 }

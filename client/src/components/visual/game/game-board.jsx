@@ -1,11 +1,7 @@
-import React, { useContext, useRef, useEffect, useState } from "react";
+import { useContext, useRef, useEffect, useState } from "react";
 import CardPack from "./card-pack.jsx";
 import GameContext from "../../../context/game.js";
 import { useAlertContext } from "../../providers/alert-context-provider.jsx";
-import {
-  canPlaceOnGBPack,
-  canPlaceOnGameBoard,
-} from "../../../services/game-validation";
 import DangerAlert from "../alerts/danger-alert.jsx";
 import GameBoardSlot from "./game-board-slot.jsx";
 import LanguageContext from "../../../context/language.js";
@@ -13,19 +9,16 @@ import Hand from "./hand.jsx";
 import CardAnimationContext from "../../../context/card-animation.js";
 import { handleSocketAnimation } from "../../../utils/animation-utils.js";
 import { useAudio } from "../../providers/audio-context-provider.jsx";
-import { Bg } from "../../../../../shared/constants/game-constants.json";
-
-function getSlotCoordinates(slotId) {
-  const slotElement = document.getElementById(slotId);
-  if (!slotElement) return null;
-  const slotRect = slotElement.getBoundingClientRect();
-  return { top: slotRect.top, left: slotRect.left };
-}
+import {
+  Bg,
+  SlotTargets,
+} from "../../../../../shared/constants/game-constants.json";
+import { getSlotCoordinates } from "../../../utils/slot-coordinates.js";
 
 function GameBoard({ player }) {
   const i18n = useContext(LanguageContext);
   const gameContext = useContext(GameContext);
-  const { showDangerAlert, errorMessage, setShowDangerAlert, showErrorAlert } =
+  const { showDangerAlert, errorMessage, setShowDangerAlert } =
     useAlertContext();
   const cardAnimationContext = useContext(CardAnimationContext);
   const { playSound } = useAudio();
@@ -55,8 +48,10 @@ function GameBoard({ player }) {
     prevBoard.forEach((prevPack, index) => {
       const currentPack = currentBoard[index];
       if (prevPack?.length === 12 && currentPack?.length === 13) {
-        const from = getSlotCoordinates(`gb_card_${index}`);
-        const to = getSlotCoordinates("completed_cardpack_deck");
+        const from = getSlotCoordinates(
+          `${SlotTargets.GAMEBOARD_CARD}${index}`,
+        );
+        const to = getSlotCoordinates(SlotTargets.COMPLETED_CARDPACK_DECK);
         const card = currentPack[currentPack.length - 1];
         const animation = {
           top: to.top,
@@ -89,10 +84,10 @@ function GameBoard({ player }) {
       animationPromiseResolver(); // resolve the promise to not block anything
       return;
     }
-    const from = getSlotCoordinates(`cardpack_deck`);
+    const from = getSlotCoordinates(SlotTargets.CARDPACK_DECK);
     let to;
     for (let i = 0; i < 5; i++) {
-      to = getSlotCoordinates(`empty_hand_${i}`);
+      to = getSlotCoordinates(`${SlotTargets.EMPTY_HAND}${i}`);
       if (to) break;
     }
     const animation = {
@@ -128,54 +123,13 @@ function GameBoard({ player }) {
     );
   }
 
-  // Validace před voláním addToPack
+  // Validation before calling addToPack
   function handleAddToPack(card, targetIndex) {
-    const allPlayers = gameContext.players;
-    const currentPlayer = allPlayers?.[gameContext.currentPlayer];
-    const myPlayer = allPlayers?.find((p) => p.myself);
-    if (!currentPlayer || !myPlayer) {
-      showErrorAlert("notYourTurn");
-      return;
-    }
-    if (!currentPlayer.myself) {
-      showErrorAlert("notYourTurn");
-      return;
-    }
-    if (myPlayer.isCardDrawed === false) {
-      showErrorAlert("drawCard");
-      return;
-    }
-    if (
-      !canPlaceOnGBPack(
-        card,
-        gameContext.gameBoard,
-        targetIndex,
-        myPlayer?.bus?.[0],
-        showErrorAlert,
-      )
-    )
-      return;
     gameContext.addToPack(card, targetIndex);
   }
 
-  // Validace před voláním startNewPack
+  // Validation before calling startNewPack
   function handleStartNewPack(card) {
-    const allPlayers = gameContext.players;
-    const currentPlayer = allPlayers?.[gameContext.currentPlayer];
-    const myPlayer = allPlayers?.find((p) => p.myself);
-    if (!currentPlayer || !myPlayer) {
-      showErrorAlert("notYourTurn");
-      return;
-    }
-    if (!currentPlayer.myself) {
-      showErrorAlert("notYourTurn");
-      return;
-    }
-    if (myPlayer.isCardDrawed === false) {
-      showErrorAlert("drawCard");
-      return;
-    }
-    if (!canPlaceOnGameBoard(card, myPlayer?.bus?.[0], showErrorAlert)) return;
     gameContext.startNewPack(card);
   }
 
@@ -195,11 +149,12 @@ function GameBoard({ player }) {
           />
           <div
             className="absolute right-0"
-            id="completed_cardpack_deck"
+            id={SlotTargets.COMPLETED_CARDPACK_DECK}
             style={{ transform: "rotate(25deg)" }}
           >
             {completedCardLength > 0 ? (
               <CardPack
+                id={"ahoj"}
                 bg={
                   gameContext.game.completedCardList[completedCardLength - 1]
                     ?.bg
@@ -224,8 +179,8 @@ function GameBoard({ player }) {
             const card = pack[pack.length - 1];
             return (
               <GameBoardSlot
-                id={`gb_card_${index}`}
-                key={`gb_card_${card.i}`}
+                id={`${SlotTargets.GAMEBOARD_CARD}${index}`}
+                key={`${SlotTargets.GAMEBOARD_CARD}${card.i}`}
                 index={index}
                 card={card}
                 onDropCard={handleAddToPack}
@@ -235,8 +190,8 @@ function GameBoard({ player }) {
             );
           })}
           <GameBoardSlot
-            id={`gb_nocard_`}
-            key={`gb_nocard_${gameContext.gameBoard.length}`}
+            id={SlotTargets.GAMEBOARD_NO_CARD}
+            key={`${SlotTargets.GAMEBOARD_NO_CARD}${gameContext.gameBoard.length}`}
             index={gameContext.gameBoard.length}
             onDropCard={handleStartNewPack}
           />

@@ -1,11 +1,11 @@
-import React, {useRef, useState} from "react";
+import { useRef, useState } from "react";
 import SlotContext from "../../context/slot.js";
 
 function SlotContextProvider({ children }) {
   const slotRefs = useRef({});
   const [activeSlot, setActiveSlot] = useState(null);
 
-  const setSlotRef = (lookupIndex, index, el, handler) => {
+  function setSlotRef(lookupIndex, index, el, handler) {
     if (el) {
       slotRefs.current[lookupIndex] = {
         index,
@@ -14,37 +14,48 @@ function SlotContextProvider({ children }) {
         rect: el.getBoundingClientRect(),
       };
     }
-  };
+  }
 
-  const unsetSlotRef = (lookupIndex) => {
+  function unsetSlotRef(lookupIndex) {
     if (slotRefs.current[lookupIndex]) {
       delete slotRefs.current[lookupIndex];
     }
   }
 
-  const getActiveSlot = () => activeSlot
+  function getActiveSlot() {
+    return activeSlot;
+  }
 
-  const safeSetActiveSlot = (lookupIndex) => {
+  function safeSetActiveSlot(lookupIndex) {
     if (lookupIndex !== activeSlot) {
       setActiveSlot(lookupIndex);
     }
   }
 
-  const getSlotRects = () => Object.entries(slotRefs.current)
-  .map(([lookupIndex, slot]) => {
-    if (!slot?.el) return null;
-    return {
-      index: slot.index,
-      lookupIndex,
-      handler: slot.handler,
-      rect: slot.el.getBoundingClientRect(),
-    };
-  })
-  .filter(Boolean)
-
+  function getSlotRects() {
+    return Object.entries(slotRefs.current)
+      .map(([lookupIndex, slot]) => {
+        if (!slot?.el) return null;
+        return {
+          index: slot.index,
+          lookupIndex,
+          handler: slot.handler,
+          rect: slot.el.getBoundingClientRect(),
+        };
+      })
+      .filter(Boolean);
+  }
 
   return (
-    <SlotContext.Provider value={{ setSlotRef, getSlotRects, unsetSlotRef, getActiveSlot, setActiveSlot:safeSetActiveSlot }}>
+    <SlotContext.Provider
+      value={{
+        setSlotRef,
+        getSlotRects,
+        unsetSlotRef,
+        getActiveSlot,
+        setActiveSlot: safeSetActiveSlot,
+      }}
+    >
       {children}
     </SlotContext.Provider>
   );

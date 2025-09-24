@@ -1,12 +1,16 @@
-import React, { createContext, useContext } from "react";
+import { useContext } from "react";
 import { useAlerts } from "../../hooks/use-alerts.js";
-
-const AlertContext = createContext();
+import AlertContext from "../../context/alert.js";
 
 export function AlertContextProvider({ children }) {
   const alert = useAlerts();
+
+  const alertValue = {
+    ...alert,
+  };
+
   return (
-    <AlertContext.Provider value={alert}>{children}</AlertContext.Provider>
+    <AlertContext.Provider value={alertValue}>{children}</AlertContext.Provider>
   );
 }
 

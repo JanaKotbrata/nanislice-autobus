@@ -1,18 +1,19 @@
 import { FaSignOutAlt } from "react-icons/fa";
-import React, { useContext, useState } from "react";
-import { useAuth } from "../../../context/auth-context.jsx";
-import { logOut } from "../../../services/user-service.jsx";
+import { useContext, useState } from "react";
+import { useAuth } from "../../providers/auth-context-provider.jsx";
+import { logOut } from "../../../services/user-service.js";
 import LogOutAlert from "../alerts/log-out-alert.jsx";
 import LanguageContext from "../../../context/language.js";
 
 function LogOut({ size }) {
   const i18n = useContext(LanguageContext);
-  const { token } = useAuth();
+  const { token, logout } = useAuth();
   const [showAlert, setShowAlert] = useState(false);
 
   function handleLogOut() {
     logOut({}, token)
       .then(() => {
+        logout();
         window.location.href = "/";
       })
       .catch((err) => console.error(err));

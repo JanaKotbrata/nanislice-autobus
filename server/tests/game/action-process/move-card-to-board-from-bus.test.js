@@ -39,7 +39,7 @@ describe("POST /game/action/process - move card to board from bus", () => {
         gameCode: mockGame.code,
         targetIndex,
         action: GameActions.MOVE_CARD_TO_BOARD_FROM_BUS,
-        card: mockGame.playerList[1].bus[mockGame.playerList[1].bus.length - 1],
+        card: mockGame.playerList[1].bus[0],
       },
     );
 

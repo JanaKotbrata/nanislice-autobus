@@ -2,7 +2,11 @@ const gameRules = require("../../../shared/validation/game-rules.js");
 const GameRulesErrors = require("../../../shared/constants/game-rules-errors.json");
 const GameErrors = require("../errors/game/game-errors");
 const GameActions = require("../../../shared/constants/game-actions.json");
-const Constants = require("../../../shared/constants/game-constants.json");
+const {
+  SlotTargets,
+  States,
+  RANK_CARD_ORDER,
+} = require("../../../shared/constants/game-constants.json");
 /**
  * Server-side implementation of game rules, extending CommonGameRules.
  * Handles validation, player actions, and game state transitions for the server.
@@ -40,6 +44,10 @@ class ServerGameRules extends gameRules.CommonGameRules {
       [GameRulesErrors.InvalidHandLength]: GameErrors.InvalidHandLength,
       [GameRulesErrors.NotPossibleToDraw]: GameErrors.NotPossibleToDraw,
       [GameRulesErrors.ActionIsNotDefined]: GameErrors.ActionIsNotDefined,
+      [GameRulesErrors.BusJrFirst]: GameErrors.InvalidCardInGameBoard,
+      [GameRulesErrors.FirstPlaceError]: GameErrors.InvalidCardInGameBoard,
+      [GameRulesErrors.PlaceRankError]: GameErrors.InvalidCardInGameBoard,
+      [GameRulesErrors.InvalidBusCard]: GameErrors.InvalidBusCard,
     };
     const ErrorClass = errorsMapping[errorKey];
     if (!ErrorClass) {
@@ -60,7 +68,7 @@ class ServerGameRules extends gameRules.CommonGameRules {
     const actualCardsInHand = super.drawCard({ myself });
     const newCard = this.game.deck.pop();
     this.#drawCard(myself.hand, newCard);
-    this.target = "hand";
+    this.target = SlotTargets.HAND;
     if (actualCardsInHand.length + 1 === 5) {
       myself.isCardDrawed = true;
     }
@@ -100,14 +108,14 @@ class ServerGameRules extends gameRules.CommonGameRules {
 
   moveCardToBoard({ myself, targetIndex, card }) {
     super.moveCardToBoard({ myself, targetIndex, card });
-    this.target = `gb_card_${targetIndex}`;
+    this.target = `${SlotTargets.GAMEBOARD_CARD}${targetIndex}`;
     this.#setPlayerToDraw(myself);
     this.#completeCardList(this.game, targetIndex);
   }
 
   moveCardToBoardFromBus({ myself, targetIndex, card }) {
     super.moveCardToBoardFromBus({ myself, targetIndex, card });
-    this.target = `gb_card_${targetIndex}`;
+    this.target = `${SlotTargets.GAMEBOARD_CARD}${targetIndex}`;
     //if the destination is full, move cards to completedCardList
     this.#completeCardList(this.game, targetIndex);
     this.checkEndOfGame(myself);
@@ -115,14 +123,14 @@ class ServerGameRules extends gameRules.CommonGameRules {
 
   moveCardToBoardFromBusStop({ myself, targetIndex, card }) {
     super.moveCardToBoardFromBusStop({ myself, targetIndex, card });
-    this.target = `gb_card_${targetIndex}`;
+    this.target = `${SlotTargets.GAMEBOARD_CARD}${targetIndex}`;
     //if the destination is full, move cards to completedCardList
     this.#completeCardList(this.game, targetIndex);
   }
 
   checkEndOfGame(myself) {
     if (myself.bus.length === 0) {
-      this.game.state = Constants.States.FINISHED;
+      this.game.state = States.FINISHED;
       this.game.winner = myself.userId;
       this.xp = 100;
     }
@@ -146,9 +154,7 @@ class ServerGameRules extends gameRules.CommonGameRules {
   }
 
   #completeCardList(newGame, targetIndex) {
-    if (
-      newGame.gameBoard[targetIndex].length === Constants.RANK_CARD_ORDER.length
-    ) {
+    if (newGame.gameBoard[targetIndex].length === RANK_CARD_ORDER.length) {
       newGame.completedCardList = newGame.completedCardList || [];
       newGame.completedCardList = [
         ...newGame.completedCardList,

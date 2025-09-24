@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { FaCheck, FaTimes } from "react-icons/fa";
 import ModalWrapper from "./modal-wrapper.jsx";
 import BaseAlert from "./base-alert.jsx";

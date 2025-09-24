@@ -1,12 +1,6 @@
-import { Bg } from "../../../shared/constants/game-constants.json";
+import { Bg, SlotTargets } from "../../../shared/constants/game-constants.json";
 const ANIMATION_DURATION = 1000;
-
-export function getSlotCoordinates(slotId) {
-  const slotElement = document.getElementById(slotId);
-  if (!slotElement) return null;
-  const rect = slotElement.getBoundingClientRect();
-  return { top: rect.top, left: rect.left };
-}
+import { getSlotCoordinates } from "./slot-coordinates.js";
 
 export function handleSocketAnimation(
   cardAnimationContext,
@@ -27,8 +21,8 @@ export function handleSocketAnimation(
   let coords, originCoords, bg;
 
   if (isShuffled) {
-    originCoords = getSlotCoordinates("completed_cardpack_deck");
-    coords = getSlotCoordinates("cardpack_deck");
+    originCoords = getSlotCoordinates(SlotTargets.COMPLETED_CARDPACK_DECK);
+    coords = getSlotCoordinates(SlotTargets.CARDPACK_DECK);
     const completedList = gameContext?.game?.completedCardList || [];
     bg = completedList[completedList.length - 1]?.bg;
     duration /= 2;
@@ -52,8 +46,10 @@ export function handleSocketAnimation(
   let finishedPackAnimation;
   if (finishedPackIndex !== null) {
     duration /= 2;
-    originCoords = getSlotCoordinates(`gb_card_${finishedPackIndex}`);
-    coords = getSlotCoordinates("completed_cardpack_deck");
+    originCoords = getSlotCoordinates(
+      `${SlotTargets.GAMEBOARD_CARD}${finishedPackIndex}`,
+    );
+    coords = getSlotCoordinates(SlotTargets.COMPLETED_CARDPACK_DECK);
     const finishedPack = gameContext?.game?.gameBoard || [];
     bg = finishedPack[0]?.bg || Bg.BLUE;
 
@@ -70,13 +66,13 @@ export function handleSocketAnimation(
   }
 
   coords = getSlotCoordinates(
-    target === "hand" ? `player_${actionBy}` : target,
+    target === SlotTargets.HAND ? `${SlotTargets.PLAYER}${actionBy}` : target,
   );
-  originCoords = getSlotCoordinates(`player_${actionBy}`);
+  originCoords = getSlotCoordinates(`${SlotTargets.PLAYER}${actionBy}`);
 
-  if (target === "hand") {
+  if (target === SlotTargets.HAND) {
     bg = gameContext?.deck?.[gameContext?.deck?.length - 1]?.bg;
-    originCoords = getSlotCoordinates("cardpack_deck");
+    originCoords = getSlotCoordinates(SlotTargets.CARDPACK_DECK);
   }
 
   if (coords && originCoords) {

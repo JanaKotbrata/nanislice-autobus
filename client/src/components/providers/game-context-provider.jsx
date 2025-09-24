@@ -1,23 +1,17 @@
-import React, {useEffect, useRef} from "react";
+import { useEffect, useRef } from "react";
 import GameContext from "../../context/game";
 import GameActions from "../../../../shared/constants/game-actions.json";
 import { getGame, setPlayer } from "../../services/game-service";
-import {
-  getPlayerAndValid,
-} from "../../services/game-validation";
 import { useNavigate } from "react-router-dom";
 import { useGameState } from "../../hooks/use-game-state";
 import { useGameActions } from "../../hooks/use-game-actions";
 
-import {
-  isCardInSource,
-} from "../../utils/card-utils";
-import { maxHandSize } from "../../constants/game";
-import { useAuth } from "../../context/auth-context.jsx";
+import { isCardInSource } from "../../utils/card-utils";
+import { useAuth } from "./auth-context-provider.jsx";
 
 import { useAlertContext } from "./alert-context-provider.jsx";
-import {ClientGameRules} from "../../services/game-rules.js";
-import {GameError} from "../../errors/game-error.js";
+import { ClientGameRules } from "../../services/game-rules.js";
+import { GameError } from "../../errors/game-error.js";
 
 function GameContextProvider({ children }) {
   const {
@@ -33,7 +27,8 @@ function GameContextProvider({ children }) {
     setContextGame,
   } = useGameState();
 
-  const { updateGameServerState, updateGameServerStateAnimated } = useGameActions(setContextGame);
+  const { updateGameServerState, updateGameServerStateAnimated } =
+    useGameActions(setContextGame);
 
   const { showErrorAlert } = useAlertContext();
   const { token, user } = useAuth();
@@ -46,7 +41,7 @@ function GameContextProvider({ children }) {
   const gameState = game?.state;
 
   // keep track of temporary cards during draw animation
-  const tempCardListRef = useRef([null, null, null, null, null])
+  const tempCardListRef = useRef([null, null, null, null, null]);
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -54,7 +49,7 @@ function GameContextProvider({ children }) {
         const fetchedGame = await getGame({ code: gameCode }, token);
         setContextGame(fetchedGame);
       } catch (err) {
-        console.error("Nepodařilo se načíst hru:", err);
+        console.error("Failed to load game:", err);
         navigate("/");
       }
     };
@@ -64,6 +59,7 @@ function GameContextProvider({ children }) {
   }, [gameCode]);
 
   function handleToggle(field, setter, forceValue = null) {
+    // TODO na tohle se podivat vic
     const current = field === "ready" ? ready : nextGame;
     const newValue = forceValue !== null ? forceValue : !current;
 
@@ -81,7 +77,7 @@ function GameContextProvider({ children }) {
         setContextGame(updatedGame);
       })
       .catch((err) => {
-        console.error(`Chyba při nastavení ${field}:`, err);
+        console.error(`Error setting ${field}:`, err);
         setter(current);
         updateMyselfInGame({ [field]: current });
       });
@@ -112,19 +108,23 @@ function GameContextProvider({ children }) {
    * Handles drawing a card for the current player, including validation and state update.
    */
   function drawCard(animationPromise = null) {
-    const myself = getPlayerAndValid(players, currentPlayer, showErrorAlert);
-    if (!myself || myself.isCardDrawed) {
-      if (myself?.isCardDrawed) showErrorAlert("notPossibleDraw");
-      return null;
-    }
+    const { newGame, myself } = performAction(GameActions.DRAW_CARD, {
+      userId: user.id,
+    });
+    if (!newGame) return; // action failed
+
     const handLength = myself.hand.filter((c) => c.rank).length;
-    if (handLength >= maxHandSize) return null;
 
     // altering instance so setState in updateMyselfInGame updates the gameDeck as well to have the proper card removed
     const deckCard = gameDeck.pop();
 
     // the i is different per each drawn card to make them unique in the hand
-    const newCard = { i: -1-handLength, rank: "počkej", suit: "na mě", bg: deckCard.bg };
+    const newCard = {
+      i: -1 - handLength,
+      rank: "počkej",
+      suit: "na mě",
+      bg: deckCard.bg,
+    };
     const newHand = [...myself.hand];
     const index = newHand.findIndex((c) => !c.rank);
     if (index !== -1) newHand[index] = newCard;
@@ -136,10 +136,11 @@ function GameContextProvider({ children }) {
     const hasCardToDraw = newHand.some((c) => !c.rank);
 
     updateMyselfInGame({ hand: newHand, isCardDrawed: !hasCardToDraw });
+
     async function setupCardsBeforeUpdate(newGame) {
       // wait for the animation to finish before updating the game state with the new cards to prevent blinking of the cards
       await animationPromise;
-      const myself = getPlayerAndValid(newGame.playerList, currentPlayer, showErrorAlert);
+      const myself = newGame.playerList.find((player) => player.myself);
       // inject temp cards into the new game state where the real cards are missing
       for (const idx in myself.hand) {
         if (!myself.hand[idx].rank && tempCardListRef.current[idx]) {
@@ -154,7 +155,12 @@ function GameContextProvider({ children }) {
       myself.isCardDrawed = !hasCardToDraw;
       return newGame;
     }
-    updateGameServerStateAnimated({ gameCode  }, GameActions.DRAW_CARD, setupCardsBeforeUpdate);
+
+    updateGameServerStateAnimated(
+      { gameCode },
+      GameActions.DRAW_CARD,
+      setupCardsBeforeUpdate,
+    );
     // return a stub card for immediate UI feedback (mainly the back color of the card)
     return deckCard;
   }
@@ -164,13 +170,19 @@ function GameContextProvider({ children }) {
    * @param {Object} card - The card to start the new pack with.
    */
   function startNewPack(card) {
-    const myself = players.find((player) => player.myself)
+    const myself = players.find((player) => player.myself);
     if (!myself) return;
 
     if (isCardInSource(card, myself.hand)) {
-      performAction(GameActions.START_NEW_PACK, {card, userId: user.id});
+      performActionAndSave(GameActions.START_NEW_PACK, {
+        card,
+        userId: user.id,
+      });
     } else if (isCardInSource(card, myself.bus)) {
-      performAction(GameActions.START_NEW_PACK_FROM_BUS, {card, userId: user.id});
+      performActionAndSave(GameActions.START_NEW_PACK_FROM_BUS, {
+        card,
+        userId: user.id,
+      });
     }
   }
 
@@ -179,26 +191,45 @@ function GameContextProvider({ children }) {
     const myself = game.playerList.find((player) => player.myself);
     let newGame;
     try {
-      newGame = gameRules.performAction(action, {myself, ...params});
+      newGame = gameRules.performAction(action, { myself, ...params });
     } catch (e) {
       if (e instanceof GameError) {
-        showErrorAlert(e.code, ...e.params)
+        showErrorAlert(e.code, ...e.params);
       } else {
         console.error(e);
       }
-
-      return;
+      return {};
     }
+    return { newGame, gameRules, myself };
+  }
+
+  function performActionAndSave(action, params) {
+    const { newGame, gameRules } = performAction(action, params);
+    if (!newGame) return; // failed to perform action
     setContextGame(newGame);
-    updateGameServerState({ card: params.card, gameCode, ...{ targetIndex: params.targetIndex, hand: gameRules.hand } }, action)
+    updateGameServerState(
+      {
+        card: params.card,
+        gameCode,
+        ...{ targetIndex: params.targetIndex, hand: gameRules.hand },
+      },
+      action,
+    );
   }
 
   function moveCardToBus(card) {
-    performAction(GameActions.MOVE_CARD_TO_BUS, {card, userId: user.id});
+    performActionAndSave(GameActions.MOVE_CARD_TO_BUS, {
+      card,
+      userId: user.id,
+    });
   }
 
   function moveCardToBusStop(card, targetIndex) {
-    performAction(GameActions.MOVE_CARD_TO_BUS_STOP, {card, targetIndex, userId: user.id});
+    performActionAndSave(GameActions.MOVE_CARD_TO_BUS_STOP, {
+      card,
+      targetIndex,
+      userId: user.id,
+    });
   }
 
   /**
@@ -207,20 +238,35 @@ function GameContextProvider({ children }) {
    * @param {number} targetIndex - The index of the target pack.
    */
   function addToPack(card, targetIndex) {
-    const myself = players.find((player) => player.myself)
+    const myself = players.find((player) => player.myself);
     if (!myself) return;
 
     if (isCardInSource(card, myself.hand)) {
-      performAction(GameActions.MOVE_CARD_TO_BOARD, {card, targetIndex, userId: user.id});
+      performActionAndSave(GameActions.MOVE_CARD_TO_BOARD, {
+        card,
+        targetIndex,
+        userId: user.id,
+      });
     } else if (isCardInSource(card, myself.bus)) {
-      performAction(GameActions.MOVE_CARD_TO_BOARD_FROM_BUS, {card, targetIndex, userId: user.id});
+      performActionAndSave(GameActions.MOVE_CARD_TO_BOARD_FROM_BUS, {
+        card,
+        targetIndex,
+        userId: user.id,
+      });
     } else if (isCardInSource(card, myself.busStop)) {
-      performAction(GameActions.MOVE_CARD_TO_BOARD_FROM_BUS_STOP, {card, targetIndex, userId: user.id});
+      performActionAndSave(GameActions.MOVE_CARD_TO_BOARD_FROM_BUS_STOP, {
+        card,
+        targetIndex,
+        userId: user.id,
+      });
     }
   }
 
   function reorderHand(card, newIndex) {
-    performAction(GameActions.REORDER_HAND, {card, targetIndex: newIndex});
+    performActionAndSave(GameActions.REORDER_HAND, {
+      card,
+      targetIndex: newIndex,
+    });
   }
 
   function viewBusBottomCard() {

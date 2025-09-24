@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@import "./styles/card.css";
 #root {
   width: 100vw;
   height: 100vh;
@@ -13,103 +13,23 @@
     z-index: 1;
 }
 
-.card {
-  padding: 0.5em;
-}
 
 .logo {
   will-change: filter;
   transition: filter 300ms;
 }
 .board {
-  background-color: #3d5336;
-  background-image: repeating-linear-gradient(
-          45deg,
-          rgba(255, 255, 255, 0.045) 0px,
-          rgba(255, 255, 255, 0.045) 1px,
-          transparent 2px,
-          transparent 6px
-  );
-  background-blend-mode: overlay;
-  color: white;
-}
-.back-card-red {
-    border: #ede2e2 4px solid;
-    background-image:
-            repeating-linear-gradient(
-            45deg,
-            #A10404FF 0px,
-            #ca0909 1px,
-            transparent 1px,
-            transparent 2px
-    ),
-            repeating-linear-gradient(
-                    -45deg,
-                    #ffffff 0px,
-                    #ffffff 0px,
-                    transparent 1px,
-                    transparent 1px
-            ),
-    repeating-linear-gradient(
-            -45deg,
-            #500101 0px,
-            #aa2727 1px,
-            transparent 1px,
-            transparent 2px
-    ),
-    repeating-linear-gradient(
-            45deg,
-            #A10404FF 0px,
-            #A10404FF 2px,
-            transparent 2px,
-            transparent 12px
-    ),
-    repeating-linear-gradient(
-            -45deg,
-            #A10404FF 0px,
-            #A10404FF 2px,
-            transparent 2px,
-            transparent 12px
-    )
-}
-.back-card-blue {
-    border: #ede2e2 4px solid;
-    background-image:
-            repeating-linear-gradient(
-                    45deg,
-                    #1432b6 0px,
-                    #2548e1 1px,
-                    transparent 1px,
-                    transparent 2px
-            ),
-            repeating-linear-gradient(
-                    -45deg,
-                    #ffffff 0px,
-                    #ffffff 0px,
-                    transparent 1px,
-                    transparent 1px
-            ),
-            repeating-linear-gradient(
-                    -45deg,
-                    #02135e 0px,
-                    #1c84c6 1px,
-                    transparent 1px,
-                    transparent 2px
-            ),
-            repeating-linear-gradient(
-                    45deg,
-                    #1432b6 0px,
-                    #1432b6 2px,
-                    transparent 2px,
-                    transparent 12px
-            ),
-            repeating-linear-gradient(
-                    -45deg,
-                    #1432b6 0px,
-                    #1432b6 2px,
-                    transparent 2px,
-                    transparent 12px
-            )
+        background-color: #3d5336;
+        background-image: repeating-linear-gradient(
+                                        45deg,
+                                        rgba(255, 255, 255, 0.045) 0px,
+                                        rgba(255, 255, 255, 0.045) 1px,
+                                        transparent 2px,
+                                        transparent 6px
+        );
+        background-blend-mode: overlay;
+        color: white;
+        overflow: hidden;
 }
 
 .game {

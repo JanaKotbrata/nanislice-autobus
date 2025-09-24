@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef, useEffect } from "react";
+import { useState, useContext, useRef, useEffect } from "react";
 import LanguageContext from "../../context/language.js";
 import { FaLanguage } from "react-icons/fa6";
 

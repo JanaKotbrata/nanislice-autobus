@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import LanguageContext from "../../context/language.js";
 
 function Instructions() {
@@ -18,7 +18,7 @@ function Instructions() {
     slideRef.current = currentSlide;
   }, [currentSlide]);
 
-  // Automatické slidování
+  // Automatic sliding
   useEffect(() => {
     const interval = setInterval(() => {
       const nextSlide = (slideRef.current + 1) % howToPlaySteps.length;

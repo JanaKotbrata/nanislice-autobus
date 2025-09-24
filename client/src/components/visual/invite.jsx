@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import GameContext from "../../context/game.js";
 import { useAlertContext } from "../providers/alert-context-provider.jsx";
 import Button from "./button.jsx";
@@ -14,12 +14,12 @@ function Invite() {
     : "";
   async function handleCopy() {
     try {
-      const url = `${i18n.translate("comeToPlay")} ${window.location.origin}/lobby/${gameContext.gameCode} \n${i18n.translate("codeForConnect")} ${gameContext.gameCode}`;
-      await navigator.clipboard.writeText(url);
+      const inviteText = `${i18n.translate("comeToPlay")} ${window.location.origin}/lobby/${gameContext.gameCode} \n${i18n.translate("codeForConnect")} ${gameContext.gameCode}`;
+      await navigator.clipboard.writeText(inviteText);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error("Nepodařilo se zkopírovat URL:", err);
+      console.error("Failed to copy URL:", err);
     }
   }
 

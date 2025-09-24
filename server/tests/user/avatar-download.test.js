@@ -31,12 +31,11 @@ describe("downloadAvatar", () => {
   it("should download and save avatar from URL (png)", async () => {
     // Mock fetch vrací stream s testovacím PNG obsahem
 
-
     // Create a mock stream with .pipeTo for compatibility with Writable.toWeb
     const mockStream = Readable.from(testImageBuffer);
-    mockStream.pipeTo = async function(dest) {
+    mockStream.pipeTo = async function (dest) {
       // Simulate writing all data and finishing
-      if (typeof dest.getWriter === 'function') {
+      if (typeof dest.getWriter === "function") {
         const writer = dest.getWriter();
         for await (const chunk of this) {
           await writer.write(chunk);

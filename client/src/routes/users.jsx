@@ -1,8 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
-import { listUser } from "../services/user-service.jsx";
-import { useAuth } from "../context/auth-context.jsx";
+import { useContext, useEffect, useState, useRef } from "react";
+import { listUser } from "../services/user-service.js";
+import { useAuth } from "../components/providers/auth-context-provider.jsx";
 import Avatar from "../components/visual/user/avatar.jsx";
 import Button from "../components/visual/button.jsx";
+import UserBadge from "../components/visual/user/user-badge.jsx";
 import LanguageContext from "../context/language.js";
 import PageContainer from "../components/visual/page-container.jsx";
 import {
@@ -17,15 +18,16 @@ function UsersPage() {
 
   const [users, setUsers] = useState([]);
   const [pageIndex, setPageIndex] = useState(0);
-  const [totalCount, setTotalCount] = useState(0);
+  // totalCount nemusí být stav, stačí useRef, hodnota se mění pouze při načtení uživatelů
+  const totalCount = useRef(0);
   const pageSize = 4;
-  const totalPages = Math.ceil(totalCount / pageSize);
+  const totalPages = Math.ceil(totalCount.current / pageSize);
 
   useEffect(() => {
     listUser({ pageInfo: { pageIndex, pageSize } }, token)
       .then((res) => {
         setUsers(res.list);
-        setTotalCount(res.pageInfo.totalCount);
+        totalCount.current = res.pageInfo.totalCount;
       })
       .catch((err) => {
         console.error(err);
@@ -77,58 +79,44 @@ function UsersPage() {
                       i18n.translate(Roles.PLEB).toUpperCase()}
                   </p>
                   <div className="flex flex-wrap gap-2 mt-1 text-xs leading-5 text-gray-400 whitespace-normal break-all">
-                    <span className="flex items-center gap-1">
-                      <span className="flex h-2 w-2 rounded-full bg-yellow-400" />
-                      Level: {user.level || 0}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <span className="flex h-2 w-2 rounded-full bg-pink-800" />
-                      XP: {user.xp || 0}
-                    </span>
+                    <UserBadge colorClass="bg-yellow-400" label="Level:">
+                      {user.level || 0}
+                    </UserBadge>
+                    <UserBadge colorClass="bg-pink-800" label="XP:">
+                      {user.xp || 0}
+                    </UserBadge>
                     {user.discordId && (
-                      <span className="flex items-center gap-1">
-                        <span className="flex h-2 w-2 rounded-full bg-blue-900" />
-                        Discord:{" "}
+                      <UserBadge colorClass="bg-blue-900" label="Discord:">
                         <span className="break-all">{user.discordId}</span>
-                      </span>
+                      </UserBadge>
                     )}
                     {user.googleId && (
-                      <span className="flex items-center gap-1">
-                        <span className="flex h-2 w-2 rounded-full bg-blue-900" />
-                        Google:{" "}
+                      <UserBadge colorClass="bg-blue-900" label="Google:">
                         <span className="break-all">{user.googleId}</span>
-                      </span>
+                      </UserBadge>
                     )}
                     {user.seznamId && (
-                      <span className="flex items-center gap-1">
-                        <span className="flex h-2 w-2 rounded-full bg-blue-900" />
-                        Seznam:{" "}
+                      <UserBadge colorClass="bg-blue-900" label="Seznam:">
                         <span className="break-all">{user.seznamId}</span>
-                      </span>
+                      </UserBadge>
                     )}
                     {user.sys && (
                       <>
-                        <span className="flex items-center gap-1">
-                          <span className="flex h-2 w-2 rounded-full bg-green-400" />
-                          Created:{" "}
+                        <UserBadge colorClass="bg-green-400" label="Created:">
                           <span className="break-all">{user.sys.cts}</span>
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <span className="flex h-2 w-2 rounded-full bg-green-800" />
-                          Updated:{" "}
+                        </UserBadge>
+                        <UserBadge colorClass="bg-green-800" label="Updated:">
                           <span className="break-all">{user.sys.mts}</span>
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <span className="flex h-2 w-2 rounded-full bg-green-900" />
-                          Rev: <span className="break-all">{user.sys.rev}</span>
-                        </span>
+                        </UserBadge>
+                        <UserBadge colorClass="bg-green-900" label="Rev:">
+                          <span className="break-all">{user.sys.rev}</span>
+                        </UserBadge>
                       </>
                     )}
                     {user.id && (
-                      <span className="flex items-center gap-1">
-                        <span className="flex h-2 w-2 rounded-full bg-red-500" />
-                        ID: <span className="break-all">{user.id}</span>
-                      </span>
+                      <UserBadge colorClass="bg-red-500" label="ID:">
+                        <span className="break-all">{user.id}</span>
+                      </UserBadge>
                     )}
                   </div>
                 </div>
