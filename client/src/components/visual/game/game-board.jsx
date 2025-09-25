@@ -1,5 +1,5 @@
 import { useContext, useRef, useEffect, useState } from "react";
-import CardPack from "./card-pack.jsx";
+import CardPack from "./card/card-pack.jsx";
 import GameContext from "../../../context/game.js";
 import { useAlertContext } from "../../providers/alert-context-provider.jsx";
 import DangerAlert from "../alerts/danger-alert.jsx";

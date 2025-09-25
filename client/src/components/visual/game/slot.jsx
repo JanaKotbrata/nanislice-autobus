@@ -1,8 +1,8 @@
 import { useRef, useEffect, useContext } from "react";
 import { useDrop } from "react-dnd";
-import Card from "./card.jsx";
+import Card from "./card/card.jsx";
 import SlotContext from "../../../context/slot.js";
-import CardBack from "./card-back.jsx";
+import CardBack from "./card/card-back/card-back.jsx";
 
 function Slot({
   card,

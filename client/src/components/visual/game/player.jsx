@@ -6,7 +6,7 @@ import BusSlot from "./bus-slot.jsx";
 import { getAvatar } from "../../../services/user-service.js";
 import Avatar from "../user/avatar.jsx";
 import { SlotTargets } from "../../../../../shared/constants/game-constants.json";
-import CardCount from "./card-count.jsx";
+import CardCount from "./card/card-count.jsx";
 
 function Player({
   player,

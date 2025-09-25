@@ -42,20 +42,20 @@
 
 @keyframes yrden-pulse {
     0% {
-        filter: drop-shadow(0 0 8px #e17055) drop-shadow(0 0 16px #e17055aa);
+        filter: drop-shadow(0 0 8px #ff8468) drop-shadow(0 0 16px #e17055aa);
     }
     50% {
-        filter: drop-shadow(0 0 24px #e17055) drop-shadow(0 0 48px #e17055cc);
+        filter: drop-shadow(0 0 24px #ff8468) drop-shadow(0 0 48px #e17055cc);
     }
     100% {
-        filter: drop-shadow(0 0 8px #e17055) drop-shadow(0 0 16px #e17055aa);
+        filter: drop-shadow(0 0 8px #ff8468) drop-shadow(0 0 16px #e17055aa);
     }
 }
 .witcher-card-back--red,
 .witcher-card-back--blue {
     border-radius: 0.4em;
     overflow: hidden;
-    border: 6px solid rgba(130,100,70,0.95);
+    border: 4px solid rgba(130,100,70,0.95);
     box-shadow: 0 6px 18px rgba(0,0,0,0.6), inset 0 0 0 4px rgba(255,255,255,0.02);
 }
 .witcher-card-back--red {

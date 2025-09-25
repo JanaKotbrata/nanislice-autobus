@@ -3,7 +3,7 @@ import { FaPaintBrush, FaLock, FaCheckCircle } from "react-icons/fa";
 import CardStyleContext from "../../context/card-style-context.js";
 import { useAuth } from "../providers/auth-context-provider.jsx";
 import { updateUser } from "../../services/user-service.js";
-import CardBack from "../visual/game/card-back.jsx";
+import CardBack from "./game/card/card-back/card-back.jsx";
 import LanguageContext from "../../context/language.js";
 import { Bg } from "../../../../shared/constants/game-constants.json";
 

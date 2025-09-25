@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useContext } from "react";
-import CardStyleContext from "../../../context/card-style-context.js";
+import CardStyleContext from "../../../../context/card-style-context.js";
 
 function AnimationCard({
   x,

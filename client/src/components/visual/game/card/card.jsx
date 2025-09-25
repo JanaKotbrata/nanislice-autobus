@@ -1,10 +1,10 @@
 import { useContext, useRef, useEffect } from "react";
 import { useDrag, useDragLayer } from "react-dnd";
-import RANK_CARD_ORDER from "../../../../../shared/constants/rank-card-order.json";
-import LanguageContext from "../../../context/language.js";
-import SlotContext from "../../../context/slot.js";
+import RANK_CARD_ORDER from "../../../../../../shared/constants/rank-card-order.json";
+import LanguageContext from "../../../../context/language.js";
+import SlotContext from "../../../../context/slot.js";
 import { getEmptyImage } from "react-dnd-html5-backend";
-import { useAlertContext } from "../../providers/alert-context-provider.jsx";
+import { useAlertContext } from "../../../providers/alert-context-provider.jsx";
 
 function getEmoji(rank) {
   switch (rank) {

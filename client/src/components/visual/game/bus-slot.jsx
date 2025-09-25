@@ -3,7 +3,7 @@ import { useShowCounts } from "../../../hooks/use-show-counts.js";
 import Slot from "./slot.jsx";
 import GameContext from "../../../context/game.js";
 import { useAlertContext } from "../../providers/alert-context-provider.jsx";
-import CardCount from "./card-count.jsx";
+import CardCount from "./card/card-count.jsx";
 import LanguageContext from "../../../context/language.js";
 import {
   JOKER,

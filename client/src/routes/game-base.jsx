@@ -4,7 +4,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import SlotContextProvider from "../components/providers/slot-context-provider.jsx";
 import PlayerPanel from "../components/visual/game/player-panel.jsx";
-import CardDragLayer from "../components/visual/game/card-drag-layer.jsx";
+import CardDragLayer from "../components/visual/game/card/card-drag-layer.jsx";
 import GameBoard from "../components/visual/game/game-board.jsx";
 import LangSelector from "../components/visual/lang-selector.jsx";
 import EndGameAlert from "../components/visual/alerts/end-game-alert.jsx";

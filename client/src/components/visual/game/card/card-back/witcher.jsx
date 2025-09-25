@@ -1,9 +1,8 @@
-import "../../../styles/witcher.css";
+import "../../../../../styles/witcher.css";
 import { useContext } from "react";
-import CardStyleContext from "../../../context/card-style-context.js";
+import CardStyleContext from "../../../../../context/card-style-context.js";
 
-// TODO - vytvorit specificke card back pro typy karet. Witcher card v sobe bude mit znameni, klasicka karta nebude mit nic
-export default function CardBack({ card, forceStyle }) {
+function Witcher({ card, forceStyle }) {
   const { getCardBgClass } = useContext(CardStyleContext);
   const bg = card?.bg;
 
@@ -25,3 +24,4 @@ export default function CardBack({ card, forceStyle }) {
     </div>
   );
 }
+export default Witcher;

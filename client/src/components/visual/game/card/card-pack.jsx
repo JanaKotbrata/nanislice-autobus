@@ -2,8 +2,8 @@ import { motion } from "framer-motion";
 import {
   Bg,
   SlotTargets,
-} from "../../../../../shared/constants/game-constants.json";
-import CardBack from "./card-back.jsx";
+} from "../../../../../../shared/constants/game-constants.json";
+import CardBack from "./card-back/card-back.jsx";
 
 function CardPack({
   id = SlotTargets.CARDPACK_DECK,

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import CardAnimationContext from "../../context/card-animation.js";
-import AnimationCard from "../visual/game/animation-card.jsx";
+import AnimationCard from "../visual/game/card/animation-card.jsx";
 
 function SlotContextProvider({ children }) {
   const animationQueue = useRef([]);
