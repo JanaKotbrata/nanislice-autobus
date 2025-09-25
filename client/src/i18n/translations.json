@@ -479,276 +479,296 @@
         "cs": "Zaklínač",
         "en": "Witcher",
         "sk": "Zaklínač"
+      },
+      "harrypotter": {
+        "cs": "Harry Potter",
+        "en": "Harry Potter",
+        "sk": "Harry Potter"
+      },
+      "flower": {
+        "cs": "Květinové",
+        "en": "Flower power",
+        "sk": "Kvetinové"
+      },
+      "flowerdark": {
+        "cs": "Květinové (tmavé)",
+        "en": "Flower power (dark)",
+        "sk": "Kvetinové (tmavé)"
+      },
+      "deadpool": {
+        "cs": "Deadpool",
+        "en": "Deadpool",
+        "sk": "Deadpool"
+      }
+  },
+  "saveVolumeTitle": {
+    "cs": "Po kliknutí se nastavení uloží ke tvému účtu. Pokud to neuložíš, tak se ti to po refreshi dá na defaultní hodnotu.",
+    "en": "Clicking this will save the setting to your account. If you don’t save it, it’ll reset to default on refresh.",
+    "sk": "Kliknutím sa nastavenie uloží k tvojmu účtu. Ak to neuložíš, tak sa to po refreshi vráti na defaultnú hodnotu."
+  },
+  "changeVolume": {
+    "cs": "Změnit hlasitost",
+    "en": "Change volume",
+    "sk": "Zmeniť hlasitosť"
+  },
+  "change": {
+    "cs": "Změnit",
+    "en": "Change it up",
+    "sk": "Zmeniť"
+  },
+  "saving": {
+    "cs": "Ukládám...",
+    "en": "Saving it...",
+    "sk": "Ukladám..."
+  },
+  "nemo": {
+    "cs": "Nemo",
+    "en": "Nemo",
+    "sk": "Nemo"
+  },
+  "page": {
+    "cs": "Stránka",
+    "en": "Page",
+    "sk": "Stránka"
+  },
+  "previous": {
+    "cs": "← Předchozí",
+    "en": "← Previous",
+    "sk": "← Predošlá"
+  },
+  "next": {
+    "cs": "Další →",
+    "en": "Next →",
+    "sk": "Ďalšia →"
+  },
+  "editProfile": {
+    "cs": "Upravit profil",
+    "en": "Edit profile",
+    "sk": "Upraviť profil"
+  },
+  "aboutTitle": {
+    "cs": "O projektu",
+    "en": "About the project",
+    "sk": "O projekte"
+  },
+  "aboutSecondTitle": {
+    "cs": "Použité technologie",
+    "en": "Technologies used",
+    "sk": "Použité technológie"
+  },
+  "aboutFooter": {
+    "cs": "Poprvé spatřilo světlo světa: 3. července 2025",
+    "en": "First saw the light of day: July 3, 2025",
+    "sk": "Prvýkrát uzrelo svetlo sveta: 3. júla 2025"
+  },
+  "aboutFirstParagraph": {
+    "cs": "Tento sebevzdělávací projekt vznikl jako cvičení programování, inspirovaný láskou ke karetním hrám a vzpomínkami na babičku. Cílem bylo nahlédnout mimo svět korporátních technologií – prostě zjistit, jak se věci dají dělat jinak – a vytvořit interaktivní aplikaci, která propojuje moderní technologie se zábavou. A hlavně: hodí se skvěle na večerní session na Discordu, kdy se nemůžeme dohodnout, co si zahrát, a chceme si jen v klidu odpočinout u sklenky něčeho dobrého.",
+    "en": "This self-educational project was born as a programming exercise, inspired by a love for card games and fond memories of my grandmother. The goal was to look beyond the corporate tech world – just to see how things can be done differently – and create an interactive app that blends modern technology with fun. And most importantly: it’s perfect for those evening Discord sessions when we can’t agree on what to play and just want to chill with a drink in hand.",
+    "sk": "Tento seba-vzdelávací projekt vznikol ako cvičenie programovania, inšpirované láskou ku kartovým hrám a spomienkami na babičku. Cieľom bolo nahliadnuť mimo svet korporátnych technológií – proste zistiť, ako sa dajú veci robiť inak – a vytvoriť interaktívnu aplikáciu, ktorá spája moderné technológie so zábavou. A hlavne: hodí sa skvele na večerné session na Discorde, keď sa nemôžeme dohodnúť, čo si zahrať, a chceme si len v kľude oddýchnuť pri poháriku niečoho dobrého."
+  },
+  "aboutSecondParagraph": {
+    "cs": "Nejsem frontend specialista, proto prosím omluvte případné vizuální nedokonalosti. Děkuji za pochopení.",
+    "en": "I’m not a frontend specialist, so please excuse any visual imperfections. Thanks for understanding.",
+    "sk": "Nie som frontend špecialista, takže prosím ospravedlňte prípadné vizuálne nedokonalosti. Ďakujem za pochopenie."
+  },
+  "technologyReact": {
+    "cs": "React (včetně knihoven jako React Router a React DnD)",
+    "en": "React (including libraries like React Router and React DnD)",
+    "sk": "React (vrátane knižníc ako React Router a React DnD)"
+  },
+  "technologyTailwind": {
+    "cs": "TailwindCSS pro stylování",
+    "en": "TailwindCSS for styling",
+    "sk": "TailwindCSS pre štýlovanie"
+  },
+  "technologySocketio": {
+    "cs": "Socket.IO pro real-time komunikaci",
+    "en": "Socket.IO for real-time communication",
+    "sk": "Socket.IO pre real-time komunikáciu"
+  },
+  "technologyExpress": {
+    "cs": "Express.js pro backend",
+    "en": "Express.js for the backend",
+    "sk": "Express.js pre backend"
+  },
+  "technologyMongoDB": {
+    "cs": "MongoDB pro databázi",
+    "en": "MongoDB for the database",
+    "sk": "MongoDB pre databázu"
+  },
+  "technologyPassport": {
+    "cs": "Passport.js pro autentizaci",
+    "en": "Passport.js for authentication",
+    "sk": "Passport.js pre autentifikáciu"
+  },
+  "technologyAxios": {
+    "cs": "Axios pro HTTP požadavky",
+    "en": "Axios for HTTP requests",
+    "sk": "Axios pre HTTP požiadavky"
+  },
+  "technologyJest": {
+    "cs": "Jest pro testování backendu",
+    "en": "Jest for backend testing",
+    "sk": "Jest pre testovanie backendu"
+  },
+  "signIn": {
+    "cs": "Přihlaš se",
+    "en": "Sign in",
+    "sk": "Prihlásiť sa"
+  },
+  "welcomeTitle": {
+    "cs": "Vzniklo pro procvičení kódění, z lásky ke kartám a vzpomínkám na babi.",
+    "en": "Born from a love for cards and fond memories of grandma, this is a coding exercise.",
+    "sk": "Vzniklo z lásky ku kartám a spomienkam na babičku, toto je cvičenie programovania."
+  },
+  "continueSeznam": {
+    "cs": "Pokračovat přes Seznam",
+    "en": "Continue with Seznam",
+    "sk": "Pokračovať cez Seznam"
+  },
+  "continueGoogle": {
+    "cs": "Pokračovat přes Google",
+    "en": "Continue with Google",
+    "sk": "Pokračovať cez Google"
+  },
+  "continueDiscord": {
+    "cs": "Pokračovat přes Discord",
+    "en": "Continue with Discord",
+    "sk": "Pokračovať cez Discord"
+  },
+  "dangerAlertCloseRules": {
+    "cs": "Už dobrý, zavřít",
+    "en": "Close rules",
+    "sk": "Zavrieť pravidlá"
+  },
+  "changeLanguage": {
+    "cs": "Změnit jazyk",
+    "en": "Change language",
+    "sk": "Zmeniť jazyk"
+  },
+  "weirdAlert": {
+    "cs": "Tady se dějou nějký divný věci...",
+    "en": "Something went wwwwrong...",
+    "sk": "Čo ti jebe, čo ti jebe? Něčo čudného: "
+  },
+  "signing": {
+    "cs": "Přihlašujeme tě...",
+    "en": "We are signing you up...",
+    "sk": "Prihlasujeme ťa..."
+  },
+  "consentWith": {
+    "cs": "Souhlasím se ",
+    "en": "I agree to the ",
+    "sk": "Súhlasím so "
+  },
+  "consent": {
+    "cs": " Zásadami ochrany osobních údajů.",
+    "en": " Privacy Policy.",
+    "sk": " Zásadami ochrany osobných údajov."
+  },
+  "consentWarning": {
+    "cs": "⚠ Pro pokračování musíš souhlasit se Zásadami ochrany osobních údajů.",
+    "en": "⚠ To continue, you must agree to the Privacy Policy.",
+    "sk": "⚠ Aby si mohol pokračovať, musíš súhlasiť so Zásadami ochrany osobných údajov."
+  },
+  "privacyPolicy": {
+    "name": {
+      "cs": "Jméno / přezdívka",
+      "en": "Name / Nickname",
+      "sk": "Meno / prezývka"
+    },
+    "avatar": {
+      "cs": "Profilový obrázek (avatar)",
+      "en": "Profile picture (avatar)",
+      "sk": "Profilový obrázok (avatar)"
+    },
+    "email": {
+      "cs": "E-mailová adresa",
+      "en": "Email address",
+      "sk": "E-mailová adresa"
+    },
+    "title": {
+      "cs": "Zásady ochrany osobních údajů",
+      "en": "Privacy Policy",
+      "sk": "Zásady ochrany osobných údajov"
+    },
+    "intro": {
+      "cs": "Vaše soukromí je pro mě důležité. Tyto zásady vysvětlují, jak nakládám s osobními údaji.",
+      "en": "Your privacy is important to me. This policy explains how I handle personal data.",
+      "sk": "Vaše súkromie je pre mňa dôležité. Tieto zásady vysvetľujú, ako nakladám s osobnými údajmi."
+    },
+    "whatWeCollect": {
+      "title": {
+        "cs": "Jaké údaje shromažďuji",
+        "en": "What data I collect",
+        "sk": "Aké údaje zhromažďujem"
+      },
+      "content": {
+        "cs": "Při přihlášení prostřednictvím externích služeb (např. Seznam.cz, Google, Discord) získávám pouze vaše jméno, e-mailovou adresu a profilový obrázek.",
+        "en": "When you sign in through external services (like Seznam.cz, Google, Discord), I only collect your name, email address, and profile picture.",
+        "sk": "Pri prihlásení cez externé služby (ako Seznam.cz, Google, Discord) zhromažďujem iba vaše meno, e-mailovú adresu a profilový obrázok."
       }
     },
-    "saveVolumeTitle": {
-      "cs": "Po kliknutí se nastavení uloží ke tvému účtu. Pokud to neuložíš, tak se ti to po refreshi dá na defaultní hodnotu.",
-      "en": "Clicking this will save the setting to your account. If you don’t save it, it’ll reset to default on refresh.",
-      "sk": "Kliknutím sa nastavenie uloží k tvojmu účtu. Ak to neuložíš, tak sa to po refreshi vráti na defaultnú hodnotu."
-    },
-    "changeVolume": {
-      "cs": "Změnit hlasitost",
-      "en": "Change volume",
-      "sk": "Zmeniť hlasitosť"
-    },
-    "change": {
-      "cs": "Změnit",
-      "en": "Change it up",
-      "sk": "Zmeniť"
-    },
-    "saving": {
-      "cs": "Ukládám...",
-      "en": "Saving it...",
-      "sk": "Ukladám..."
-    },
-    "nemo": {
-      "cs": "Nemo",
-      "en": "Nemo",
-      "sk": "Nemo"
-    },
-    "page": {
-      "cs": "Stránka",
-      "en": "Page",
-      "sk": "Stránka"
-    },
-    "previous": {
-      "cs": "← Předchozí",
-      "en": "← Previous",
-      "sk": "← Predošlá"
-    },
-    "next": {
-      "cs": "Další →",
-      "en": "Next →",
-      "sk": "Ďalšia →"
-    },
-    "editProfile": {
-      "cs": "Upravit profil",
-      "en": "Edit profile",
-      "sk": "Upraviť profil"
-    },
-    "aboutTitle": {
-      "cs": "O projektu",
-      "en": "About the project",
-      "sk": "O projekte"
-    },
-    "aboutSecondTitle": {
-      "cs": "Použité technologie",
-      "en": "Technologies used",
-      "sk": "Použité technológie"
-    },
-    "aboutFooter": {
-      "cs": "Poprvé spatřilo světlo světa: 3. července 2025",
-      "en": "First saw the light of day: July 3, 2025",
-      "sk": "Prvýkrát uzrelo svetlo sveta: 3. júla 2025"
-    },
-    "aboutFirstParagraph": {
-      "cs": "Tento sebevzdělávací projekt vznikl jako cvičení programování, inspirovaný láskou ke karetním hrám a vzpomínkami na babičku. Cílem bylo nahlédnout mimo svět korporátních technologií – prostě zjistit, jak se věci dají dělat jinak – a vytvořit interaktivní aplikaci, která propojuje moderní technologie se zábavou. A hlavně: hodí se skvěle na večerní session na Discordu, kdy se nemůžeme dohodnout, co si zahrát, a chceme si jen v klidu odpočinout u sklenky něčeho dobrého.",
-      "en": "This self-educational project was born as a programming exercise, inspired by a love for card games and fond memories of my grandmother. The goal was to look beyond the corporate tech world – just to see how things can be done differently – and create an interactive app that blends modern technology with fun. And most importantly: it’s perfect for those evening Discord sessions when we can’t agree on what to play and just want to chill with a drink in hand.",
-      "sk": "Tento seba-vzdelávací projekt vznikol ako cvičenie programovania, inšpirované láskou ku kartovým hrám a spomienkami na babičku. Cieľom bolo nahliadnuť mimo svet korporátnych technológií – proste zistiť, ako sa dajú veci robiť inak – a vytvoriť interaktívnu aplikáciu, ktorá spája moderné technológie so zábavou. A hlavne: hodí sa skvele na večerné session na Discorde, keď sa nemôžeme dohodnúť, čo si zahrať, a chceme si len v kľude oddýchnuť pri poháriku niečoho dobrého."
-    },
-    "aboutSecondParagraph": {
-      "cs": "Nejsem frontend specialista, proto prosím omluvte případné vizuální nedokonalosti. Děkuji za pochopení.",
-      "en": "I’m not a frontend specialist, so please excuse any visual imperfections. Thanks for understanding.",
-      "sk": "Nie som frontend špecialista, takže prosím ospravedlňte prípadné vizuálne nedokonalosti. Ďakujem za pochopenie."
-    },
-    "technologyReact": {
-      "cs": "React (včetně knihoven jako React Router a React DnD)",
-      "en": "React (including libraries like React Router and React DnD)",
-      "sk": "React (vrátane knižníc ako React Router a React DnD)"
-    },
-    "technologyTailwind": {
-      "cs": "TailwindCSS pro stylování",
-      "en": "TailwindCSS for styling",
-      "sk": "TailwindCSS pre štýlovanie"
-    },
-    "technologySocketio": {
-      "cs": "Socket.IO pro real-time komunikaci",
-      "en": "Socket.IO for real-time communication",
-      "sk": "Socket.IO pre real-time komunikáciu"
-    },
-    "technologyExpress": {
-      "cs": "Express.js pro backend",
-      "en": "Express.js for the backend",
-      "sk": "Express.js pre backend"
-    },
-    "technologyMongoDB": {
-      "cs": "MongoDB pro databázi",
-      "en": "MongoDB for the database",
-      "sk": "MongoDB pre databázu"
-    },
-    "technologyPassport": {
-      "cs": "Passport.js pro autentizaci",
-      "en": "Passport.js for authentication",
-      "sk": "Passport.js pre autentifikáciu"
-    },
-    "technologyAxios": {
-      "cs": "Axios pro HTTP požadavky",
-      "en": "Axios for HTTP requests",
-      "sk": "Axios pre HTTP požiadavky"
-    },
-    "technologyJest": {
-      "cs": "Jest pro testování backendu",
-      "en": "Jest for backend testing",
-      "sk": "Jest pre testovanie backendu"
-    },
-    "signIn": {
-      "cs": "Přihlaš se",
-      "en": "Sign in",
-      "sk": "Prihlásiť sa"
-    },
-    "welcomeTitle": {
-      "cs": "Vzniklo pro procvičení kódění, z lásky ke kartám a vzpomínkám na babi.",
-      "en": "Born from a love for cards and fond memories of grandma, this is a coding exercise.",
-      "sk": "Vzniklo z lásky ku kartám a spomienkam na babičku, toto je cvičenie programovania."
-    },
-    "continueSeznam": {
-      "cs": "Pokračovat přes Seznam",
-      "en": "Continue with Seznam",
-      "sk": "Pokračovať cez Seznam"
-    },
-    "continueGoogle": {
-      "cs": "Pokračovat přes Google",
-      "en": "Continue with Google",
-      "sk": "Pokračovať cez Google"
-    },
-    "continueDiscord": {
-      "cs": "Pokračovat přes Discord",
-      "en": "Continue with Discord",
-      "sk": "Pokračovať cez Discord"
-    },
-    "dangerAlertCloseRules": {
-      "cs": "Už dobrý, zavřít",
-      "en": "Close rules",
-      "sk": "Zavrieť pravidlá"
-    },
-    "changeLanguage": {
-      "cs": "Změnit jazyk",
-      "en": "Change language",
-      "sk": "Zmeniť jazyk"
-    },
-    "weirdAlert": {
-      "cs": "Tady se dějou nějký divný věci...",
-      "en": "Something went wwwwrong...",
-      "sk": "Čo ti jebe, čo ti jebe? Něčo čudného: "
-    },
-    "signing": {
-      "cs": "Přihlašujeme tě...",
-      "en": "We are signing you up...",
-      "sk": "Prihlasujeme ťa..."
-    },
-    "consentWith": {
-      "cs": "Souhlasím se ",
-      "en": "I agree to the ",
-      "sk": "Súhlasím so "
-    },
-    "consent": {
-      "cs": " Zásadami ochrany osobních údajů.",
-      "en": " Privacy Policy.",
-      "sk": " Zásadami ochrany osobných údajov."
-    },
-    "consentWarning": {
-      "cs": "⚠ Pro pokračování musíš souhlasit se Zásadami ochrany osobních údajů.",
-      "en": "⚠ To continue, you must agree to the Privacy Policy.",
-      "sk": "⚠ Aby si mohol pokračovať, musíš súhlasiť so Zásadami ochrany osobných údajov."
-    },
-    "privacyPolicy": {
-      "name": {
-        "cs": "Jméno / přezdívka",
-        "en": "Name / Nickname",
-        "sk": "Meno / prezývka"
-      },
-      "avatar": {
-        "cs": "Profilový obrázek (avatar)",
-        "en": "Profile picture (avatar)",
-        "sk": "Profilový obrázok (avatar)"
-      },
-      "email": {
-        "cs": "E-mailová adresa",
-        "en": "Email address",
-        "sk": "E-mailová adresa"
-      },
+    "purpose": {
       "title": {
-        "cs": "Zásady ochrany osobních údajů",
-        "en": "Privacy Policy",
-        "sk": "Zásady ochrany osobných údajov"
+        "cs": "K čemu údaje používám",
+        "en": "How I use your data",
+        "sk": "Na čo používam vaše údaje"
       },
-      "intro": {
-        "cs": "Vaše soukromí je pro mě důležité. Tyto zásady vysvětlují, jak nakládám s osobními údaji.",
-        "en": "Your privacy is important to me. This policy explains how I handle personal data.",
-        "sk": "Vaše súkromie je pre mňa dôležité. Tieto zásady vysvetľujú, ako nakladám s osobnými údajmi."
+      "content": {
+        "cs": "Údaje slouží výhradně k vytvoření a zobrazení vašeho účtu v aplikaci. Nepoužívám je k žádným dalším účelům.",
+        "en": "The data is used solely to create and display your account in the app. I do not use it for any other purposes.",
+        "sk": "Údaje slúžia výhradne na vytvorenie a zobrazenie vášho účtu v aplikácii. Nepoužívam ich na žiadne ďalšie účely."
+      }
+    },
+    "sharing": {
+      "title": {
+        "cs": "Komu údaje poskytuji",
+        "en": "Who I share your data with",
+        "sk": "Komu poskytujem vaše údaje"
       },
-      "whatWeCollect": {
-        "title": {
-          "cs": "Jaké údaje shromažďuji",
-          "en": "What data I collect",
-          "sk": "Aké údaje zhromažďujem"
-        },
-        "content": {
-          "cs": "Při přihlášení prostřednictvím externích služeb (např. Seznam.cz, Google, Discord) získávám pouze vaše jméno, e-mailovou adresu a profilový obrázek.",
-          "en": "When you sign in through external services (like Seznam.cz, Google, Discord), I only collect your name, email address, and profile picture.",
-          "sk": "Pri prihlásení cez externé služby (ako Seznam.cz, Google, Discord) zhromažďujem iba vaše meno, e-mailovú adresu a profilový obrázok."
-        }
+      "content": {
+        "cs": "Osobní údaje nikomu nepředávám. Sdílím je pouze s poskytovatelem přihlášení, který je potřebuje k ověření vaší identity.",
+        "en": "I do not share personal data with anyone. I only share it with the login provider, which needs it to verify your identity.",
+        "sk": "Osobné údaje nikomu neposkytujem. Zdieľam ich iba s poskytovateľom prihlásenia, ktorý ich potrebuje na overenie vašej identity."
+      }
+    },
+    "retention": {
+      "title": {
+        "cs": "Doba uchovávání",
+        "en": "Data retention",
+        "sk": "Doba uchovávania"
       },
-      "purpose": {
-        "title": {
-          "cs": "K čemu údaje používám",
-          "en": "How I use your data",
-          "sk": "Na čo používam vaše údaje"
-        },
-        "content": {
-          "cs": "Údaje slouží výhradně k vytvoření a zobrazení vašeho účtu v aplikaci. Nepoužívám je k žádným dalším účelům.",
-          "en": "The data is used solely to create and display your account in the app. I do not use it for any other purposes.",
-          "sk": "Údaje slúžia výhradne na vytvorenie a zobrazenie vášho účtu v aplikácii. Nepoužívam ich na žiadne ďalšie účely."
-        }
+      "content": {
+        "cs": "Vaše údaje uchovávám pouze po dobu existence vašeho účtu. Po jeho smazání jsou trvale odstraněny.",
+        "en": "I keep your data only for as long as your account exists. Once your account is deleted, the data is permanently removed.",
+        "sk": "Vaše údaje uchovávam iba počas existencie vášho účtu. Po jeho zmazaní sú trvalo odstránené."
+      }
+    },
+    "rights": {
+      "title": {
+        "cs": "Vaše práva",
+        "en": "Your rights",
+        "sk": "Vaše práva"
       },
-      "sharing": {
-        "title": {
-          "cs": "Komu údaje poskytuji",
-          "en": "Who I share your data with",
-          "sk": "Komu poskytujem vaše údaje"
-        },
-        "content": {
-          "cs": "Osobní údaje nikomu nepředávám. Sdílím je pouze s poskytovatelem přihlášení, který je potřebuje k ověření vaší identity.",
-          "en": "I do not share personal data with anyone. I only share it with the login provider, which needs it to verify your identity.",
-          "sk": "Osobné údaje nikomu neposkytujem. Zdieľam ich iba s poskytovateľom prihlásenia, ktorý ich potrebuje na overenie vašej identity."
-        }
+      "content": {
+        "cs": "Máte právo na přístup, opravu a výmaz svých údajů. V případě dotazů nebo žádostí mě můžete kontaktovat na e-mailu: kkotrbataj@gmail.com.",
+        "en": "You have the right to access, correct, and delete your data. For any questions or requests, you can contact me at: kkotrbataj@gmail.com.",
+        "sk": "Máte právo na prístup, opravu a vymazanie svojich údajov. V prípade otázok alebo žiadostí ma môžete kontaktovať na e-mailovej adrese: kkotrbataj@gmail.com."
+      }
+    },
+    "contact": {
+      "title": {
+        "cs": "Kontakt",
+        "en": "Contact",
+        "sk": "Kontakt"
       },
-      "retention": {
-        "title": {
-          "cs": "Doba uchovávání",
-          "en": "Data retention",
-          "sk": "Doba uchovávania"
-        },
-        "content": {
-          "cs": "Vaše údaje uchovávám pouze po dobu existence vašeho účtu. Po jeho smazání jsou trvale odstraněny.",
-          "en": "I keep your data only for as long as your account exists. Once your account is deleted, the data is permanently removed.",
-          "sk": "Vaše údaje uchovávam iba počas existencie vášho účtu. Po jeho zmazaní sú trvalo odstránené."
-        }
-      },
-      "rights": {
-        "title": {
-          "cs": "Vaše práva",
-          "en": "Your rights",
-          "sk": "Vaše práva"
-        },
-        "content": {
-          "cs": "Máte právo na přístup, opravu a výmaz svých údajů. V případě dotazů nebo žádostí mě můžete kontaktovat na e-mailu: kkotrbataj@gmail.com.",
-          "en": "You have the right to access, correct, and delete your data. For any questions or requests, you can contact me at: kkotrbataj@gmail.com.",
-          "sk": "Máte právo na prístup, opravu a vymazanie svojich údajov. V prípade otázok alebo žiadostí ma môžete kontaktovať na e-mailovej adrese: kkotrbataj@gmail.com."
-        }
-      },
-      "contact": {
-        "title": {
-          "cs": "Kontakt",
-          "en": "Contact",
-          "sk": "Kontakt"
-        },
-        "content": {
-          "cs": "Za zpracování údajů odpovídám já, Jana Kotrbatá, e-mail: kkotrbataj@gmail.com.",
-          "en": "I am the data controller: Jana Kotrbatá, e-mail: kkotrbataj@gmail.com.",
-          "sk": "Za spracovanie údajov zodpovedám ja, Jana Kotrbatá, e-mail: kkotrbataj@gmail.com."
-        }
+      "content": {
+        "cs": "Za zpracování údajů odpovídám já, Jana Kotrbatá, e-mail: kkotrbataj@gmail.com.",
+        "en": "I am the data controller: Jana Kotrbatá, e-mail: kkotrbataj@gmail.com.",
+        "sk": "Za spracovanie údajov zodpovedám ja, Jana Kotrbatá, e-mail: kkotrbataj@gmail.com."
       }
     }
   }
+}
 }

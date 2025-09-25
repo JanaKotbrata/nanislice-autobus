@@ -1,0 +1,316 @@
+ .snitch {
+    transition: top 0.5s cubic-bezier(.4,0,.2,1);
+    top: 6.5em;
+}
+
+.harrypotter-card-back:hover .snitch {
+    top: -2em;
+    transform: scale(0.5);
+}
+.harrypotter-window-svg {
+    color: #111;
+    display: block;
+    position: absolute;
+    left: 10%;
+    width: 50%;
+    top: 10%;
+    height: 70%;
+    pointer-events: none;
+}
+.animate-always {
+    top: -2em;
+    animation: hover ease-in-out 12s infinite;
+}
+.animate-always .wing {
+    animation: flap-left ease-in-out 1s infinite;
+}
+.animate-always .r.wing {
+    animation: flap-right ease-in-out 1s infinite;
+}
+.animate-always-shadow {
+    opacity: .65;
+    height: 10%;
+    left: calc(50% - 25%);
+    width: 50%;
+    animation: shadow-hover ease-in-out 12s infinite;
+}
+.harrypotter-card-back {
+    border-radius: 0.4em;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #ffb936;
+}
+
+.harrypotter-card-back::after {
+    content: "";
+    position: absolute;
+    top: 12px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #331703;
+    pointer-events: none;
+    transition: opacity 0.5s;
+}
+
+.harrypotter-card-back--red {
+    background: #3a0102;
+    position: relative;
+}
+
+.harrypotter-card-back--blue {
+    background: #1a1a3a;
+}
+.harrypotter-card-back--red:hover {
+    border-color: #46443e;
+    box-shadow: 0 0 24px #f7e9c1cc, 0 6px 18px rgba(160,4,4,0.7);
+}
+.harrypotter-card-back--blue:hover {
+    border-color: #f7e9c1;
+    box-shadow: 0 0 24px #f7e9c1cc, 0 6px 18px rgba(20,50,182,0.7);
+}
+.harrypotter-frame {
+     transform: scale(0.13);
+    transform-origin: center;
+}
+
+.snitch {
+    position:relative;
+    text-align:center;
+    width:150px;
+    height:150px;
+    cursor:pointer;
+}
+.snitch .obj{
+    position:relative;
+    width:100%;
+    height:100%;
+    top:0;
+    transition:all ease 1s;
+}
+.snitch .obj .snitch-body{
+    position:relative;
+    overflow:hidden;
+    width:100%;
+    height:100%;
+    border-radius:50%;
+    background:#efbf65;
+    border:solid .42em #3c2e2d;
+    border-width:.62em;
+    z-index: 200;
+}
+.snitch .obj .snitch-body .flourish{
+    border:solid .42em #3c2e2d;
+    background:#efbf65;
+}
+.snitch .obj .snitch-body .flourish:nth-child(1){
+    position:absolute;
+    top:-30%;
+    left:0;
+    border-radius:50%;
+    width:100%;
+    height:60%;
+    z-index:10;
+}
+.snitch .obj .snitch-body .flourish:nth-child(2){
+    position:absolute;
+    top:7.5%;
+    left:-38%;
+    border-radius:50%;
+    width:90%;
+    height:52%;
+    z-index:9;
+}
+.snitch .obj .snitch-body .flourish:nth-child(3){
+    position:absolute;
+    top:7.5%;
+    right:-38%;
+    border-radius:50%;
+    width:90%;
+    height:52%;
+    z-index:9;
+}
+.snitch .obj .snitch-body .flourish:nth-child(4){
+    overflow:hidden;
+    position:absolute;
+    bottom:-15%;
+    right:-26%;
+    border-radius:50%;
+    width:70%;
+    height:60%;
+    z-index:9;
+}
+.snitch .obj .snitch-body .flourish:nth-child(5){
+    overflow:hidden;
+    position:absolute;
+    bottom:-15%;
+    left:-26%;
+    border-radius:50%;
+    width:70%;
+    height:60%;
+    z-index:9;
+}
+.snitch .obj .snitch-body .flourish .line{
+    position:absolute;
+    right:0;
+    top:.5em;
+    width:100%;
+    height:.42em;
+    background:#3c2e2d;
+}
+.snitch .obj .snitch-body .flourish .line:nth-child(2){
+    top:1.4em;
+}
+.snitch .obj .snitch-body .flourish .line:nth-child(3){
+    top:2.25em;
+}
+.snitch .obj .wing{
+    position:absolute;
+    text-align:right;
+    line-height:0;
+    top:-70%;
+    left:-165%;
+    width:190%;
+    height:80%;
+    transform-origin: bottom right;
+    transform: rotate(-25deg);
+}
+.snitch .obj .r.wing{
+    text-align:left;
+    left:auto;
+    right:-165%;
+    transform-origin: bottom left;
+    transform: rotate(25deg);
+}
+.snitch .obj .joint{
+    position:absolute;
+    top:8%;
+    left:3%;
+    width:22%;
+    height: 22%;
+    border-radius:50%;
+    background:#efbf65;
+    border:solid .42em #3c2e2d;
+    border-width:.62em;
+    z-index:11;
+}
+.snitch .obj .r.joint{
+    left:auto;
+    right:3%;
+}
+
+.snitch .obj .wing .feather{
+    display:inline-block;
+    width:92%;
+    height:16%;
+    margin-top:-1px;
+    margin-left:4%;
+    background:#fdfce6;
+    border:solid .32em #3c2e2d;
+    border-width:.5em;
+    border-radius:0 3.5em 0 3.5em;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.snitch .obj .wing .feather:nth-child(1){ height:13%; width:92%; margin-left:4%; border-top:none; border-radius:0 3.5em 0 3.5em; }
+.snitch .obj .wing .feather:nth-child(2){ height:12.5%; width:88%; margin-left:6%; border-top:none; border-radius:0 3.2em 0 3.2em; }
+.snitch .obj .wing .feather:nth-child(3){ height:12%; width:84%; margin-left:8%; border-top:none; border-radius:0 2.9em 0 2.9em; }
+.snitch .obj .wing .feather:nth-child(4){ height:11.5%; width:80%; margin-left:10%; border-top:none; border-radius:0 2.6em 0 2.6em; }
+.snitch .obj .wing .feather:nth-child(5){ height:11%; width:76%; margin-left:12%; border-top:none; border-radius:0 2.3em 0 2.3em; }
+.snitch .obj .wing .feather:nth-child(6){ height:10.5%; width:72%; margin-left:14%; border-top:none; border-radius:0 2em 0 2em; }
+.snitch .obj .wing .feather:nth-child(7){ height:10%; width:68%; margin-left:16%; border-top:none; border-radius:0 1.7em 0 1.7em; }
+.snitch .obj .wing .feather:nth-child(8){ height:9.5%; width:64%; margin-left:18%; border-top:none; border-radius:0 1.4em 0 1.4em; }
+.snitch .obj .wing .feather:nth-child(9){ height:9%; width:60%; margin-left:20%; border-top:none; border-radius:0 1.1em 0 1.1em; }
+.snitch .obj .r.wing .feather{ border-radius:0 0 3.5em 0; margin-left:0; margin-right:4%; }
+.snitch .obj .r.wing .feather:nth-child(1){ border-radius:3.5em 0 3.5em 0; margin-right:4%; }
+.snitch .obj .r.wing .feather:nth-child(2){ margin-right:6%; border-radius:3.2em 0 3.2em 0; }
+.snitch .obj .r.wing .feather:nth-child(3){ margin-right:8%; border-radius:2.9em 0 2.9em 0; }
+.snitch .obj .r.wing .feather:nth-child(4){ margin-right:10%; border-radius:2.6em 0 2.6em 0; }
+.snitch .obj .r.wing .feather:nth-child(5){ margin-right:12%; border-radius:2.3em 0 2.3em 0; }
+.snitch .obj .r.wing .feather:nth-child(6){ margin-right:14%; border-radius:2em 0 2em 0; }
+.snitch .obj .r.wing .feather:nth-child(7){ margin-right:16%; border-radius:1.7em 0 1.7em 0; }
+.snitch .obj .r.wing .feather:nth-child(8){ margin-right:18%; border-radius:1.4em 0 1.4em 0; }
+.snitch .obj .r.wing .feather:nth-child(9){ margin-right:20%; border-radius:1.1em 0 1.1em 0; }
+.snitch-body .shadow{
+    position:absolute;
+    left:50%;
+    bottom:-18%;
+    transform:translateX(-50%) scaleX(1.2) scaleY(0.5);
+    width:60%;
+    height:22%;
+    background:#3c2e2d;
+    opacity:0.55;
+    border-radius:50%;
+    z-index:1;
+    filter: blur(2px);
+    transition:all ease 1s;
+    pointer-events:none;
+}
+
+@keyframes flap-left{
+    0%{
+        transform: rotate(-25deg);
+    }
+    50%{
+        transform: rotate(-55deg) scaley(.6);
+    }
+    100%{
+        transform: rotate(-25deg);
+    }
+}
+
+@keyframes flap-right{
+    0%{
+        transform: rotate(25deg);
+    }
+    50%{
+        transform: rotate(55deg) scaley(.6);
+    }
+    100%{
+        transform: rotate(25deg);
+    }
+}
+
+@keyframes hover{
+    0%{
+    }
+    50%{
+        transform:translatey(-1.2em);
+    }
+    100%{
+    }
+}
+@keyframes shadow-hover{
+    0%{
+    }
+    50%{
+        transform:scale(1.1);
+        opacity:.5;
+    }
+    100%{
+    }
+}
+
+@media (max-width: 750px){
+    .snitch {
+        width:100px;
+        height:100px;
+    }
+    .snitch .obj .snitch-body, .snitch .obj .wing .feather, .snitch .obj .joint{
+        border-width:.4em;
+    }
+    .snitch .obj .snitch-body .flourish{
+        border:solid .42em #3c2e2d;
+        border-width:.3em;
+    }
+    .snitch .obj .snitch-body .flourish .line{
+        height:.3em;
+    }
+}
+
+.harrypotter-window-svg {
+  color: #1e0000;
+  display: block;
+}

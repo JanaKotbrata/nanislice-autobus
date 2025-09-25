@@ -7,15 +7,12 @@ const LOCAL_STORAGE_KEY = "cardStyle";
 const DEFAULT_CARD_STYLE = "classic";
 
 function detectInitialCardStyle(user) {
-  // 1. User preference from DB
   if (user?.cardStyle) return user.cardStyle;
-  // 2. Browser localStorage
   const stored =
     typeof window !== "undefined"
       ? localStorage.getItem(LOCAL_STORAGE_KEY)
       : null;
   if (stored) return stored;
-  // 3. Default value
   return DEFAULT_CARD_STYLE;
 }
 
@@ -26,12 +23,10 @@ export default function CardStyleContextProvider({ children }) {
     detectInitialCardStyle(user),
   );
 
-  // Update card style when user changes (priority: user, localStorage, default)
   useEffect(() => {
     setCardStyleState(detectInitialCardStyle(user));
   }, [user]);
 
-  // Save card style to localStorage on change
   useEffect(() => {
     if (cardStyle) {
       localStorage.setItem(LOCAL_STORAGE_KEY, cardStyle);
@@ -40,7 +35,6 @@ export default function CardStyleContextProvider({ children }) {
 
   function setCardStyle(newStyle) {
     setCardStyleState(newStyle);
-    // localStorage is set in useEffect
   }
 
   function getCardBgClass(background, forceStyle) {
@@ -60,7 +54,14 @@ export default function CardStyleContextProvider({ children }) {
       value={{
         cardStyle,
         setCardStyle,
-        availableStyles: [{ code: DEFAULT_CARD_STYLE }, { code: "witcher" }],
+        availableStyles: [
+          { code: DEFAULT_CARD_STYLE },
+          { code: "witcher" },
+          { code: "harrypotter" },
+          { code: "flower" },
+          { code: "flowerdark" },
+          { code: "deadpool" },
+        ],
         getCardBgClass,
       }}
     >

@@ -7,7 +7,7 @@ import CardBack from "./game/card/card-back/card-back.jsx";
 import LanguageContext from "../../context/language.js";
 import { Bg } from "../../../../shared/constants/game-constants.json";
 
-const level = "5"; //TODO make dynamic
+const level = 5; //TODO make dynamic
 export default function CardStyleSelector({ size }) {
   const i18n = useContext(LanguageContext);
   const { cardStyle, setCardStyle, availableStyles } =
@@ -34,7 +34,7 @@ export default function CardStyleSelector({ size }) {
   }, []);
 
   function handleSelect(style) {
-    if (userLevel < 5) return;
+    if (userLevel < level) return;
     setSelected(style);
   }
 
@@ -51,17 +51,13 @@ export default function CardStyleSelector({ size }) {
     }
   }
 
-  // Determine if user can select any style (not locked and not already selected)
-  // The button should be enabled if the selected style is different from the current cardStyle
-  // and the selected style is available (not locked for the user)
   const selectedStyleObj = availableStyles.find(
     (style) => style.code === selected,
   );
   const isSelectedLocked =
-    selectedStyleObj && selectedStyleObj.code !== "classic" && userLevel < 5;
-  // Confirm should be enabled only if user has level >= 5, selected is different from cardStyle, and not locked
+    selectedStyleObj && selectedStyleObj.code !== "classic" && userLevel < level;
   const canConfirm =
-    userLevel >= 5 && selected !== cardStyle && !isSelectedLocked;
+    userLevel >= level && selected !== cardStyle && !isSelectedLocked;
 
   return (
     <div className="relative inline-block" ref={menuRef}>
@@ -82,7 +78,7 @@ export default function CardStyleSelector({ size }) {
         <div className="absolute right-0 bottom-full mb-2 !bg-white/90 border !border-gray-300 rounded shadow-lg p-4 z-50 min-w-[260px]">
           <div className="grid grid-cols-3 gap-3 mb-4">
             {availableStyles.map((style) => {
-              const isLocked = style.code !== "classic" && userLevel < 5;
+              const isLocked = style.code !== "classic" && userLevel < level;
               const isSelected = selected === style.code;
               return (
                 <button

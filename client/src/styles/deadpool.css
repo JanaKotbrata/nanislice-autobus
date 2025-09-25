@@ -1,0 +1,343 @@
+.deadpool-card-back:hover .eye::after {
+    transform: scaleY(3);
+}
+
+.deadpool-card-back:hover .head {
+    border-radius: 44% 46% 57% 57% / 43% 40% 90% 90%;
+    transition: border-radius 250ms linear;
+}
+
+.dp-scale {
+    transform: scale(0.17);
+    transform-origin: center;
+}
+@media (max-width: 600px) {
+    .dp-scale {
+        transform: scale(0.13) !important;
+    }
+}
+.deadpool-card-back {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 6px 18px rgba(0, 0, 0), 0 0 0 1px rgb(0, 0, 0) inset;
+}
+
+.deadpool-card-back > * {
+    position: relative;
+    z-index: 1;
+}
+
+.deadpool-card-back--blue {
+    background: #1c84c6;
+}
+
+.deadpool-card-back--red {
+    background: #fb140d;
+}
+
+
+.circle {
+    position: relative;
+    min-width: 18em;
+    height: 18em;
+    max-width: 25em;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: inset 5px 5px 25px rgba(0, 0, 0, 0.5);
+    padding-block-start: 1em;
+}
+
+.circle::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #fefbf6;
+    z-index: -100;
+}
+
+.dp {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.head {
+    position: relative;
+    width: 7rem;
+    aspect-ratio: 3.5/5;
+    padding: 0.25em 0.3em;
+    border-radius: 44% 46% 57% 57% / 43% 40% 65% 63%;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    gap: 0.35em;
+    background-color: #fb140d;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    z-index: 10;
+}
+
+.head::after,
+.head::before {
+    content: "";
+    position: absolute;
+    width: 1em;
+    height: 100%;
+    border: 2px solid black;
+    border-radius: 50%;
+    background-color: #fb140d;
+    filter: brightness(0.75);
+}
+
+.head::after {
+    border-color: transparent #000 transparent transparent;
+    top: 0;
+    left: 0;
+}
+
+.head::before {
+    border-color: transparent transparent transparent #000;
+    right: 0;
+    top: 0;
+}
+
+.eye {
+    position: relative;
+    margin-block-start: 2em;
+    width: 45%;
+    aspect-ratio: 10/17;
+    border-radius: 22% 74% 72% 29% / 43% 75% 25% 57%;
+    background: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    z-index: 50;
+}
+
+.shade {
+    position: absolute;
+    width: 100%;
+    height: 250%;
+    border-radius: 50%;
+    border-color: #000 #fff #000 #000;
+    left: -1.65em;
+    top: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    transform: translate(-25%, -50%);
+}
+
+.eye:nth-child(2) {
+    transform: rotateY(180deg);
+}
+
+.eye::after {
+    content: "";
+    position: absolute;
+    width: 1.35em;
+    bottom: 38%;
+    aspect-ratio: 2/1;
+    background-color: white;
+    border-radius: 50%;
+    transform: scaleY(1);
+    transition: transform 250ms linear;
+}
+
+.neck {
+    position: relative;
+    width: 4.5em;
+    height: 3em;
+    border-bottom-left-radius: 120%;
+    border-bottom-right-radius: 120%;
+    top: -2.5em;
+    border: solid;
+    background-color: #fb140d;
+}
+
+.band {
+    position: absolute;
+    width: 4.5em;
+    height: 3em;
+    border-bottom-left-radius: 120%;
+    border-bottom-right-radius: 120%;
+    top: 50%;
+    left: 50%;
+    border: solid;
+    background-color: black;
+    transform: translate(-50%, -30%);
+    z-index: -1;
+}
+
+.band::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-bottom-left-radius: 120%;
+    border-bottom-right-radius: 120%;
+    top: 50%;
+    left: 50%;
+    border: solid;
+    background-color: transparent;
+    transform: translate(-50%, -35%);
+}
+
+.body {
+    position: relative;
+    width: 17em;
+    height: 17em;
+    top: -3em;
+    clip-path: polygon(40% 0, 60% 0, 100% 15%, 0% 15%);
+    background: #fb140d;
+    z-index: -5;
+}
+
+.bodyLower {
+    position: absolute;
+    width: 19.25em;
+    height: 6em;
+    left: 50%;
+    bottom: -0.1em;
+    background: #fb140d;
+    z-index: -5;
+    border-top-left-radius: 35%;
+    border-top-right-radius: 35%;
+    transform: translateX(-50%);
+    overflow: hidden;
+}
+
+.bodyLower::after {
+    content: "";
+    position: absolute;
+    bottom: 0.5em;
+    left: 0em;
+    width: 4em;
+    height: 5em;
+    border: solid;
+    background-color: black;
+    border-top-right-radius: 50%;
+    transform: rotateZ(20deg);
+}
+
+.bodyLower::before {
+    content: "";
+    position: absolute;
+    bottom: -1em;
+    right: -1em;
+    width: 4em;
+    height: 5em;
+    border: solid;
+    background-color: black;
+    border-bottom-left-radius: 50%;
+    transform: rotateZ(45deg);
+}
+
+.strap {
+    position: absolute;
+    width: 2.5em;
+    height: 5em;
+    top: -1em;
+    right: 3em;
+    background-color: black;
+    border-bottom-left-radius: 40%;
+    border-bottom-right-radius: 40%;
+    transform: rotateZ(45deg);
+}
+
+.strap::after {
+    content: "";
+    position: absolute;
+    height: 5em;
+    width: 1em;
+    background: black;
+    right: 0.75em;
+    top: 4.75em;
+}
+
+.stripes {
+    position: relative;
+}
+
+.stripes::after {
+    content: "";
+    position: absolute;
+    width: 15em;
+    height: 3px;
+    background-color: black;
+    top: 100px;
+    left: -100%;
+}
+
+.stripes::before {
+    content: "";
+    position: absolute;
+    height: 5em;
+    width: 3px;
+    background-color: black;
+    top: 100px;
+    left: 50%;
+}
+
+.stripes > * {
+    position: absolute;
+    width: 3px;
+    background-color: black;
+}
+
+.stripeLeft {
+    left: -2.5em;
+    top: 2em;
+    height: 6.5em;
+    transform: rotate(60deg);
+}
+
+.stripeRight {
+    right: -2.5em;
+    top: 2em;
+    height: 6.5em;
+    transform: rotate(-60deg);
+}
+
+.swordContainer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: -15;
+}
+
+.sword {
+    position: relative;
+    width: 1.15em;
+    height: 16em;
+    background-color: black;
+    transform-origin: bottom center;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.35);
+    border-top: 8px solid white;
+    transform: rotateZ(35deg);
+    transition: transform 150ms linear;
+    z-index: 20;
+}
+
+.sword:nth-child(2) {
+    transform: rotateZ(-35deg);
+    border-top: 8px solid white;
+    transition-delay: 100ms;
+    z-index: 20;
+}
+
+.sword::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 1em;
+    background-color: black;
+    top: -1.5em;
+    left: 0;
+    z-index: 20;
+}
