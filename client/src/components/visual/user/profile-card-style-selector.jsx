@@ -1,13 +1,22 @@
 import { useState, useContext, useRef, useEffect } from "react";
 import { FaPaintBrush, FaLock, FaCheckCircle } from "react-icons/fa";
-import CardStyleContext from "../../context/card-style-context.js";
-import { useAuth } from "../providers/auth-context-provider.jsx";
-import { updateUser } from "../../services/user-service.js";
-import CardBack from "./game/card/card-back/card-back.jsx";
-import LanguageContext from "../../context/language.js";
-import { Bg } from "../../../../shared/constants/game-constants.json";
+import CardStyleContext from "../../../context/card-style-context.js";
+import { useAuth } from "../../providers/auth-context-provider.jsx";
+import { updateUser } from "../../../services/user-service.js";
+import CardBack from "../game/card/card-back/card-back.jsx";
+import LanguageContext from "../../../context/language.js";
+import { Bg } from "../../../../../shared/constants/game-constants.json";
 
-const level = 5; //TODO make dynamic
+// Classic is always unlocked. Other styles unlock at increasing levels.
+function getUnlockLevel(index) {
+  if (index === 0) return 0; // classic
+  // Progressive unlock: first unlock at 5, then +4, +5, +6, ... (no max step)
+  let level = 5;
+  for (let i = 1; i < index; i++) {
+    level += 3 + i; // increases by 4, 5, 6, 7, ...
+  }
+  return level;
+}
 export default function CardStyleSelector({ size }) {
   const i18n = useContext(LanguageContext);
   const { cardStyle, setCardStyle, availableStyles } =
@@ -17,6 +26,7 @@ export default function CardStyleSelector({ size }) {
   const [selected, setSelected] = useState(cardStyle);
   const menuRef = useRef(null);
   const userLevel = user?.level ?? 0;
+  const isAdmin = user?.role === "admin";
 
   useEffect(() => {
     setSelected(cardStyle);
@@ -34,7 +44,9 @@ export default function CardStyleSelector({ size }) {
   }, []);
 
   function handleSelect(style) {
-    if (userLevel < level) return;
+    const styleIndex = availableStyles.findIndex(s => s.code === style);
+    const unlockLevel = getUnlockLevel(styleIndex);
+    if (!isAdmin && userLevel < unlockLevel) return;
     setSelected(style);
   }
 
@@ -54,10 +66,12 @@ export default function CardStyleSelector({ size }) {
   const selectedStyleObj = availableStyles.find(
     (style) => style.code === selected,
   );
+  const selectedStyleIndex = availableStyles.findIndex(s => s.code === selected);
+  const unlockLevel = getUnlockLevel(selectedStyleIndex);
   const isSelectedLocked =
-    selectedStyleObj && selectedStyleObj.code !== "classic" && userLevel < level;
+    selectedStyleObj && selectedStyleObj.code !== "classic" && !isAdmin && userLevel < unlockLevel;
   const canConfirm =
-    userLevel >= level && selected !== cardStyle && !isSelectedLocked;
+    (isAdmin || userLevel >= unlockLevel) && selected !== cardStyle && !isSelectedLocked;
 
   return (
     <div className="relative inline-block" ref={menuRef}>
@@ -70,15 +84,16 @@ export default function CardStyleSelector({ size }) {
           className="hover:!bg-blue-700 transition p-1 rounded"
           size={size || 32}
         />
-        <span className="text-base leading-none">
+  <span className="text-base leading-none flex items-center h-[32px] sm:whitespace-nowrap whitespace-normal max-w-xs">
           {i18n.translate("setCardStyle")}
         </span>
       </span>
       {showMenu && (
         <div className="absolute right-0 bottom-full mb-2 !bg-white/90 border !border-gray-300 rounded shadow-lg p-4 z-50 min-w-[260px]">
           <div className="grid grid-cols-3 gap-3 mb-4">
-            {availableStyles.map((style) => {
-              const isLocked = style.code !== "classic" && userLevel < level;
+            {availableStyles.map((style, idx) => {
+              const unlockLevel = getUnlockLevel(idx);
+              const isLocked = style.code !== "classic" && !isAdmin && userLevel < unlockLevel;
               const isSelected = selected === style.code;
               return (
                 <button
@@ -89,7 +104,7 @@ export default function CardStyleSelector({ size }) {
                     ${isLocked ? "opacity-60 cursor-not-allowed" : "hover:!border-blue-400 hover:!bg-blue-50"}`}
                   title={
                     isLocked
-                      ? i18n.translate("cardStyle.unlock") + level
+                      ? i18n.translate("cardStyle.unlock") + unlockLevel
                       : i18n.translate(`cardStyle.${style.code}`)
                   }
                   disabled={isLocked}

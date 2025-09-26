@@ -1,11 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
+import ProgressBar from "../components/visual/user/profile-progress-bar.jsx";
+import ProfileLangSelector from "../components/visual/profile-lang-selector.jsx";
 import { updateUserData } from "../services/user-service.js";
 import { getAvatar } from "../services/user-service.js";
 import UserContext from "../context/user.js";
 import { FaPencilAlt } from "react-icons/fa";
 import LanguageContext from "../context/language.js";
 import PageContainer from "../components/visual/page-container.jsx";
-import CardStyleSelector from "../components/visual/profile-card-style-selector.jsx";
+import CardStyleSelector from "../components/visual/user/profile-card-style-selector.jsx";
 import {
   Roles,
   DEFAULT_NAME,
@@ -21,28 +23,15 @@ function Profile() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const level = userContext.user.level ?? 1;
   const xp = userContext.user.xp ?? 0;
-  const xpPercent = Math.min((xp / 1000) * 100, 100);
+
+  const [preferLang, setPreferLang] = useState(!!userContext?.user?.language);
+  const [selectedLang, setSelectedLang] = useState(
+    userContext?.user?.language || "",
+  );
+  const languageContext = useContext(LanguageContext);
   const email = userContext.user.email || "";
   const role = userContext.user.role || i18n.translate(Roles.PLEB);
   const avatar = getAvatar(userContext.user.id, userContext.user.sys.rev);
-  const [preferLang, setPreferLang] = useState(!!userContext?.user?.language);
-  const [selectedLang, setSelectedLang] = useState(
-    userContext?.user?.language || null,
-  );
-  const languageContext = useContext(LanguageContext);
-
-  // name
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (name && name !== userContext.user.name) {
-        setIsSubmitting(true);
-        updateUserData(userContext, "name", name).finally(() =>
-          setIsSubmitting(false),
-        );
-      }
-    }, 600);
-    return () => clearTimeout(timeout);
-  }, [name]);
 
   // avataru
   useEffect(() => {
@@ -52,26 +41,6 @@ function Profile() {
       setSelectedFile(null),
     ).finally(() => setIsSubmitting(false));
   }, [selectedFile]);
-
-  // language
-  useEffect(() => {
-    if (!preferLang) {
-      if (userContext.user.language !== null) {
-        setIsSubmitting(true);
-        updateUserData(userContext, "language", null).finally(() =>
-          setIsSubmitting(false),
-        );
-      }
-      setSelectedLang(null);
-      return;
-    }
-    if (selectedLang && selectedLang !== userContext.user.language) {
-      setIsSubmitting(true);
-      updateUserData(userContext, "language", selectedLang, () =>
-        languageContext.setContextLanguage(selectedLang),
-      ).finally(() => setIsSubmitting(false));
-    }
-  }, [preferLang, selectedLang, userContext.user.language]);
 
   // Handler for avatar change
   function handleAvatarChange(e) {
@@ -136,55 +105,21 @@ function Profile() {
             </div>
           </div>
         </div>
-        <div className="w-full text-left">
-          <p className="text-sm text-gray-300 mb-1">
-            {i18n.translate("earnedXp")}
-          </p>
-          <div className="w-full bg-gray-700 h-4 rounded-full overflow-hidden relative">
-            <div
-              className="bg-green-500 h-full transition-all duration-300"
-              style={{ width: `${xpPercent}%` }}
-            />
-            <span
-              className="absolute top-1/2 -translate-y-1/2 text-sm"
-              style={{ left: `calc(${xpPercent}% - 10px)` }}
-            >
-              🚌
-            </span>
-          </div>
-          <p className="text-xs text-gray-400 text-right mt-1">{xp} XP</p>
-        </div>
-        <div className="flex items-center gap-3 mb-2">
-          <label className="inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              className="sr-only peer"
-              checked={preferLang}
-              onChange={(e) => setPreferLang(e.target.checked)}
-            />
-            <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
-            <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-              {selectedLang
-                ? i18n.translate("preferredLanguage") + " " + selectedLang
-                : i18n.translate("setPrefLang")}
-            </span>
-          </label>
+        <ProgressBar level={level} xp={xp} i18n={i18n} />
+  <div className="flex flex-col md:flex-row items-center justify-center gap-3 mb-2 w-full max-w-2xl mx-auto">
+          <ProfileLangSelector
+            preferLang={preferLang}
+            setPreferLang={setPreferLang}
+            selectedLang={selectedLang}
+            setSelectedLang={setSelectedLang}
+            languageContext={languageContext}
+            i18n={i18n}
+            userContext={userContext}
+            isSubmitting={isSubmitting}
+            setIsSubmitting={setIsSubmitting}
+          />
           <CardStyleSelector />
         </div>
-        {preferLang && (
-          <select
-            value={selectedLang || ""}
-            onChange={(e) => setSelectedLang(e.target.value)}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          >
-            <option value="">🌎</option>
-            {languageContext.languages.map((lang) => (
-              <option key={lang.code} value={lang.code}>
-                {lang.name}
-              </option>
-            ))}
-          </select>
-        )}
         {isSubmitting && (
           <p className="text-sm text-gray-500">{i18n.translate("saving")}</p>
         )}
