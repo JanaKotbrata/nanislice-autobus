@@ -75,7 +75,7 @@
     background-color: #fb140d;
     box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
     overflow: hidden;
-    z-index: 10;
+    z-index: 1;
 }
 
 .head::after,

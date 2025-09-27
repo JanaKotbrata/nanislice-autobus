@@ -56,11 +56,12 @@ export default function CardStyleContextProvider({ children }) {
         setCardStyle,
         availableStyles: [
           { code: DEFAULT_CARD_STYLE },
-          { code: "witcher" },
-          { code: "harrypotter" },
-          { code: "flower" },
-          { code: "flowerdark" },
           { code: "deadpool" },
+          { code: "flower" },
+          { code: "witcher" },
+          { code: "flowerdark" },
+          { code: "harrypotter" },
+          { code: "starwars" },
         ],
         getCardBgClass,
       }}

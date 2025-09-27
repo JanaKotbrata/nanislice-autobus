@@ -1,5 +1,6 @@
 import { useState, useContext, useRef, useEffect } from "react";
 import { FaPaintBrush, FaLock, FaCheckCircle } from "react-icons/fa";
+import ProfileProgressBar from "./profile-progress-bar.jsx";
 import CardStyleContext from "../../../context/card-style-context.js";
 import { useAuth } from "../../providers/auth-context-provider.jsx";
 import { updateUser } from "../../../services/user-service.js";
@@ -11,13 +12,13 @@ import { Bg } from "../../../../../shared/constants/game-constants.json";
 function getUnlockLevel(index) {
   if (index === 0) return 0; // classic
   // Progressive unlock: first unlock at 5, then +4, +5, +6, ... (no max step)
-  let level = 5;
+  let level = 2;
   for (let i = 1; i < index; i++) {
     level += 3 + i; // increases by 4, 5, 6, 7, ...
   }
   return level;
 }
-export default function CardStyleSelector({ size }) {
+export default function CardStyleSelector({ size, winnerId, xp }) {
   const i18n = useContext(LanguageContext);
   const { cardStyle, setCardStyle, availableStyles } =
     useContext(CardStyleContext);
@@ -27,6 +28,9 @@ export default function CardStyleSelector({ size }) {
   const menuRef = useRef(null);
   const userLevel = user?.level ?? 0;
   const isAdmin = user?.role === "admin";
+
+  // Zobrazit progress bar pouze pro vítěze
+  const isWinner = user?.id === winnerId;
 
   useEffect(() => {
     setSelected(cardStyle);
@@ -75,6 +79,16 @@ export default function CardStyleSelector({ size }) {
 
   return (
     <div className="relative inline-block" ref={menuRef}>
+      {/* Progress bar pouze pro vítěze */}
+      {isWinner && xp?.[user?.id] && (
+        <div className="mb-4">
+          <ProfileProgressBar
+            level={user.level}
+            xp={xp[user.id].xp}
+            i18n={i18n}
+          />
+        </div>
+      )}
       <span
         className="flex items-center gap-2 cursor-pointer select-none min-h-[40px] px-2"
         style={{ lineHeight: 1.2 }}
@@ -84,7 +98,7 @@ export default function CardStyleSelector({ size }) {
           className="hover:!bg-blue-700 transition p-1 rounded"
           size={size || 32}
         />
-  <span className="text-base leading-none flex items-center h-[32px] sm:whitespace-nowrap whitespace-normal max-w-xs">
+        <span className="text-base leading-none flex items-center h-[32px] sm:whitespace-nowrap whitespace-normal max-w-xs">
           {i18n.translate("setCardStyle")}
         </span>
       </span>

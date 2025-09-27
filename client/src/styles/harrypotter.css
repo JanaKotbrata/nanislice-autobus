@@ -48,8 +48,12 @@
     right: 8px;
     width: 8px;
     height: 8px;
-    border-radius: 50%;
-    background: #331703;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    background: radial-gradient(circle at 60% 40%, #ffe9a3 60%, #f7d36b 80%, #331703 100%);
+    box-shadow:
+        2px 2px 4px 0px #d6b85c,
+        -2px -2px 6px 0px #fffbe6,
+        3px 6px 8px 0px #bfae6a;
     pointer-events: none;
     transition: opacity 0.5s;
 }
@@ -96,8 +100,8 @@
     height:100%;
     border-radius:50%;
     background:#efbf65;
-    border:solid .42em #3c2e2d;
-    border-width:.62em;
+    border: .62em solid #3c2e2d;
+    box-shadow: 0 0 32px 8px #ffe066, 0 0 12px 2px #ffd700;
     z-index: 200;
 }
 .snitch .obj .snitch-body .flourish{
@@ -302,8 +306,7 @@
         border-width:.4em;
     }
     .snitch .obj .snitch-body .flourish{
-        border:solid .42em #3c2e2d;
-        border-width:.3em;
+        border: .3em solid #3c2e2d;
     }
     .snitch .obj .snitch-body .flourish .line{
         height:.3em;

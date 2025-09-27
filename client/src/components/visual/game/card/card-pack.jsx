@@ -52,7 +52,7 @@ function CardPack({
         <CardBack card={{ bg }} />
         {text && (
           <p
-            className={`!bg-gray-600/50 rounded-md border-1 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 px-1`}
+            className={`!bg-gray-600/50 rounded-md border-1 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 px-1 z-50`}
           >
             {text}
           </p>

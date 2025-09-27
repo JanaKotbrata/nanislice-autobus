@@ -76,7 +76,7 @@ function VolumeSettings({ size }) {
       )}
 
       {showMenu && (
-        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg p-4 z-50">
+        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg p-4 !z-50">
           <label className="block text-sm text-gray-700 mb-2">
             {i18n.translate("volume")}
           </label>

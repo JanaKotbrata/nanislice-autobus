@@ -499,6 +499,11 @@
         "cs": "Deadpool",
         "en": "Deadpool",
         "sk": "Deadpool"
+      },
+      "starwars": {
+        "cs": "Star Wars",
+        "en": "Star Wars",
+        "sk": "Star Wars"
       }
   },
   "saveVolumeTitle": {

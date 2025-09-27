@@ -1,5 +1,5 @@
-import React, { useLayoutEffect, useContext } from "react";
-import CardStyleContext from "../../../../context/card-style-context.js";
+import React, { useLayoutEffect } from "react";
+import CardBack from "./card-back/card-back.jsx";
 
 function AnimationCard({
   x,
@@ -9,9 +9,7 @@ function AnimationCard({
   duration = 1,
   rotateTo = 0,
   bg,
-  style = "",
 }) {
-  const { getCardBgClass } = useContext(CardStyleContext);
   const [targetCoords, setTargetCoords] = React.useState({
     x: startX,
     y: startY,
@@ -22,11 +20,9 @@ function AnimationCard({
     setTargetCoords({ x: x, y: y, rotate: rotateTo });
   }, []);
 
-  const backgroundColor = getCardBgClass(bg);
-
   return (
     <div
-      className={`w-11 h-16 sm:w-14 sm:h-22 md:w-16 md:h-24 rounded-md shadow-md absolute z-50 border-2 ${backgroundColor} !bg-white ${style}`}
+      className={`absolute z-50`}
       style={{
         top: targetCoords.y,
         left: targetCoords.x,
@@ -35,7 +31,9 @@ function AnimationCard({
         position: "absolute",
         zIndex: 50,
       }}
-    />
+    >
+      <CardBack card={{bg}} />
+    </div>
   );
 }
 

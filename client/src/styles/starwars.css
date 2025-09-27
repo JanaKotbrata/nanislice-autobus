@@ -1,0 +1,134 @@
+/* Animace pro lightsaber a logo */
+.starwars-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.starwars-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.4s cubic-bezier(.4,2,.3,1), filter 0.4s;
+}
+.starwars-card-back:hover .starwars-logo {
+    transform: scale(0.6) translateY(-30px);
+    filter: brightness(0.7);
+}
+.lightsaber {
+    position: absolute;
+    left: 50%;
+    bottom: 8%;
+    width: 12px;
+    height: 80px;
+    z-index: 10;
+    pointer-events: none;
+    transform: translateX(-50%);
+}
+.lightsaber::before {
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 18px;
+    background: repeating-linear-gradient(
+            to top,
+            #444 0px,
+            #444 3px,
+            #888 3px,
+            #888 6px
+    );
+    border-radius: 6px 6px 10px 10px;
+    box-shadow: 0 2px 8px #222;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.4s cubic-bezier(.4,2,.3,1);
+    transition-delay: 0.4s;
+}
+.starwars-card-back:hover .lightsaber::before {
+    opacity: 1;
+    transition-delay: 0s;
+}
+.lightsaber::after {
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%) scaleY(0);
+    transform-origin: bottom center;
+    width: 6px;
+    height: 62px;
+    border-radius: 3px 3px 12px 12px;
+    background: linear-gradient(to top, #fff 60%, #eee 80%, #fff 100%);
+    box-shadow: 0 0 16px 6px #fff8, 0 0 32px 12px #fff6;
+    z-index: 1;
+    transition: transform 1s cubic-bezier(.4,2,.3,1);
+    transition-delay: 0s;
+}
+.starwars-card-back:hover .lightsaber::after {
+    transform: translateX(-50%) scaleY(1);
+    transition-delay: 0.4s;
+}
+
+@media (max-width: 600px) {
+    .lightsaber {
+        width: 8px !important;
+        height: 48px !important;
+    }
+    .lightsaber::before {
+        width: 8px !important;
+        height: 12px !important;
+    }
+    .lightsaber::after {
+        width: 4px !important;
+        height: 36px !important;
+    }
+}
+.starwars-card-back {
+    border-radius: 0.4em;
+    overflow: hidden;
+    border: 3px solid #1e1c18;
+    background: radial-gradient(ellipse at 60% 40%, #242520 60%, #000000 100%);
+    box-shadow: 0 6px 18px rgba(232, 232, 63, 0.51), 0 0 0 4px rgba(58, 63, 18, 0.8) inset;
+    position: relative;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.starwars-card-back--red {
+
+}
+.starwars-card-back--blue {
+
+}
+.starwars-card-back--red .lightsaber::after {
+    background: linear-gradient(to top, #ff2222 60%, #fff 80%, #ff2222 100%);
+    box-shadow: 0 0 16px 6px #ff2222, 0 0 32px 12px #ff2222;
+}
+.starwars-card-back--blue .lightsaber::after {
+    background: linear-gradient(to top, #2288ff 60%, #fff 80%, #2288ff 100%);
+    box-shadow: 0 0 16px 6px #2288ff, 0 0 32px 12px #2288ff;
+}
+.starwars-card-back:hover,
+.starwars-card-back--red:hover,
+.starwars-card-back--blue:hover {
+    border-color: #f7e9c1;
+    box-shadow: 0 0 24px #f7e9c1cc, 0 6px 18px rgba(180,180,120,0.25);
+}
+.starwars-icon {
+    font-size: 2.2em;
+    color: #111;
+    filter: drop-shadow(0 0 8px #fff8);
+}
+.starwars-card-back--red .starwars-icon {
+    color: #111;
+    filter: drop-shadow(0 0 8px #ff2222) drop-shadow(0 0 16px #ff2222);
+}
+.starwars-card-back--blue .starwars-icon {
+    color: #111;
+    filter: drop-shadow(0 0 8px #2288ff) drop-shadow(0 0 16px #2288ff);
+}

@@ -1,5 +1,3 @@
-export const maxHandSize = 5;
-
 export const CardBgClassMap = {
   classic: {
     RED: "back-card-red",
@@ -24,5 +22,9 @@ export const CardBgClassMap = {
   deadpool: {
     RED: "deadpool-card-back deadpool-card-back--red",
     BLUE: "deadpool-card-back deadpool-card-back--blue",
+  },
+  starwars: {
+    RED: "starwars-card-back starwars-card-back--red",
+    BLUE: "starwars-card-back starwars-card-back--blue",
   },
 };

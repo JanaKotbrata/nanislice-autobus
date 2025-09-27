@@ -7,6 +7,7 @@ import HarryPotter from "./harrypotter.jsx";
 import Flower from "./flower.jsx";
 import Deadpool from "./deadpool.jsx";
 import FlowerDark from "./flower-dark.jsx";
+import StarWars from "./starwars.jsx";
 
 export default function CardBack({ card, forceStyle }) {
   const { cardStyle } = useContext(CardStyleContext);
@@ -19,6 +20,7 @@ export default function CardBack({ card, forceStyle }) {
     flower: Flower,
     flowerdark: FlowerDark,
     deadpool: Deadpool,
+    starwars: StarWars,
   };
 
   const CardComponent = styleComponentMap[style] || Classic;

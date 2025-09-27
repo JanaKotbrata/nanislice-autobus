@@ -15,50 +15,56 @@ function HarryPotter({
       className={`${size} ${bgClass} flex items-center justify-center rounded-lg shadow-lg harrypotter-card-back`}
       style={{ position: "relative" }}
     >
-      <svg
-        className="harrypotter-window-svg"
-        width="52.04311mm"
-        height="162.30765mm"
-        viewBox="0 0 52.04311 162.30765"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-        xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-        xmlns:svg="http://www.w3.org/2000/svg"
+      {/* Quidditch goals as background */}
+      <div
+        className="absolute left-0 right-0 flex flex-row items-end justify-center gap-2"
+        style={{ top: "11%", zIndex: 1, pointerEvents: "none", left: "-9px" }}
       >
-        <g
-          inkscape:label="Vrstva 1"
-          inkscape:groupmode="layer"
-          id="layer1"
-          transform="translate(-331.22037,-119.51381)"
+        {/* Left goal - shorter */}
+        <svg
+          className="harrypotter-window-svg"
+          width="52"
+          height="80"
+          viewBox="0 0 52.04311 162.30765"
+          style={{ minWidth: 52, height: 80 }}
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <rect
-            style={{ fill: "#554400", fillOpacity: 1, strokeWidth: 0.104586 }}
-            id="rect127"
-            width="2.590133"
-            height="109.75691"
-            x="355.12271"
-            y="172.06456"
-            ry="1.5000944"
-          />
-          <ellipse
-            style={{
-              fill: "none",
-              fillOpacity: 1,
-              stroke: "#554400",
-              strokeWidth: 2.59504,
-              strokeDasharray: "none",
-              strokeOpacity: 1,
-            }}
-            id="path127"
-            cx="357.24194"
-            cy="147.06299"
-            rx="24.724035"
-            ry="26.251652"
-          />
-        </g>
-      </svg>
-      <div className="harrypotter-frame">
+          <g transform="translate(-300.22037,-75.51381)">
+            <rect style={{ fill: "#554400", fillOpacity: 1, strokeWidth: 0.104586 }} width="2.590133" height="70" x="355.12271" y="165.06456" ry="1.5" />
+            <ellipse style={{ fill: "none", stroke: "#554400", strokeWidth: 2.59504 }} cx="357.24194" cy="147.06299" rx="18" ry="18" />
+          </g>
+        </svg>
+        {/* Center goal - tallest */}
+        <svg
+          className="harrypotter-window-svg"
+          width="52"
+          height="80"
+          viewBox="0 0 52.04311 162.30765"
+          style={{ minWidth: 52, height: 80 }}
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g transform="translate(-331.22037,-119.51381)">
+            <rect style={{ fill: "#554400", fillOpacity: 1, strokeWidth: 0.104586 }} width="2.590133" height="109.75691" x="355.12271" y="172.06456" ry="1.5" />
+            <ellipse style={{ fill: "none", stroke: "#554400", strokeWidth: 2.59504 }} cx="357.24194" cy="147.06299" rx="24.724035" ry="26.251652" />
+          </g>
+        </svg>
+        {/* Right goal - shorter */}
+        <svg
+          className="harrypotter-window-svg"
+          width="52"
+          height="80"
+          viewBox="0 0 52.04311 162.30765"
+          style={{ minWidth: 52, height: 80 }}
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g transform="translate(-362.22037,-55.51381)">
+            <rect style={{ fill: "#554400", fillOpacity: 1, strokeWidth: 0.104586 }} width="2.590133" height="70" x="355.12271" y="165.06456" ry="1.5" />
+            <ellipse style={{ fill: "none", stroke: "#554400", strokeWidth: 2.59504 }} cx="357.24194" cy="147.06299" rx="18" ry="18" />
+          </g>
+        </svg>
+      </div>
+      {/* Foreground: snitch */}
+      <div className="harrypotter-frame" style={{ position: "relative", zIndex: 2 }}>
         <div className="snitch">
           <div className="obj animate-always">
             <div className="snitch-body">
