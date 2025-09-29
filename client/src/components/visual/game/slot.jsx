@@ -3,6 +3,7 @@ import { useDrop } from "react-dnd";
 import Card from "./card/card.jsx";
 import SlotContext from "../../../context/slot.js";
 import CardBack from "./card/card-back/card-back.jsx";
+import { CARD } from "../../../constants/game.js";
 
 function Slot({
   card,
@@ -24,7 +25,7 @@ function Slot({
   const isActive = getActiveSlot() === slotIndex;
 
   const [, drop] = useDrop({
-    accept: "CARD",
+    accept: CARD,
     drop: (item) => {
       setActiveSlot(null);
       onDropCard?.(item.card, index);

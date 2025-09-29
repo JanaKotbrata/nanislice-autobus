@@ -1,11 +1,11 @@
-import React from "react";
 import UserContext from "../../context/user";
 import { useAuth } from "./auth-context-provider.jsx";
 import { updateUser } from "../../services/user-service.js";
+import { useState } from "react";
 
 function UserContextProvider({ children }) {
   const { user: authUser, token } = useAuth();
-  const [user, setUser] = React.useState(authUser);
+  const [user, setUser] = useState(authUser);
 
   async function update(formData) {
     try {

@@ -9,7 +9,7 @@ import Deadpool from "./deadpool.jsx";
 import FlowerDark from "./flower-dark.jsx";
 import StarWars from "./starwars.jsx";
 
-export default function CardBack({ card, forceStyle }) {
+export default function CardBack({ card, forceStyle, animated = true }) {
   const { cardStyle } = useContext(CardStyleContext);
   const style = forceStyle || cardStyle;
 
@@ -24,11 +24,13 @@ export default function CardBack({ card, forceStyle }) {
   };
 
   const CardComponent = styleComponentMap[style] || Classic;
+
   return (
     <CardComponent
       card={card}
       forceStyle={forceStyle}
       size={"w-11 h-16 sm:w-14 sm:h-22 md:w-16 md:h-24"}
+      animated={animated}
     />
   );
 }

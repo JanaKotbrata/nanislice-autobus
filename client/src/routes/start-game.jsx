@@ -7,7 +7,7 @@ import {
   createGame,
   getGame,
   getGameByUser,
-} from "../services/game-service.jsx";
+} from "../services/game-service.js";
 import GameContext from "../context/game.js";
 import { FaSignInAlt } from "react-icons/fa";
 import Button from "../components/visual/button.jsx";
@@ -15,8 +15,8 @@ import Avatar from "../components/visual/user/avatar.jsx";
 import LanguageContext from "../context/language.js";
 import InfoAlert from "../components/visual/alerts/info-alert.jsx";
 import PageContainer from "../components/visual/page-container.jsx";
-import PageHeader from "../components/visual/page-header.jsx";
 import { States } from "../../../shared/constants/game-constants.json";
+import { Routes } from "../constants/routes.js";
 
 function StartGame() {
   const i18n = useContext(LanguageContext);
@@ -30,9 +30,9 @@ function StartGame() {
     if (!response) return;
     gameContext.setContextGame(response);
     if (response.state === States.ACTIVE) {
-      navigate(`/game/${response.code}`);
+      navigate(Routes.GAME(response.code));
     } else if (response.state === States.INITIAL) {
-      navigate(`/lobby/${response.code}`);
+      navigate(Routes.LOBBY(response.code));
     }
   }
 
@@ -57,7 +57,7 @@ function StartGame() {
           token,
         );
         gameContext.setContextGame(game);
-        navigate(`/lobby/${game?.code}`);
+        navigate(Routes.LOBBY(game?.code));
       } else {
         alert(error.message);
         console.error("Chyba při vytváření hry:", error);
@@ -73,17 +73,15 @@ function StartGame() {
     try {
       let game = await addPlayer({ gameCode }, token);
       gameContext.setContextGame(game);
-      navigate(`/lobby/${gameCode}`);
+      navigate(Routes.LOBBY(gameCode));
     } catch (error) {
       alert(error.message);
       console.error("Chyba při připojování do hry:", error);
     }
   }
 
-  const header = <PageHeader>{i18n.translate("startGameTitle")}</PageHeader>;
-
   return (
-    <PageContainer header={header}>
+    <PageContainer header={i18n.translate("startGameTitle")}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-10 pt-8">
         <div className="flex flex-col items-center justify-center border-b-2 md:border-b-0 md:border-r-2 border-cyan-400/50 pb-6 md:pb-0 md:pr-4">
           <Avatar user={user} gameCode={gameContext.gameCode} isMyself={true} />

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
 import Member from "../components/visual/game/member.jsx";
@@ -13,7 +13,7 @@ import {
   addPlayer,
   removePlayer,
   setPlayersOrder,
-} from "../services/game-service.jsx";
+} from "../services/game-service.js";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/providers/auth-context-provider.jsx";
 import { getAvatar } from "../services/user-service.js";
@@ -25,6 +25,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import PageContainer from "../components/visual/page-container.jsx";
 import { States } from "../../../shared/constants/game-constants.json";
+import { Routes } from "../constants/routes.js";
 
 function Lobby() {
   const i18n = useContext(LanguageContext);
@@ -32,9 +33,7 @@ function Lobby() {
   const gameContext = useContext(GameContext);
   const { startAlert, setStartAlert } = useAlertContext();
   const { user, token } = useAuth();
-  const [orderedPlayers, setOrderedPlayers] = React.useState(
-    gameContext.players,
-  );
+  const [orderedPlayers, setOrderedPlayers] = useState(gameContext.players);
   // Ref to always have the latest orderedPlayers for DnD handlers
   const orderedPlayersRef = useRef(orderedPlayers);
   useEffect(() => {
@@ -57,7 +56,7 @@ function Lobby() {
 
   useEffect(() => {
     if (gameContext.gameState === States.ACTIVE) {
-      navigate(`/game/${gameContext.gameCode}`);
+      navigate(Routes.GAME(gameContext.gameCode));
     }
   }, [gameContext.gameState]);
 
@@ -73,7 +72,15 @@ function Lobby() {
           },
           token,
         );
+        const currentGameCode = gameContext.gameCode;
         gameContext.setContextGame(game);
+        if (game.code !== currentGameCode) {
+          if (game.state === States.INITIAL) {
+            navigate(Routes.LOBBY(game.code));
+          } else {
+            navigate(Routes.GAME(game.code));
+          }
+        }
       }
     }
 
@@ -120,13 +127,13 @@ function Lobby() {
         token,
       );
       if (!game || !Array.isArray(game.players)) {
-        navigate("/");
+        navigate(Routes.HOME);
       } else {
         gameContext.setContextGame(game);
       }
     } catch (error) {
       console.error("Chyba při odchodu ze hry:", error);
-      navigate("/");
+      navigate(Routes.HOME);
     }
   }
 
@@ -148,7 +155,7 @@ function Lobby() {
   );
 
   return (
-    <PageContainer header={header}>
+    <PageContainer header={header} isCustomHeader={true}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-10 pt-8">
         <div className="flex flex-col items-center border-b md:border-b-0 md:border-r-2 border-cyan-400/30 md:pr-6 gap-6 w-full">
           <div
@@ -175,6 +182,7 @@ function Lobby() {
                         <Member
                           isCreator={!!player.creator}
                           isMyself={!!player.myself}
+                          level={player.level}
                           picture={avatarUri}
                         >
                           <span className="truncate">{player.name}</span>
@@ -220,10 +228,10 @@ function Lobby() {
           )}
           {!shouldRender && (
             <div
-              className={`p-6 bg-gray-500/40 ${gameContext?.ready || myself?.ready ? "" : "animate-[pulse_2s_ease-in-out_infinite]"} rounded-lg`}
+              className={`p-6 bg-gray-500/40 ${myself?.ready ? "" : "animate-[pulse_2s_ease-in-out_infinite]"} rounded-lg`}
             >
               <Button onClick={() => gameContext.handleReady()}>
-                {gameContext?.ready || myself?.ready ? (
+                {myself?.ready ? (
                   <FaCheck className="w-5 h-5 mx-auto" />
                 ) : (
                   i18n.translate("iCanPlay")

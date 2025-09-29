@@ -6,6 +6,7 @@ function Witcher({
   card,
   forceStyle,
   size = "w-11 h-16 sm:w-14 sm:h-22 md:w-16 md:h-24 ",
+  animated = false,
 }) {
   const { getCardBgClass } = useContext(CardStyleContext);
   const bg = card?.bg;

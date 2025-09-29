@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import { useLayoutEffect, useState } from "react";
 import CardBack from "./card-back/card-back.jsx";
 
 function AnimationCard({
@@ -10,7 +10,7 @@ function AnimationCard({
   rotateTo = 0,
   bg,
 }) {
-  const [targetCoords, setTargetCoords] = React.useState({
+  const [targetCoords, setTargetCoords] = useState({
     x: startX,
     y: startY,
     rotate: 0,
@@ -32,7 +32,7 @@ function AnimationCard({
         zIndex: 50,
       }}
     >
-      <CardBack card={{bg}} />
+      <CardBack card={{ bg }} />
     </div>
   );
 }

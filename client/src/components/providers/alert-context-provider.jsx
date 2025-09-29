@@ -5,12 +5,8 @@ import AlertContext from "../../context/alert.js";
 export function AlertContextProvider({ children }) {
   const alert = useAlerts();
 
-  const alertValue = {
-    ...alert,
-  };
-
   return (
-    <AlertContext.Provider value={alertValue}>{children}</AlertContext.Provider>
+    <AlertContext.Provider value={alert}>{children}</AlertContext.Provider>
   );
 }
 

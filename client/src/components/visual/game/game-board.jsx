@@ -1,5 +1,6 @@
 import { useContext, useRef, useEffect, useState } from "react";
 import CardPack from "./card/card-pack.jsx";
+import FinishedCardPack from "./card/finished-card-pack.jsx";
 import GameContext from "../../../context/game.js";
 import { useAlertContext } from "../../providers/alert-context-provider.jsx";
 import DangerAlert from "../alerts/danger-alert.jsx";
@@ -14,6 +15,7 @@ import {
   SlotTargets,
 } from "../../../../../shared/constants/game-constants.json";
 import { getSlotCoordinates } from "../../../utils/slot-coordinates.js";
+import GameboardColorContext from "../../../context/gameboard-color-context.js";
 
 function GameBoard({ player }) {
   const i18n = useContext(LanguageContext);
@@ -23,6 +25,7 @@ function GameBoard({ player }) {
   const cardAnimationContext = useContext(CardAnimationContext);
   const { playSound } = useAudio();
   const boardRef = useRef(null);
+  const { gameboardColor } = useContext(GameboardColorContext);
 
   const isCurrentPlayer =
     gameContext.players?.[gameContext.currentPlayer]?.myself;
@@ -138,6 +141,7 @@ function GameBoard({ player }) {
       <div
         ref={boardRef}
         className={`flex flex-col items-center justify-start board p-6 shadow-lg rounded-xl grow transition-all duration-300 overflow-x-hidden w-full ${shouldPulse ? "animate-[pulse_0.3s_ease-in-out_infinite]" : ""}`}
+        style={{ backgroundColor: gameboardColor }}
       >
         <div className="relative w-full mb-6 flex justify-center">
           <CardPack
@@ -153,15 +157,13 @@ function GameBoard({ player }) {
             style={{ transform: "rotate(25deg)" }}
           >
             {completedCardLength > 0 ? (
-              <CardPack
-                id={"ahoj"}
+              <FinishedCardPack
+                id={SlotTargets.COMPLETED_CARD_LIST}
                 bg={
                   gameContext.game.completedCardList[completedCardLength - 1]
                     ?.bg
                 }
                 count={completedCardLength}
-                isDrawedCard={false}
-                isInteractive={true}
               />
             ) : (
               <div className="w-16 h-24 opacity-0" />

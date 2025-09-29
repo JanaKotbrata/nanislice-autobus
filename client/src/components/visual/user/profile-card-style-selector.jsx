@@ -48,7 +48,7 @@ export default function CardStyleSelector({ size, winnerId, xp }) {
   }, []);
 
   function handleSelect(style) {
-    const styleIndex = availableStyles.findIndex(s => s.code === style);
+    const styleIndex = availableStyles.findIndex((s) => s.code === style);
     const unlockLevel = getUnlockLevel(styleIndex);
     if (!isAdmin && userLevel < unlockLevel) return;
     setSelected(style);
@@ -70,12 +70,19 @@ export default function CardStyleSelector({ size, winnerId, xp }) {
   const selectedStyleObj = availableStyles.find(
     (style) => style.code === selected,
   );
-  const selectedStyleIndex = availableStyles.findIndex(s => s.code === selected);
+  const selectedStyleIndex = availableStyles.findIndex(
+    (s) => s.code === selected,
+  );
   const unlockLevel = getUnlockLevel(selectedStyleIndex);
   const isSelectedLocked =
-    selectedStyleObj && selectedStyleObj.code !== "classic" && !isAdmin && userLevel < unlockLevel;
+    selectedStyleObj &&
+    selectedStyleObj.code !== "classic" &&
+    !isAdmin &&
+    userLevel < unlockLevel;
   const canConfirm =
-    (isAdmin || userLevel >= unlockLevel) && selected !== cardStyle && !isSelectedLocked;
+    (isAdmin || userLevel >= unlockLevel) &&
+    selected !== cardStyle &&
+    !isSelectedLocked;
 
   return (
     <div className="relative inline-block" ref={menuRef}>
@@ -103,11 +110,12 @@ export default function CardStyleSelector({ size, winnerId, xp }) {
         </span>
       </span>
       {showMenu && (
-        <div className="absolute right-0 bottom-full mb-2 !bg-white/90 border !border-gray-300 rounded shadow-lg p-4 z-50 min-w-[260px]">
+        <div className="absolute right-0 bottom-full mb-2 !bg-white/90 border !border-gray-300 shadow-lg p-4 z-50 min-w-[260px]">
           <div className="grid grid-cols-3 gap-3 mb-4">
             {availableStyles.map((style, idx) => {
               const unlockLevel = getUnlockLevel(idx);
-              const isLocked = style.code !== "classic" && !isAdmin && userLevel < unlockLevel;
+              const isLocked =
+                style.code !== "classic" && !isAdmin && userLevel < unlockLevel;
               const isSelected = selected === style.code;
               return (
                 <button

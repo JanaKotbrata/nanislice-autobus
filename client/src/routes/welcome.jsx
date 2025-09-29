@@ -12,14 +12,12 @@ function Welcome() {
   const [attemptedClick, setAttemptedClick] = useState(false);
 
   const header = (
-    <div className="flex items-center justify-between px-10 pt-8 pb-6 border-b border-cyan-700/30 bg-gray-950/60 rounded-t-3xl shadow-md">
-      <a href="/about" className="flex items-center gap-4 hover:opacity-80">
-        <img src={nanislice} alt="Nanislice logo" className="w-12 h-12" />
-        <span className="text-2xl font-bold tracking-wide text-white drop-shadow">
-          nanislice-autobus
-        </span>
-      </a>
-    </div>
+    <a href="/about" className="flex items-center gap-4 hover:opacity-80">
+      <img src={nanislice} alt="Nanislice logo" className="w-12 h-12" />
+      <span className="text-2xl font-bold tracking-wide text-white drop-shadow">
+        nanislice-autobus
+      </span>
+    </a>
   );
 
   return (

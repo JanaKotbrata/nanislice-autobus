@@ -464,6 +464,16 @@
       "en": "Save permanently",
       "sk": "Uložiť natrvalo"
     },
+    "setGameboardColor": {
+        "cs": "Nastav barvu herní plochy",
+        "en": "Set gameboard color",
+        "sk": "Nastav farbu hernej plochy"
+    },
+  "resetColor": {
+      "cs": "Resetovat barvu",
+      "en": "Reset color",
+      "sk": "Resetovať farbu"
+    },
     "cardStyle": {
       "unlock": {
         "en": "Unlock at level ",

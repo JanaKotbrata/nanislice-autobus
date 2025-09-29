@@ -2,6 +2,7 @@ import { useContext, useEffect } from "react";
 import { socket } from "../services/create-socket.js";
 import { useNavigate } from "react-router-dom";
 import GameContext from "../context/game.js";
+import { Routes } from "../constants/routes.js";
 
 export function useGameSocket(userId, showAlert, animateToSlot) {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export function useGameSocket(userId, showAlert, animateToSlot) {
       }
 
       socket.on("rematch", (data) => {
-        navigate(`/lobby/${data.gameCode}`);
+        navigate(Routes.LOBBY(data.gameCode));
       });
 
       socket.on("playerAdded", (data) => {

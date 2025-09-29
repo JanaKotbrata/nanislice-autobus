@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ProgressBar from "../components/visual/user/profile-progress-bar.jsx";
 import ProfileLangSelector from "../components/visual/profile-lang-selector.jsx";
 import { updateUserData } from "../services/user-service.js";
@@ -8,6 +8,7 @@ import { FaPencilAlt } from "react-icons/fa";
 import LanguageContext from "../context/language.js";
 import PageContainer from "../components/visual/page-container.jsx";
 import CardStyleSelector from "../components/visual/user/profile-card-style-selector.jsx";
+import GameboardColorPicker from "../components/visual/user/gameboard-color-picker.jsx";
 import {
   Roles,
   DEFAULT_NAME,
@@ -15,7 +16,7 @@ import {
 
 function Profile() {
   const i18n = useContext(LanguageContext);
-  const userContext = React.useContext(UserContext);
+  const userContext = useContext(UserContext);
   const [name, setName] = useState(
     userContext?.user?.name || i18n.translate(DEFAULT_NAME),
   );
@@ -33,7 +34,7 @@ function Profile() {
   const role = userContext.user.role || i18n.translate(Roles.PLEB);
   const avatar = getAvatar(userContext.user.id, userContext.user.sys.rev);
 
-  // avataru
+  // avatar
   useEffect(() => {
     if (!selectedFile) return;
     setIsSubmitting(true);
@@ -49,12 +50,7 @@ function Profile() {
   }
 
   return (
-    <PageContainer>
-      <div className="flex items-center justify-center px-10 pt-8 pb-6 border-b border-cyan-700/30 bg-gray-950/60 rounded-t-3xl shadow-md">
-        <span className="text-3xl font-bold tracking-wide text-white drop-shadow text-center w-full">
-          {i18n.translate("profileTitle")}
-        </span>
-      </div>
+    <PageContainer header={i18n.translate("profileTitle")}>
       <div className="w-full flex flex-col items-center gap-6 px-10 pt-8">
         <label className="cursor-pointer relative group">
           <img
@@ -106,7 +102,7 @@ function Profile() {
           </div>
         </div>
         <ProgressBar level={level} xp={xp} i18n={i18n} />
-  <div className="flex flex-col md:flex-row items-center justify-center gap-3 mb-2 w-full max-w-2xl mx-auto">
+        <div className="flex flex-col items-center justify-center gap-3 mb-2 w-full max-w-2xl mx-auto">
           <ProfileLangSelector
             preferLang={preferLang}
             setPreferLang={setPreferLang}
@@ -119,6 +115,7 @@ function Profile() {
             setIsSubmitting={setIsSubmitting}
           />
           <CardStyleSelector />
+          <GameboardColorPicker />
         </div>
         {isSubmitting && (
           <p className="text-sm text-gray-500">{i18n.translate("saving")}</p>

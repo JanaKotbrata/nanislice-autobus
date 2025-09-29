@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import GameContext from "../../context/game";
 import GameActions from "../../../../shared/constants/game-actions.json";
-import { getGame, setPlayer } from "../../services/game-service";
+import { getGame, setPlayer } from "../../services/game-service.js";
 import { useNavigate } from "react-router-dom";
 import { useGameState } from "../../hooks/use-game-state";
 import { useGameActions } from "../../hooks/use-game-actions";
@@ -12,20 +12,11 @@ import { useAuth } from "./auth-context-provider.jsx";
 import { useAlertContext } from "./alert-context-provider.jsx";
 import { ClientGameRules } from "../../services/game-rules.js";
 import { GameError } from "../../errors/game-error.js";
+import { Routes } from "../../constants/routes.js";
 
 function GameContextProvider({ children }) {
-  const {
-    gameCode,
-    setGameCode,
-    game,
-    setGame,
-    ready,
-    setReady,
-    nextGame,
-    setNextGame,
-    code,
-    setContextGame,
-  } = useGameState();
+  const { gameCode, setGameCode, game, setGame, code, setContextGame } =
+    useGameState();
 
   const { updateGameServerState, updateGameServerStateAnimated } =
     useGameActions(setContextGame);
@@ -50,7 +41,7 @@ function GameContextProvider({ children }) {
         setContextGame(fetchedGame);
       } catch (err) {
         console.error("Failed to load game:", err);
-        navigate("/");
+        navigate(Routes.HOME);
       }
     };
     if (gameCode && gameCode !== code.current) {
@@ -58,12 +49,11 @@ function GameContextProvider({ children }) {
     }
   }, [gameCode]);
 
-  function handleToggle(field, setter, forceValue = null) {
-    // TODO na tohle se podivat vic
-    const current = field === "ready" ? ready : nextGame;
+  function handleToggle(field, forceValue = null) {
+    const myself = game?.playerList?.find((player) => player.myself);
+    const current = myself?.[field] || false;
     const newValue = forceValue !== null ? forceValue : !current;
 
-    setter(newValue);
     updateMyselfInGame({ [field]: newValue });
 
     setPlayer(
@@ -78,21 +68,20 @@ function GameContextProvider({ children }) {
       })
       .catch((err) => {
         console.error(`Error setting ${field}:`, err);
-        setter(current);
         updateMyselfInGame({ [field]: current });
       });
   }
 
   function handleReady() {
-    handleToggle("ready", setReady);
+    handleToggle("ready");
   }
 
   function handleNextGame() {
-    handleToggle("nextGame", setNextGame);
+    handleToggle("nextGame");
   }
 
   function setNextGameFalse() {
-    handleToggle("nextGame", setNextGame, false);
+    handleToggle("nextGame", false);
   }
 
   function updateMyselfInGame(changes) {
@@ -165,10 +154,6 @@ function GameContextProvider({ children }) {
     return deckCard;
   }
 
-  /**
-   * Starts a new pack on the game board with the given card.
-   * @param {Object} card - The card to start the new pack with.
-   */
   function startNewPack(card) {
     const myself = players.find((player) => player.myself);
     if (!myself) return;
@@ -302,8 +287,6 @@ function GameContextProvider({ children }) {
         currentPlayer,
         gameState,
         // State
-        ready,
-        nextGame,
         loading: isLoading(),
       }}
     >

@@ -1,9 +1,11 @@
 import { useContext, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../components/providers/auth-context-provider.jsx";
-import { getGameByUser } from "../services/game-service.jsx";
+import { getGameByUser } from "../services/game-service.js";
 import LanguageContext from "../context/language.js";
 import { States } from "../../../shared/constants/game-constants.json";
+import { Routes } from "../constants/routes.js";
+
 function AuthCallback() {
   const [searchParams] = useSearchParams();
   const { login } = useAuth();
@@ -17,7 +19,7 @@ function AuthCallback() {
 
         if (!token) {
           console.error("Chybí token");
-          navigate("/", { replace: true });
+          navigate(Routes.HOME, { replace: true });
           return;
         }
 
@@ -30,15 +32,15 @@ function AuthCallback() {
 
         const activeGame = await getGameByUser(token);
         if (activeGame?.state === States.ACTIVE) {
-          navigate(`/game/${activeGame.code}`);
+          navigate(Routes.GAME(activeGame.code));
         } else if (activeGame?.state === States.INITIAL) {
-          navigate(`/lobby/${activeGame.code}`);
+          navigate(Routes.LOBBY(activeGame?.code));
         } else {
-          navigate("/start-game", { replace: true });
+          navigate(Routes.START_GAME, { replace: true });
         }
       } catch (error) {
         console.error("Chyba:", error);
-        navigate("/", { replace: true });
+        navigate(Routes.HOME, { replace: true });
       }
     }
 

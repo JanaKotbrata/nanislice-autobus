@@ -5,6 +5,9 @@ import BaseAlert from "./base-alert.jsx";
 import LanguageContext from "../../../context/language.js";
 import GameContext from "../../../context/game.js";
 import { useNavigate } from "react-router-dom";
+import CloseButton from "./close-button.jsx";
+import DefaultButton from "./default-button.jsx";
+import { Routes } from "../../../constants/routes.js";
 
 function EndGameAlert({
   message,
@@ -16,13 +19,13 @@ function EndGameAlert({
   const navigate = useNavigate();
   function handleClose() {
     gameContext.setNextGameFalse();
-    navigate(`/`);
+    navigate(Routes.HOME);
   }
   const buttons = [
-    <button
+    <DefaultButton
       key="confirm"
       onClick={gameContext.handleNextGame}
-      className={`text-white font-medium rounded-lg text-xs px-3 py-1.5 inline-flex items-center ${buttonColor}`}
+      buttonColor={buttonColor}
     >
       {myself?.nextGame ? (
         <FaCheck
@@ -33,18 +36,14 @@ function EndGameAlert({
       ) : (
         i18n.translate("yesNewGame")
       )}
-    </button>,
-    <button
-      key="cancel"
-      onClick={handleClose}
-      className="bg-transparent border focus:ring-4 font-medium rounded-lg text-xs px-3 py-1.5 !hover:bg-red-600 !border-red-600 !text-red-500 !hover:text-white"
-    >
+    </DefaultButton>,
+    <CloseButton key="cancel" onClose={handleClose}>
       {myself?.nextGame === false ? (
         <FaTimes className="text-red-300/50" title={"nope"} size={18} />
       ) : (
         i18n.translate("noNewGame")
       )}
-    </button>,
+    </CloseButton>,
   ];
 
   return (

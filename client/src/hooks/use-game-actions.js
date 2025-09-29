@@ -1,6 +1,6 @@
 import { useAuth } from "../components/providers/auth-context-provider.jsx";
 import { useAudio } from "../components/providers/audio-context-provider.jsx";
-import { processAction } from "../services/game-service";
+import { processAction } from "../services/game-service.js";
 
 export function useGameActions(setContextGame) {
   const { token } = useAuth();

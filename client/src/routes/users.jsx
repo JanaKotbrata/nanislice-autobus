@@ -18,7 +18,6 @@ function UsersPage() {
 
   const [users, setUsers] = useState([]);
   const [pageIndex, setPageIndex] = useState(0);
-  // totalCount nemusí být stav, stačí useRef, hodnota se mění pouze při načtení uživatelů
   const totalCount = useRef(0);
   const pageSize = 4;
   const totalPages = Math.ceil(totalCount.current / pageSize);
@@ -42,16 +41,8 @@ function UsersPage() {
     if (pageIndex > 0) setPageIndex((p) => p - 1);
   }
 
-  const header = (
-    <div className="flex items-center justify-center px-10 pt-8 pb-6 border-b border-cyan-700/30 bg-gray-950/60 rounded-t-3xl shadow-md">
-      <span className="text-3xl font-bold tracking-wide text-white drop-shadow text-center w-full">
-        {i18n.translate("usersTitle")}
-      </span>
-    </div>
-  );
-
   return (
-    <PageContainer header={header}>
+    <PageContainer header={i18n.translate("usersTitle")}>
       <div className="w-full max-w-7xl mx-auto px-12 sm:px-16 py-8">
         <ul role="list" className="divide-y divide-gray-700">
           {users.map((user) => {

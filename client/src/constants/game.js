@@ -28,3 +28,5 @@ export const CardBgClassMap = {
     BLUE: "starwars-card-back starwars-card-back--blue",
   },
 };
+export const CARD = "CARD";
+export const DEFAULT_GAMEBOARD_COLOR = "#3d5336";

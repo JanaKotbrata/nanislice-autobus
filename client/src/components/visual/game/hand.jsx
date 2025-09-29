@@ -19,13 +19,12 @@ function Hand({ player, isActivePlayer = false }) {
     } else {
       clearTimeout(timeoutRef.current);
       if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
+        audioRef.current.stopAndRemove();
       }
     }
     return () => {
       clearTimeout(timeoutRef.current);
-      if (audioRef.current) audioRef.current.pause();
+      if (audioRef.current) audioRef.current.stopAndRemove();
     };
   }, [isActivePlayer]);
 

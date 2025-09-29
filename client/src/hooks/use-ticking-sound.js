@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 
 /**
- * useTickingSound - spustí/zastaví zvuk podle booleanu
- * @param {boolean} active - má zvuk hrát?
- * @param {function} playSound - funkce na přehrání zvuku, vrací audio objekt
- * @param {string} src - cesta ke zvuku
- * @param {boolean} loop - má zvuk loopovat?
+ * useTickingSound - starts/stops sound based on boolean
+ * @param {boolean} active - should the sound play?
+ * @param {function} playSound - function to play sound, returns audio object
+ * @param {string} src - path to sound
+ * @param {boolean} loop - should the sound loop?
  */
 export function useTickingSound(active, playSound, src, loop = true) {
   const audioRef = useRef(null);
@@ -14,14 +14,12 @@ export function useTickingSound(active, playSound, src, loop = true) {
     if (active) {
       audioRef.current = playSound(src, loop);
     } else if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
+      audioRef.current.stopAndRemove();
       audioRef.current = null;
     }
     return () => {
       if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
+        audioRef.current.stopAndRemove();
         audioRef.current = null;
       }
     };

@@ -12,6 +12,7 @@ export function useAlerts() {
   const [infoMessage, setInfoMessage] = useState("");
 
   function showErrorAlert(messageKey, message = "") {
+    console.log("děje se něco?", messageKey, message);
     const translatedMessage = i18n.translate(messageKey) + message;
     setErrorMessage(translatedMessage);
     setShowDangerAlert(true);

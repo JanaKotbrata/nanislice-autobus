@@ -4,7 +4,6 @@ import Slot from "./slot.jsx";
 import GameContext from "../../../context/game.js";
 import { useAlertContext } from "../../providers/alert-context-provider.jsx";
 import CardCount from "./card/card-count.jsx";
-import LanguageContext from "../../../context/language.js";
 import {
   JOKER,
   SlotTargets,
@@ -20,18 +19,14 @@ function BusSlot({
   isDraggable,
   isMyself,
 }) {
-  const i18n = useContext(LanguageContext);
   const gameContext = useContext(GameContext);
   const [showBottomCard, setShowBottomCard] = useState(false);
   const [showCount, triggerShowCount] = useShowCounts();
-
+  const { showErrorAlert } = useAlertContext();
   let pulse = "";
 
-  const { setErrorMessage, setShowDangerAlert } = useAlertContext();
-
   function tooManyViewOfBottomCard() {
-    setErrorMessage(i18n.translate("bottomBusCardNotAvailable"));
-    setShowDangerAlert(true);
+    showErrorAlert("bottomBusCardNotAvailable");
   }
 
   useEffect(() => {

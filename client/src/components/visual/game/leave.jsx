@@ -1,16 +1,16 @@
 import { FaSignOutAlt } from "react-icons/fa";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import LeaveAlert from "../alerts/leave-alert.jsx";
 import GameContext from "../../../context/game.js";
 import { useAlertContext } from "../../providers/alert-context-provider.jsx";
-import { removePlayer } from "../../../services/game-service.jsx";
+import { removePlayer } from "../../../services/game-service.js";
 import { useAuth } from "../../providers/auth-context-provider.jsx";
 import LanguageContext from "../../../context/language.js";
 import { socket } from "../../../services/create-socket.js";
 
 function Leave({ userId }) {
   const i18n = useContext(LanguageContext);
-  const gameContext = React.useContext(GameContext);
+  const gameContext = useContext(GameContext);
   const { showAlert, setShowAlert } = useAlertContext();
   const { token } = useAuth();
   async function handleLeave() {
@@ -32,9 +32,8 @@ function Leave({ userId }) {
             userId,
             gameCode: gameContext.gameCode,
             playerIdList: gameContext.players.map((p) => p.userId),
-            playerName:
-              gameContext.players.find((p) => p.userId === userId)?.name ||
-              "chleba",
+            playerName: gameContext.players.find((p) => p.userId === userId)
+              ?.name,
           });
         }}
         size={19}

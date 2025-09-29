@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from "react";
-import { closeGame, rematchGame } from "../services/game-service";
+import { closeGame, rematchGame } from "../services/game-service.js";
 import { States } from "../../../shared/constants/game-constants.json";
 import { useAuth } from "../components/providers/auth-context-provider.jsx";
 import { useNavigate } from "react-router-dom";
 import GameContext from "../context/game.js";
+import { Routes } from "../constants/routes.js";
 
 function finishGame(currentUserId, players, gameCode, token, navigate) {
   const playersWithYes = players.filter((p) => p.nextGame === true);
@@ -12,25 +13,25 @@ function finishGame(currentUserId, players, gameCode, token, navigate) {
       return player.userId === currentUserId;
     });
     if (!playerWantToContinue) {
-      return navigate(`/start-game`);
+      return navigate(Routes.START_GAME);
     }
     if (playersWithYes[0].userId !== currentUserId) {
       return; // do nothing, it will be triggered by another player
     }
     if (token) {
       rematchGame({ gameCode }, token).then((data) =>
-        navigate(`/lobby/${data.code}`),
+        navigate(Routes.LOBBY(data.code)),
       );
     } else {
-      return navigate(`/start-game`);
+      return navigate(Routes.START_GAME);
     }
   } else {
     if (token) {
       return closeGame({ gameCode }, token).finally(() =>
-        navigate(`/start-game`),
+        navigate(Routes.START_GAME),
       );
     } else {
-      return navigate(`/start-game`);
+      return navigate(Routes.START_GAME);
     }
   }
 }
@@ -55,9 +56,9 @@ export function useGameFlow() {
 
   useEffect(() => {
     if (gameContext?.gameState === States.INITIAL) {
-      navigate(`/lobby/${gameContext?.gameCode}`);
+      navigate(Routes.LOBBY(gameContext?.gameCode));
     } else if (gameContext?.gameState === States.CLOSED) {
-      navigate(`/`);
+      navigate(Routes.HOME);
     } else if (gameContext?.gameState === States.FINISHED) {
       setShowEndGameAlert(true);
 

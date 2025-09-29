@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import LanguageContext from "../../context/language.js";
 import translations from "../../i18n/translations.json";
 import { useAuth } from "./auth-context-provider.jsx";
@@ -32,26 +32,21 @@ function findTranslateKey(key, i18nData) {
 
 function LanguageContextProvider({ children }) {
   const { user } = useAuth();
-  const [lang, setLang] = React.useState(() => resolveInitialLangCode(user));
+  const [lang, setLang] = useState(() => resolveInitialLangCode(user));
 
   useEffect(() => {
     setLang(resolveInitialLangCode(user));
   }, [user]);
 
-  function setContextLanguage(lang) {
-    setLang(lang);
-  }
-
   function translate(key) {
     const toTranslate = findTranslateKey(key, translations);
-    //console.log(`Translating key: ${key} for language: ${lang}`, toTranslate);
     return toTranslate?.[lang] || toTranslate?.["cs"] || "Tohle neznam";
   }
 
   return (
     <LanguageContext.Provider
       value={{
-        setContextLanguage,
+        setContextLanguage: setLang,
         translate,
         languages: translations.languages,
       }}

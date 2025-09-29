@@ -1,12 +1,13 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { startGame } from "../../../services/game-service.jsx";
+import { startGame } from "../../../services/game-service.js";
 import { useAuth } from "../../providers/auth-context-provider.jsx";
 import GameContext from "../../../context/game.js";
 import { useAlertContext } from "../../providers/alert-context-provider.jsx";
 import Button from "../button.jsx";
 import LanguageContext from "../../../context/language.js";
 import InfoAlert from "../alerts/info-alert.jsx";
+import { Routes } from "../../../constants/routes.js";
 function Start({ gameCode, playerList }) {
   const i18n = useContext(LanguageContext);
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ function Start({ gameCode, playerList }) {
       if (isEveryOneReady) {
         const res = await startGame(gameCode, token);
         gameContext.setContextGame(res);
-        navigate(`/game/${res.code}`);
+        navigate(Routes.GAME(res.code));
       }
     } else {
       setStartAlert(true);

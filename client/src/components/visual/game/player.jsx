@@ -73,7 +73,14 @@ function Player({
             isMyself={!!player.myself}
             isInGame={true}
           />
-          <span className="truncate">{player.name}</span>
+          <div className="flex flex-col leading-tight truncate">
+            <span className="truncate">{player.name}</span>
+            {player.level && (
+              <span className="text-xs font-light text-gray-400">
+                Level {player.level}
+              </span>
+            )}
+          </div>
         </div>
         {expandable && (
           <span className="ml-2 text-sm">{expanded ? "▲" : "▼"}</span>

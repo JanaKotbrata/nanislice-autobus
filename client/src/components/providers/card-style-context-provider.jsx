@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import CardStyleContext from "../../context/card-style-context.js";
 import { CardBgClassMap } from "../../constants/game.js";
 import { useAuth } from "./auth-context-provider.jsx";
@@ -19,7 +19,7 @@ function detectInitialCardStyle(user) {
 export default function CardStyleContextProvider({ children }) {
   const { user } = useAuth();
 
-  const [cardStyle, setCardStyleState] = React.useState(() =>
+  const [cardStyle, setCardStyleState] = useState(() =>
     detectInitialCardStyle(user),
   );
 

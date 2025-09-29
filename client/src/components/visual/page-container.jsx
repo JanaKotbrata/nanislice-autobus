@@ -1,5 +1,7 @@
 import TopRightControls from "./top-right-controls.jsx";
 import { useAuth } from "../providers/auth-context-provider.jsx";
+import PageHeader from "./page-header.jsx";
+import PageFooter from "./page-footer.jsx";
 
 /**
  * Universal page container for centered content with consistent background, border, shadow, and padding.
@@ -10,6 +12,7 @@ function PageContainer({
   showLang = true,
   header,
   footer,
+  isCustomHeader = false,
 }) {
   const { user } = useAuth();
   const isLoggedIn = !!user;
@@ -28,9 +31,11 @@ function PageContainer({
         </div>
         <div className="flex justify-center items-center w-full flex-1">
           <div className="w-full max-w-6xl mt-8 rounded-3xl shadow-2xl bg-gray-950/40 border border-cyan-900/40 backdrop-blur-md px-0 pb-8 relative">
-            {header && <div>{header}</div>}
+            {header && (
+              <PageHeader isCustom={isCustomHeader}>{header}</PageHeader>
+            )}
             {children}
-            {footer && <div>{footer}</div>}
+            {footer && <PageFooter>{footer}</PageFooter>}
           </div>
         </div>
       </div>

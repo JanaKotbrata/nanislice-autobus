@@ -1,5 +1,5 @@
 import { useDragLayer } from "react-dnd";
-import Card from "./card.jsx";
+import CardFront from "./card-front.jsx";
 
 const layerStyles = {
   position: "fixed",
@@ -34,15 +34,7 @@ function CardDragLayer() {
   return (
     <div style={layerStyles}>
       <div style={getItemStyles(currentOffset)}>
-        <Card
-          card={item.card}
-          index={item.index}
-          isBottomCard={false}
-          isDraggable={false}
-          isMyself={false}
-          isMyselfJrInBus={false}
-          packLength={null}
-        />
+        <CardFront card={item.card} />
       </div>
     </div>
   );
