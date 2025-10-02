@@ -1,3 +1,21 @@
+export const EMOTES = [
+  { icon: "😊", label: "Smile" },
+  { icon: "😍", label: "Love" },
+  { icon: "😮", label: "Surprise" },
+  { icon: "😢", label: "Sad" },
+  { icon: "😂", label: "Laugh" },
+  { icon: "😡", label: "Angry" },
+  { icon: "😘", label: "Kiss" },
+  { icon: "😐", label: "Meh" },
+];
+export const MESSAGES = [
+  { label: "Cheater!", text: "msgCheater" },
+  { label: "Vyndej to ESO!", text: "msgCard" },
+  { label: "Stačííí!", text: "msgStop" },
+  { label: "Dělej! Nezdržůůj!", text: "msgDo" },
+  { label: "Dej tam tu kartu!", text: "msgGive" },
+  { label: "Hm, dobře ty!", text: "msgGood" },
+];
 export const CardBgClassMap = {
   classic: {
     RED: "back-card-red",
@@ -31,3 +49,7 @@ export const CardBgClassMap = {
 export const CARD = "CARD";
 export const DEFAULT_CARD_STYLE = "classic";
 export const DEFAULT_GAMEBOARD_COLOR = "#3d5336";
+export const InteractionType = {
+  EMOTE: "emote",
+  MESSAGE: "message",
+};

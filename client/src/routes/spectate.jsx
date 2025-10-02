@@ -57,6 +57,7 @@ function Spectate() {
       showEndGameAlert={showEndGameAlert}
       i18n={i18n}
       gameContext={gameContext}
+      disallowInteractions
     ></GameBase>
   );
 }

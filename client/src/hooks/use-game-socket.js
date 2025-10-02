@@ -3,8 +3,19 @@ import { socket } from "../services/create-socket.js";
 import { useNavigate } from "react-router-dom";
 import GameContext from "../context/game.js";
 import { Routes } from "../constants/routes.js";
+import {
+  SPECTATE,
+  LISTEN_TO_GAME,
+  REMATCH,
+  PLAYER_ADDED,
+  PLAYER_REMOVED,
+  PROCESS_ACTION,
+  NOTIFY_PLAYER_LEAVING,
+  PLAYER_SENT_INTERACTION,
+  CONNECT,
+} from "../../../shared/constants/websocket-events.json";
 
-export function useGameSocket(userId, showAlert, animateToSlot) {
+export function useGameSocket(userId, showAlert, animateToSlot, onPlayerEmote) {
   const navigate = useNavigate();
   const gameContext = useContext(GameContext);
 
@@ -12,28 +23,28 @@ export function useGameSocket(userId, showAlert, animateToSlot) {
     const gameCode = gameContext.gameCode;
     if (gameCode && userId) {
       if (userId === -1) {
-        socket.emit("spectate", gameCode);
-        socket.on("connect", () => {
-          socket.emit("spectate", gameCode);
+        socket.emit(SPECTATE, gameCode);
+        socket.on(CONNECT, () => {
+          socket.emit(SPECTATE, gameCode);
         });
       } else {
-        socket.emit("listenToGame", gameCode, userId);
-        socket.on("connect", () => {
-          socket.emit("listenToGame", gameCode, userId);
+        socket.emit(LISTEN_TO_GAME, gameCode, userId);
+        socket.on(CONNECT, () => {
+          socket.emit(LISTEN_TO_GAME, gameCode, userId);
         });
       }
 
-      socket.on("rematch", (data) => {
+      socket.on(REMATCH, (data) => {
         navigate(Routes.LOBBY(data.gameCode));
       });
 
-      socket.on("playerAdded", (data) => {
+      socket.on(PLAYER_ADDED, (data) => {
         if (data.code === gameCode) {
           gameContext.setContextGame(data);
         }
       });
 
-      socket.on("processAction", (data) => {
+      socket.on(PROCESS_ACTION, (data) => {
         if (data.newGame.code === gameCode) {
           if (data.actionBy === userId) {
             // do nothing, own actions are handled as server response
@@ -44,7 +55,7 @@ export function useGameSocket(userId, showAlert, animateToSlot) {
               target: data.target,
               actionBy: data.actionBy,
               isShuffled: data.isShuffled,
-              finishedPack: data.finishedPack,
+              finishedPackIndex: data.finishedPack,
               animationCallBack: () => {
                 gameContext.setContextGame(data.newGame);
               },
@@ -59,24 +70,32 @@ export function useGameSocket(userId, showAlert, animateToSlot) {
         }
       });
 
-      socket.on("playerRemoved", (data) => {
+      socket.on(PLAYER_REMOVED, (data) => {
         if (data.code.startsWith(gameCode)) {
           gameContext.setContextGame(data);
         }
       });
+
+      // Emote event
+      if (typeof onPlayerEmote === "function") {
+        socket.on(PLAYER_SENT_INTERACTION, onPlayerEmote);
+      }
     }
 
-    socket.on("notify-player-leaving", ({ playerName }) => {
+    socket.on(NOTIFY_PLAYER_LEAVING, ({ playerName }) => {
       showAlert(playerName);
     });
 
     return () => {
-      socket.off("processAction");
-      socket.off("connect");
-      socket.off("playerRemoved");
-      socket.off("notify-player-leaving");
+      socket.off(PROCESS_ACTION);
+      socket.off(CONNECT);
+      socket.off(PLAYER_REMOVED);
+      socket.off(NOTIFY_PLAYER_LEAVING);
+      if (typeof onPlayerEmote === "function") {
+        socket.off(PLAYER_SENT_INTERACTION, onPlayerEmote);
+      }
     };
-  }, [userId, gameContext]);
+  }, [userId, gameContext, onPlayerEmote]);
 
   return socket;
 }

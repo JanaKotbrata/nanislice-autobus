@@ -1,7 +1,7 @@
 function InfoAlert({ message, onClose }) {
   return (
     <div
-      className="flex items-center p-4 mb-4 text-yellow-800 border-t-4 border-yellow-300 bg-yellow-50 dark:text-yellow-300 dark:bg-gray-800 dark:border-yellow-800 z-10"
+      className="flex items-center p-4 mb-4 border-t-4 !text-yellow-300 !bg-gray-800 !border-yellow-800 z-10"
       role="alert"
     >
       <svg className="shrink-0 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

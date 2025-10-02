@@ -61,14 +61,14 @@ function VolumeSettings({ size }) {
     <div className="relative flex justify-end mb-3" ref={menuRef}>
       {muted || volume === 0 ? (
         <FaVolumeMute
-          className="hover:bg-green-700 cursor-pointer transition p-1 rounded"
+          className="hover:!bg-green-700 cursor-pointer transition p-1 rounded"
           title={i18n.translate("changeVolume")}
           onClick={() => setShowMenu((prev) => !prev)}
           size={size || 19}
         />
       ) : (
         <FaMusic
-          className="hover:bg-green-700 cursor-pointer transition p-1 rounded"
+          className="hover:!bg-green-700 cursor-pointer transition p-1 rounded"
           title={i18n.translate("changeVolume")}
           onClick={() => setShowMenu((prev) => !prev)}
           size={size || 19}
@@ -76,8 +76,8 @@ function VolumeSettings({ size }) {
       )}
 
       {showMenu && (
-        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg p-4 !z-50">
-          <label className="block text-sm text-gray-700 mb-2">
+        <div className="absolute right-0 mt-2 w-48 !bg-white border !border-gray-300 rounded shadow-lg p-4 !z-50">
+          <label className="block text-sm !text-gray-700 mb-2">
             {i18n.translate("volume")}
           </label>
           <input
@@ -86,9 +86,9 @@ function VolumeSettings({ size }) {
             max="100"
             value={muted ? 0 : Math.round(volume * 100)}
             onChange={(e) => handleVolumeChange(Number(e.target.value))}
-            className="w-full accent-green-700"
+            className="w-full !accent-green-700"
           />
-          <div className="text-sm text-gray-600 mt-2 text-center">
+          <div className="text-sm !text-gray-600 mt-2 text-center">
             {muted ? "0%" : `${Math.round(volume * 100)}%`}
           </div>
 
@@ -96,7 +96,7 @@ function VolumeSettings({ size }) {
             <button
               onClick={() => handleSave()}
               title={i18n.translate("saveVolumeTitle")}
-              className="mt-3 w-full px-3 py-1 rounded bg-green-700 text-white hover:bg-green-800 transition"
+              className="mt-3 w-full px-3 py-1 rounded !bg-green-700 !text-white hover:!bg-green-800 transition"
             >
               {i18n.translate("savePermanently")}
             </button>

@@ -41,7 +41,7 @@ function EndGameAlert({
     >
       {myself?.nextGame ? (
         <FaCheck
-          className="text-green-300/50"
+          className="!text-green-300/50"
           title={i18n.translate("playerIsReady")}
           size={18}
         />
@@ -51,7 +51,7 @@ function EndGameAlert({
     </DefaultButton>,
     <CloseButton key="cancel" onClose={handleClose}>
       {myself?.nextGame === false ? (
-        <FaTimes className="text-red-300/50" title={"nope"} size={18} />
+        <FaTimes className="!text-red-300/50" title={"nope"} size={18} />
       ) : (
         i18n.translate("noNewGame")
       )}

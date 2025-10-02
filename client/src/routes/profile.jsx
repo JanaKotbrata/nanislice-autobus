@@ -7,7 +7,7 @@ import UserContext from "../context/user.js";
 import { FaPencilAlt } from "react-icons/fa";
 import LanguageContext from "../context/language.js";
 import PageContainer from "../components/visual/page-container.jsx";
-import CardStyleSelector from "../components/visual/user/profile-card-style-selector.jsx";
+import CardStyleSelector from "../components/visual/user/card-style-selector.jsx";
 import GameboardColorPicker from "../components/visual/user/gameboard-color-picker.jsx";
 import {
   Roles,

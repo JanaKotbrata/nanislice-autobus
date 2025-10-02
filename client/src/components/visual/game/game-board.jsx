@@ -17,7 +17,9 @@ import {
 import { getSlotCoordinates } from "../../../utils/slot-coordinates.js";
 import GameboardColorContext from "../../../context/gameboard-color-context.js";
 
-function GameBoard({ player }) {
+import EmoteWheelButton from "./interaction/emote-wheel-button.jsx";
+
+function GameBoard({ player, allowInteractions = true }) {
   const i18n = useContext(LanguageContext);
   const gameContext = useContext(GameContext);
   const { showDangerAlert, errorMessage, setShowDangerAlert } =
@@ -84,7 +86,7 @@ function GameBoard({ player }) {
     });
     const drawnCardStub = gameContext.drawCard(animationPromise);
     if (!drawnCardStub) {
-      animationPromiseResolver(); // resolve the promise to not block anything
+      animationPromiseResolver();
       return;
     }
     const from = getSlotCoordinates(SlotTargets.CARDPACK_DECK);
@@ -140,7 +142,7 @@ function GameBoard({ player }) {
     <div className="h-full flex flex-col gap-4">
       <div
         ref={boardRef}
-        className={`flex flex-col items-center justify-start board p-6 shadow-lg rounded-xl grow transition-all duration-300 overflow-x-hidden w-full ${shouldPulse ? "animate-[pulse_0.3s_ease-in-out_infinite]" : ""}`}
+        className={`relative flex flex-col items-center justify-start board p-6 shadow-lg rounded-xl grow transition-all duration-300 overflow-x-hidden w-full ${shouldPulse ? "animate-[pulse_0.3s_ease-in-out_infinite]" : ""}`}
         style={{ backgroundColor: gameboardColor }}
       >
         <div className="relative w-full mb-6 flex justify-center">
@@ -198,6 +200,7 @@ function GameBoard({ player }) {
             onDropCard={handleStartNewPack}
           />
         </div>
+        {allowInteractions && <EmoteWheelButton player={player} />}
       </div>
       <Hand
         player={player}

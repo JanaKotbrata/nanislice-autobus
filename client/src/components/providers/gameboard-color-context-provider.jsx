@@ -11,7 +11,7 @@ function detectInitialGameboardColor(user) {
   return DEFAULT_GAMEBOARD_COLOR;
 }
 
-export default function GameboardColorContextProvider({ children }) {
+function GameboardColorContextProvider({ children }) {
   const { user } = useAuth();
 
   const [gameboardColor, setGameboardColorState] = useState(() =>
@@ -37,3 +37,4 @@ export default function GameboardColorContextProvider({ children }) {
     </GameboardColorContext.Provider>
   );
 }
+export default GameboardColorContextProvider;

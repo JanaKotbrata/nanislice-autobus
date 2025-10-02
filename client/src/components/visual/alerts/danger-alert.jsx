@@ -14,7 +14,7 @@ function DangerAlert({ message, onClose }) {
     <DefaultButton
       key="rules"
       onClick={() => setShowRules(true)}
-      buttonColor="!bg-red-600 !hover:bg-red-700 !focus:ring-red-800"
+      buttonColor="!bg-red-600 hover:!bg-red-700 focus:!ring-red-800"
     >
       <svg className="me-2 h-3 w-3" fill="currentColor" viewBox="0 0 20 14">
         <path d="M10 0C4.612 0 0 5.336 0 7c0 1.742 3.546 7 10 7 6.454 0 10-5.258 10-7 0-1.664-4.612-7-10-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" />

@@ -6,6 +6,7 @@ import BusSlot from "./bus-slot.jsx";
 import { getAvatar } from "../../../services/user-service.js";
 import Avatar from "../user/avatar.jsx";
 import { SlotTargets } from "../../../../../shared/constants/game-constants.json";
+import InteractCloud from "./interact-cloud.jsx";
 import CardCount from "./card/card-count.jsx";
 
 function Player({
@@ -16,6 +17,8 @@ function Player({
   isDraggable = true,
   isMyself = false,
   isMyselfJrInBus = false,
+  emote = "",
+  visible = false,
 }) {
   const gameContext = useContext(GameContext);
   const [expanded, setExpanded] = useState(!defaultCollapsed);
@@ -51,9 +54,10 @@ function Player({
   return (
     <div
       id={`${SlotTargets.PLAYER}${player.userId}`}
-      className={`w-full transition-all duration-300 ease-in-out rounded-xl border-b border-gray-600
+      className={`w-full transition-all duration-300 ease-in-out rounded-xl border-b border-gray-600 relative
         ${isActivePlayer ? "bg-gray-900 animate-[pulse_5s_ease-in-out_infinite]" : "bg-gray-800 hover:bg-gray-700"}`}
     >
+      <InteractCloud emote={emote} visible={visible} />
       <div
         className={`w-full text-[clamp(0.8rem,1.2vw,1.1rem)] font-semibold text-white truncate
           px-2 sm:px-4 py-1 flex items-center justify-between

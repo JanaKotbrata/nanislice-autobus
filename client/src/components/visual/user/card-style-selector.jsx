@@ -9,7 +9,7 @@ import { Bg, Roles } from "../../../../../shared/constants/game-constants.json";
 import { getUnlockLevel } from "../../../services/level-service.js";
 import { DEFAULT_CARD_STYLE } from "../../../constants/game.js";
 
-export default function CardStyleSelector({ size }) {
+function CardStyleSelector({ size }) {
   const i18n = useContext(LanguageContext);
   const { cardStyle, setCardStyle, availableStyles } =
     useContext(CardStyleContext);
@@ -149,3 +149,4 @@ export default function CardStyleSelector({ size }) {
     </div>
   );
 }
+export default CardStyleSelector;

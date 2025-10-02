@@ -1,36 +1,92 @@
 @import "tailwindcss";
 @import "./styles/card.css";
+
+
+
+.emote-wheel-pos {
+    left: 50%;
+    top: calc(65% - var(--emote-wheel-size, 320px) / 2);
+    transform: translate(-50%, 0);
+}
+@media (min-width: 640px) {
+    .emote-wheel-pos {
+        left: auto !important;
+        top: auto !important;
+        right: 48px !important;
+        bottom: calc(48px + (var(--emote-wheel-size, 320px) / 2)) !important;
+        transform: none !important;
+        max-width: none !important;
+        max-height: none !important;
+    }
+}
+
+
+.emote-wheel-base {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 95vw;
+    max-height: 70vw;
+}
+@media (min-width: 640px) {
+    .emote-wheel-base {
+        max-width: none;
+        max-height: none;
+    }
+}
+
+
+
+.emote-levitate .emote {
+    display: inline-block;
+    font-size: 2rem;
+    animation: emote-float 2.5s ease-in-out infinite alternate;
+    will-change: transform;
+}
+.emote-levitate .emote:nth-child(2) { animation-delay: 0.7s; }
+.emote-levitate .emote:nth-child(3) { animation-delay: 1.4s; }
+
+@keyframes emote-float {
+    0% { transform: translateY(0) scale(1) rotate(-8deg); }
+    50% { transform: translateY(-18px) scale(1.1) rotate(8deg); }
+    100% { transform: translateY(0) scale(1) rotate(-8deg); }
+}
+
+
 #root {
-  width: 100vw;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    background-color: #101828;
 }
-#root svg+* {
-    z-index: 1;
-}
+#root svg + * { z-index: 1; }
 
 
 .logo {
-  will-change: filter;
-  transition: filter 300ms;
+    will-change: filter;
+    transition: filter 300ms;
 }
+
+
 .board {
-        background-color: #3d5336;
-        background-image: repeating-linear-gradient(
-                                        45deg,
-                                        rgba(255, 255, 255, 0.045) 0px,
-                                        rgba(255, 255, 255, 0.045) 1px,
-                                        transparent 2px,
-                                        transparent 6px
-        );
-        background-blend-mode: overlay;
-        color: white;
-        overflow: hidden;
+    background-color: #3d5336;
+    background-image: repeating-linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.045) 0px,
+        rgba(255, 255, 255, 0.045) 1px,
+        transparent 2px,
+        transparent 6px
+    );
+    background-blend-mode: overlay;
+    color: white;
+    overflow: hidden;
 }
+
 
 .game {
     user-select: none;
@@ -39,8 +95,10 @@
     -webkit-touch-callout: none;
 }
 
+
+/* Locking animation */
 .locking {
-    background: rgba(255,255,255,0.8);
+    background: rgba(255, 255, 255, 0.8);
     border-radius: 50%;
     padding: 12px;
     display: flex;
@@ -50,9 +108,11 @@
     transition: opacity 0.3s;
 }
 .locking.animate {
-    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) 1, unlock-fade 0.5s 0.5s forwards;
+    animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) 1, unlock-fade 0.5s 0.5s forwards;
 }
-.confetti{
+
+
+.confetti {
     position: fixed;
     top: 0;
     left: 0;
@@ -60,20 +120,15 @@
     pointer-events: none;
 }
 
+
 @media (max-height: 740px) {
-    .force-vertical-layout {
-        flex-direction: column !important;
-    }
-    .left-bar {
-        width: auto !important;
-    }
+    .force-vertical-layout { flex-direction: column !important; }
+    .left-bar { width: auto !important; }
+}
+@media (max-width: 1163px) {
+    .left-bar { width: auto !important; }
 }
 
-@media (max-width: 1163px) {
-    .left-bar {
-        width: auto !important;
-    }
-}
 
 @keyframes shake {
     0% { transform: translateY(0) rotate(0deg); }
@@ -83,7 +138,6 @@
     80% { transform: translateY(2px) rotate(10deg); }
     100% { transform: translateY(0) rotate(0deg); }
 }
-
 @keyframes unlock-fade {
     to { opacity: 0; transform: scale(1.5) rotate(30deg); }
 }

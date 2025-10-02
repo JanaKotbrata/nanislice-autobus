@@ -10,14 +10,14 @@ import LogOut from "./login/log-out.jsx";
  *   - showLang (bool, default true)
  *   - showLogout (bool, default true)
  */
-export default function TopRightControls({
+function TopRightControls({
   showVolume = true,
   showLang = true,
   showLogOut = true,
 }) {
   return (
     <div
-      className={`fixed top-6 right-8 z-50 flex items-center gap-4 px-4`}
+      className={`fixed top-6 right-8 z-50 flex items-center gap-4 px-4 !text-white`}
       style={{ minHeight: 48 }}
     >
       {showVolume && (
@@ -34,3 +34,4 @@ export default function TopRightControls({
     </div>
   );
 }
+export default TopRightControls;

@@ -138,16 +138,24 @@ function Lobby() {
   }
 
   const header = (
-    <div className="flex items-center justify-between px-10 pt-8 pb-6 border-b border-cyan-700/30 bg-gray-950/60 rounded-t-3xl shadow-md">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-10 pt-8 pb-6 border-b border-cyan-700/30 bg-gray-950/60 rounded-t-3xl shadow-md">
       <div className="flex items-center gap-4">
         <img src={nanislice} alt="Nanislice logo" className="w-12 h-12" />
         <span className="text-3xl font-bold tracking-wide text-white drop-shadow">
           Lobby
         </span>
       </div>
-      <div className="flex items-center gap-2 bg-gray-800/70 px-5 py-2 rounded-xl text-xl font-mono border border-cyan-700/30 shadow">
+      {/* Game code for larger screens */}
+      <div className="hidden sm:flex items-center gap-2 bg-gray-800/70 px-5 py-2 rounded-xl text-xl font-mono border border-cyan-700/30 shadow">
         <span className="text-cyan-300">Code:</span>
         <span className="text-white font-bold select-all">
+          {gameContext.gameCode}
+        </span>
+      </div>
+      {/* Game code for small screens */}
+      <div className="flex sm:hidden flex-col items-end mt-4">
+        <span className="text-white font-bold select-all text-base bg-gray-800/70 px-3 py-1 rounded-lg border border-cyan-700/30 flex items-center gap-2 self-end">
+          <span className="text-cyan-300 text-sm">Code:</span>{" "}
           {gameContext.gameCode}
         </span>
       </div>

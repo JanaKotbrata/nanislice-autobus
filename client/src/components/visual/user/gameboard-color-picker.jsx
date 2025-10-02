@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useRef, useEffect } from "react";
 import { FaPalette } from "react-icons/fa";
 import GameboardColorContext from "../../../context/gameboard-color-context.js";
 import { useAuth } from "../../providers/auth-context-provider.jsx";
@@ -7,7 +7,7 @@ import LanguageContext from "../../../context/language.js";
 import { GAMEBOARD_COLOR } from "../../../constants/local-storage.js";
 import { DEFAULT_GAMEBOARD_COLOR } from "../../../constants/game.js";
 
-export default function GameboardColorPicker({ size }) {
+function GameboardColorPicker({ size }) {
   const i18n = useContext(LanguageContext);
   const { gameboardColor, setGameboardColor } = useContext(
     GameboardColorContext,
@@ -15,6 +15,17 @@ export default function GameboardColorPicker({ size }) {
   const { user, token } = useAuth();
   const [tempColor, setTempColor] = useState(gameboardColor);
   const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef(null);
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   function handleColorChange(e) {
     setTempColor(e.target.value);
@@ -44,7 +55,7 @@ export default function GameboardColorPicker({ size }) {
   }
 
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block" ref={menuRef}>
       <span
         className="flex items-center gap-2 cursor-pointer select-none min-h-[40px] px-2"
         style={{ lineHeight: 1.2 }}
@@ -93,3 +104,4 @@ export default function GameboardColorPicker({ size }) {
     </div>
   );
 }
+export default GameboardColorPicker;

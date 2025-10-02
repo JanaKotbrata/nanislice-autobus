@@ -9,7 +9,7 @@ import Deadpool from "./deadpool.jsx";
 import FlowerDark from "./flower-dark.jsx";
 import StarWars from "./starwars.jsx";
 
-export default function CardBack({ card, forceStyle, animated = true }) {
+function CardBack({ card, forceStyle, animated = true }) {
   const { cardStyle } = useContext(CardStyleContext);
   const style = forceStyle || cardStyle;
 
@@ -34,3 +34,4 @@ export default function CardBack({ card, forceStyle, animated = true }) {
     />
   );
 }
+export default CardBack;

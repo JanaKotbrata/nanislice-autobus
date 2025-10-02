@@ -5,13 +5,13 @@ import CardAnimationContext from "../context/card-animation.js";
 import LanguageContext from "../context/language.js";
 import AlertContext from "../context/alert.js";
 import { useAuth } from "../components/providers/auth-context-provider.jsx";
+import { useAudio } from "../components/providers/audio-context-provider.jsx";
 import { useGameSocket } from "../hooks/use-game-socket.js";
 import { useResizablePanel } from "../hooks/use-game-layout.js";
 import { useGameFlow } from "../hooks/use-game-flow.js";
 import { handleSocketAnimation } from "../utils/animation-utils.js";
 import GameBase from "./game-base.jsx";
 import Leave from "../components/visual/game/leave.jsx";
-import { useAudio } from "../components/providers/audio-context-provider.jsx";
 
 function splitPlayers(players) {
   const playersWithPosition = players.map((p, idx) => ({

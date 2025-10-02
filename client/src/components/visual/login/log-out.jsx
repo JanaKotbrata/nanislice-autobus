@@ -21,7 +21,7 @@ function LogOut({ size }) {
   return (
     <div className="flex justify-end p-2 z-10">
       <FaSignOutAlt
-        className="text-gray-500 hover:text-red-500 cursor-pointer"
+        className="!text-gray-500 hover:!text-red-500 cursor-pointer"
         onClick={() => setShowAlert(true)}
         title={i18n.translate("logOutTitle")}
         size={size || 32}

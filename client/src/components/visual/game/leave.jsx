@@ -31,7 +31,6 @@ function Leave({ userId }) {
           socket.emit("player-attempted-leave", {
             userId,
             gameCode: gameContext.gameCode,
-            playerIdList: gameContext.players.map((p) => p.userId),
             playerName: gameContext.players.find((p) => p.userId === userId)
               ?.name,
           });

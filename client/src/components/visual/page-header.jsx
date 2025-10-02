@@ -10,9 +10,9 @@ function PageHeader({ children, className = "", isCustom = false }) {
     children
   ) : (
     <div
-      className={`flex items-center justify-center px-10 pt-8 pb-6 border-b border-cyan-700/30 bg-gray-950/60 rounded-t-3xl shadow-md ${className}`}
+      className={`flex items-center justify-center px-10 pt-8 pb-6 border-b !border-cyan-700/30 !bg-gray-950/60 rounded-t-3xl shadow-md ${className}`}
     >
-      <span className="text-3xl font-bold tracking-wide text-white drop-shadow text-center w-full">
+      <span className="text-3xl font-bold tracking-wide !text-white drop-shadow text-center w-full">
         {children}
       </span>
     </div>

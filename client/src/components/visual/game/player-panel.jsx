@@ -3,6 +3,7 @@ import { useContext, useRef, useState, useEffect } from "react";
 import PanelActions from "./panel-actions.jsx";
 import LanguageContext from "../../../context/language.js";
 import GameContext from "../../../context/game.js";
+import EmoteContext from "../../../context/emote.js";
 import {
   SlotTargets,
   JOKER,
@@ -18,6 +19,7 @@ function PlayerPanel({
   canResizePanel,
   handlePanelDragStart,
 }) {
+  const { playerEmotes } = useContext(EmoteContext);
   const dragBarRef = useRef(null);
   const containerRef = useRef(null);
   const playersWrapperRef = useRef(null);
@@ -29,9 +31,11 @@ function PlayerPanel({
   function handleZoomIn() {
     setZoomLevel((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)));
   }
+
   function handleZoomOut() {
     setZoomLevel((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)));
   }
+
   const isMyselfJrInBus = myself?.bus[0]?.rank === JOKER;
   const i18n = useContext(LanguageContext);
 
@@ -115,6 +119,8 @@ function PlayerPanel({
                 isDraggable={false}
                 expandable={needsCollapse}
                 defaultCollapsed={allCollapsed && needsCollapse}
+                emote={playerEmotes[player.userId] || ""}
+                visible={!!playerEmotes[player.userId]}
               />
             ))}
           </div>
@@ -133,6 +139,8 @@ function PlayerPanel({
             }
             isMyself={true}
             isMyselfJrInBus={isMyselfJrInBus}
+            emote={playerEmotes[myself.userId] || ""}
+            visible={!!playerEmotes[myself.userId]}
           />
         )}
       </div>

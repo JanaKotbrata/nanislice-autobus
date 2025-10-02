@@ -4,7 +4,7 @@ import CardStyleContext from "../../../../../context/card-style-context.js";
 
 import { FaEmpire, FaRebel } from "react-icons/fa";
 
-export default function StarWars({
+function StarWars({
   card,
   forceStyle,
   size = "w-11 h-16 sm:w-14 sm:h-22 md:w-16 md:h-24",
@@ -36,3 +36,4 @@ export default function StarWars({
     </div>
   );
 }
+export default StarWars;

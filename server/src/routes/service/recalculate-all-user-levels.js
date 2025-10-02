@@ -27,7 +27,7 @@ class RecalculateAllUserLevels extends AuthenticatedPostResponseHandler {
       UserErrors.UserDoesNotExist,
     );
 
-    // This maintenance endpoint recalculates all user levels at once.
+    // This maintenance endpoint recalculates 1000 user levels at once.
     // Pagination is not used here because this is a one-time operation
     // and the expected number of users is reasonable for bulk processing.
     // If the user base grows significantly, consider batch processing.

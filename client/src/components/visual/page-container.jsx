@@ -25,12 +25,12 @@ function PageContainer({
               showVolume={showVolume}
               showLang={showLang}
               showLogOut={isLoggedIn}
-              className="static bg-gray-950/70 rounded-xl px-4 py-2 shadow-lg border border-cyan-900/40"
+              className="static !bg-gray-950/70 rounded-xl px-4 py-2 shadow-lg border !border-cyan-900/40"
             />
           </div>
         </div>
         <div className="flex justify-center items-center w-full flex-1">
-          <div className="w-full max-w-6xl mt-8 rounded-3xl shadow-2xl bg-gray-950/40 border border-cyan-900/40 backdrop-blur-md px-0 pb-8 relative">
+          <div className="w-full max-w-6xl mt-8 rounded-3xl shadow-2xl !bg-gray-950/40 border !border-cyan-900/40 backdrop-blur-md px-0 pb-8 relative">
             {header && (
               <PageHeader isCustom={isCustomHeader}>{header}</PageHeader>
             )}

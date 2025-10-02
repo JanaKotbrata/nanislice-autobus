@@ -14,7 +14,7 @@ function detectInitialCardStyle(user) {
   return DEFAULT_CARD_STYLE;
 }
 
-export default function CardStyleContextProvider({ children }) {
+function CardStyleContextProvider({ children }) {
   const { user } = useAuth();
 
   const [cardStyle, setCardStyleState] = useState(() =>
@@ -68,3 +68,4 @@ export default function CardStyleContextProvider({ children }) {
     </CardStyleContext.Provider>
   );
 }
+export default CardStyleContextProvider;

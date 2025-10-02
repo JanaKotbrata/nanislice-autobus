@@ -414,6 +414,36 @@
       "en": "Otherwise, you park it at your stop or shove it to the bottom of your bus.",
       "sk": "Inak ju odložíš na zastávku alebo pod autobus."
     },
+    "msgCheater": {
+      "cs": "Cheater!",
+      "en": "Cheater!",
+      "sk": "Podvodník!"
+    },
+    "msgCard": {
+      "cs": "Vyndej to ESO!",
+      "en": "Play that ACE!",
+      "sk": "Hraj to ESO!"
+    },
+    "msgStop": {
+      "cs": "Stačííí!",
+      "en": "Stoppp!",
+      "sk": "Stačííí!"
+    },
+    "msgDo": {
+      "cs": "Dělej! Nezdržůůj!",
+      "en": "Dooo it! No dilly-dally!",
+      "sk": "Rob to! Neváhaj!"
+    },
+    "msgGive": {
+      "cs": "Nesysli ty karty!",
+      "en": "Quit hoardin’ those cards!",
+      "sk": "Nehromadíš tie karty!"
+    },
+    "msgGood": {
+      "cs": "Hm, dobře ty!",
+      "en": "Hmm, good one!",
+      "sk": "Hmm, dobré!"
+    },
     "olala": {
       "cs": "Olalá",
       "en": "Olala",

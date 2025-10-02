@@ -9,6 +9,7 @@ import GameBoard from "../components/visual/game/game-board.jsx";
 import LangSelector from "../components/visual/lang-selector.jsx";
 import EndGameAlert from "../components/visual/alerts/end-game-alert.jsx";
 import InfoAlert from "../components/visual/alerts/info-alert.jsx";
+import EmoteContextProvider from "../components/providers/emote-context-provider.jsx";
 import { useAudio } from "../components/providers/audio-context-provider.jsx";
 import { useTickingSound } from "../hooks/use-ticking-sound.js";
 import VolumeSettings from "../components/visual/volume-settings.jsx";
@@ -26,6 +27,7 @@ function GameBase({
   showEndGameAlert,
   i18n,
   gameContext,
+  disallowInteractions = false,
 }) {
   const { playSound } = useAudio();
   const { infoMessage, setInfoMessage } = useContext(AlertContext);
@@ -34,48 +36,57 @@ function GameBase({
   const [counter] = useCountdown(showEndGameAlert, 30);
 
   return (
-    <SlotContextProvider>
-      <DndProvider backend={HTML5Backend}>
-        <CardDragLayer />
-        <div
-          className="flex flex-col sm:flex-row w-full h-full p-1 relative bg-gray-800 force-vertical-layout game"
-          onMouseMove={handlePanelDragMove}
-          onMouseUp={handlePanelDragEnd}
-        >
-          <PlayerPanel
-            otherPlayers={otherPlayers}
-            myself={myself}
-            leftPanelWidth={leftPanelWidth}
-            canResizePanel={canResizePanel}
-            handlePanelDragStart={handlePanelDragStart}
-          />
+    <EmoteContextProvider>
+      <SlotContextProvider>
+        <DndProvider backend={HTML5Backend}>
+          <CardDragLayer />
+          <div
+            className="flex flex-col sm:flex-row w-full h-full p-1 relative !bg-gray-800 force-vertical-layout game"
+            onMouseMove={handlePanelDragMove}
+            onMouseUp={handlePanelDragEnd}
+          >
+            <PlayerPanel
+              otherPlayers={otherPlayers}
+              myself={myself}
+              leftPanelWidth={leftPanelWidth}
+              canResizePanel={canResizePanel}
+              handlePanelDragStart={handlePanelDragStart}
+            />
 
-          <div className="flex-grow w-full bg-gray-900 p-6 flex flex-col relative">
-            <div className="flex flex-row gap-6 justify-end">
-              <VolumeSettings size={22} />
-              <LangSelector />
-              {children}
+            <div className="flex-grow w-full !bg-gray-900 p-6 flex flex-col relative">
+              <div className="flex flex-row gap-6 justify-end !text-white">
+                <VolumeSettings size={22} />
+                <LangSelector />
+                {children}
+              </div>
+              <GameBoard
+                player={myself}
+                cardPack={gameContext.deck}
+                allowInteractions={!disallowInteractions}
+              />
             </div>
-            <GameBoard player={myself} cardPack={gameContext.deck} />
           </div>
-        </div>
-        {showEndGameAlert && (
-          <EndGameAlert
-            message={
-              i18n.translate("winner") +
-              gameContext.players.find((p) => !p?.bus?.length)?.name +
-              ". " +
-              i18n.translate("newGame") +
-              counter +
-              "s"
-            }
-          />
-        )}
-        {infoMessage && (
-          <InfoAlert onClose={() => setInfoMessage("")} message={infoMessage} />
-        )}
-      </DndProvider>
-    </SlotContextProvider>
+          {showEndGameAlert && (
+            <EndGameAlert
+              message={
+                i18n.translate("winner") +
+                gameContext.players.find((p) => !p?.bus?.length)?.name +
+                ". " +
+                i18n.translate("newGame") +
+                counter +
+                "s"
+              }
+            />
+          )}
+          {infoMessage && (
+            <InfoAlert
+              onClose={() => setInfoMessage("")}
+              message={infoMessage}
+            />
+          )}
+        </DndProvider>
+      </SlotContextProvider>
+    </EmoteContextProvider>
   );
 }
 
