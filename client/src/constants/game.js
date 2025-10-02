@@ -29,4 +29,5 @@ export const CardBgClassMap = {
   },
 };
 export const CARD = "CARD";
+export const DEFAULT_CARD_STYLE = "classic";
 export const DEFAULT_GAMEBOARD_COLOR = "#3d5336";

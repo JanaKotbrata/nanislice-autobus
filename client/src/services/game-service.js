@@ -46,7 +46,8 @@ export async function removePlayer({ userId, gameCode, gameId }, token) {
 export async function processAction(actionData, token) {
   try {
     const response = await post(Routes.Game.ACTION_PROCESS, actionData, token);
-    return response.data.newGame;
+    // response.data = { xp, newGame }
+    return response.data;
   } catch (error) {
     console.error("Error processing game action:", error);
     throw error;

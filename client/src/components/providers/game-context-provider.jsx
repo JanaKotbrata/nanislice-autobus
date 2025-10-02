@@ -14,12 +14,14 @@ import { ClientGameRules } from "../../services/game-rules.js";
 import { GameError } from "../../errors/game-error.js";
 import { Routes } from "../../constants/routes.js";
 
-function GameContextProvider({ children }) {
-  const { gameCode, setGameCode, game, setGame, code, setContextGame } =
-    useGameState();
 
-  const { updateGameServerState, updateGameServerStateAnimated } =
-    useGameActions(setContextGame);
+import { useState } from "react";
+
+function GameContextProvider({ children }) {
+  const { gameCode, setGameCode, game, setGame, code, setContextGame } = useGameState();
+  const [xp, setXp] = useState(null);
+
+  const { updateGameServerState, updateGameServerStateAnimated } = useGameActions(setContextGame, setXp);
 
   const { showErrorAlert } = useAlertContext();
   const { token, user } = useAuth();
@@ -286,6 +288,7 @@ function GameContextProvider({ children }) {
         gameBoard,
         currentPlayer,
         gameState,
+        xp,
         // State
         loading: isLoading(),
       }}

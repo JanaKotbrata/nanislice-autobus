@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import CardStyleContext from "../../context/card-style-context.js";
-import { CardBgClassMap } from "../../constants/game.js";
+import { CardBgClassMap, DEFAULT_CARD_STYLE } from "../../constants/game.js";
+import { LOCAL_STORAGE_KEY } from "../../constants/local-storage.js";
 import { useAuth } from "./auth-context-provider.jsx";
-
-const LOCAL_STORAGE_KEY = "cardStyle";
-const DEFAULT_CARD_STYLE = "classic";
 
 function detectInitialCardStyle(user) {
   if (user?.cardStyle) return user.cardStyle;

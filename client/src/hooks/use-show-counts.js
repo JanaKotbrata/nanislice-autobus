@@ -1,8 +1,8 @@
 import { useState, useRef, useCallback } from "react";
 
 /**
- * Hook pro dočasné zobrazení počtu (např. karet) na určitou dobu.
- * @param {number} timeoutMs - Doba zobrazení v ms (default 2000)
+ * Hook for temporarily showing a count (e.g., of cards) for a certain period.
+ * @param {number} timeoutMs - Display duration in ms (default 2000)
  * @returns [showCounts, triggerShowCounts]
  */
 export function useShowCounts(timeoutMs = 2000) {
@@ -15,7 +15,6 @@ export function useShowCounts(timeoutMs = 2000) {
     timeoutRef.current = setTimeout(() => setShowCounts(false), timeoutMs);
   }, [timeoutMs]);
 
-  // Vyčisti timeout při unmountu
   useCallback(() => () => clearTimeout(timeoutRef.current), []);
 
   return [showCounts, triggerShowCounts];

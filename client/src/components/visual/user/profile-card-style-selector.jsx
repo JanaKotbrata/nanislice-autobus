@@ -1,24 +1,15 @@
 import { useState, useContext, useRef, useEffect } from "react";
 import { FaPaintBrush, FaLock, FaCheckCircle } from "react-icons/fa";
-import ProfileProgressBar from "./profile-progress-bar.jsx";
 import CardStyleContext from "../../../context/card-style-context.js";
 import { useAuth } from "../../providers/auth-context-provider.jsx";
 import { updateUser } from "../../../services/user-service.js";
 import CardBack from "../game/card/card-back/card-back.jsx";
 import LanguageContext from "../../../context/language.js";
-import { Bg } from "../../../../../shared/constants/game-constants.json";
+import { Bg, Roles } from "../../../../../shared/constants/game-constants.json";
+import { getUnlockLevel } from "../../../services/level-service.js";
+import { DEFAULT_CARD_STYLE } from "../../../constants/game.js";
 
-// Classic is always unlocked. Other styles unlock at increasing levels.
-function getUnlockLevel(index) {
-  if (index === 0) return 0; // classic
-  // Progressive unlock: first unlock at 5, then +4, +5, +6, ... (no max step)
-  let level = 2;
-  for (let i = 1; i < index; i++) {
-    level += 3 + i; // increases by 4, 5, 6, 7, ...
-  }
-  return level;
-}
-export default function CardStyleSelector({ size, winnerId, xp }) {
+export default function CardStyleSelector({ size }) {
   const i18n = useContext(LanguageContext);
   const { cardStyle, setCardStyle, availableStyles } =
     useContext(CardStyleContext);
@@ -27,10 +18,7 @@ export default function CardStyleSelector({ size, winnerId, xp }) {
   const [selected, setSelected] = useState(cardStyle);
   const menuRef = useRef(null);
   const userLevel = user?.level ?? 0;
-  const isAdmin = user?.role === "admin";
-
-  // Zobrazit progress bar pouze pro vítěze
-  const isWinner = user?.id === winnerId;
+  const isAdmin = user?.role === Roles.ADMIN;
 
   useEffect(() => {
     setSelected(cardStyle);
@@ -76,7 +64,7 @@ export default function CardStyleSelector({ size, winnerId, xp }) {
   const unlockLevel = getUnlockLevel(selectedStyleIndex);
   const isSelectedLocked =
     selectedStyleObj &&
-    selectedStyleObj.code !== "classic" &&
+    selectedStyleObj.code !== DEFAULT_CARD_STYLE &&
     !isAdmin &&
     userLevel < unlockLevel;
   const canConfirm =
@@ -86,16 +74,6 @@ export default function CardStyleSelector({ size, winnerId, xp }) {
 
   return (
     <div className="relative inline-block" ref={menuRef}>
-      {/* Progress bar pouze pro vítěze */}
-      {isWinner && xp?.[user?.id] && (
-        <div className="mb-4">
-          <ProfileProgressBar
-            level={user.level}
-            xp={xp[user.id].xp}
-            i18n={i18n}
-          />
-        </div>
-      )}
       <span
         className="flex items-center gap-2 cursor-pointer select-none min-h-[40px] px-2"
         style={{ lineHeight: 1.2 }}
@@ -115,7 +93,9 @@ export default function CardStyleSelector({ size, winnerId, xp }) {
             {availableStyles.map((style, idx) => {
               const unlockLevel = getUnlockLevel(idx);
               const isLocked =
-                style.code !== "classic" && !isAdmin && userLevel < unlockLevel;
+                style.code !== DEFAULT_CARD_STYLE &&
+                !isAdmin &&
+                userLevel < unlockLevel;
               const isSelected = selected === style.code;
               return (
                 <button

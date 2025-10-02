@@ -75,7 +75,7 @@ function Player({
           />
           <div className="flex flex-col leading-tight truncate">
             <span className="truncate">{player.name}</span>
-            {player.level && (
+            {player.level >= 0 && (
               <span className="text-xs font-light text-gray-400">
                 Level {player.level}
               </span>
