@@ -86,7 +86,6 @@ class ProcessAction extends AuthenticatedPostResponseHandler {
       this.websocketService.emitToSpectators(gameCode, "processAction", {
         userId,
         newGame: spectateGame,
-        xp,
         target,
         actionBy: userId,
         card: validData.card || null,

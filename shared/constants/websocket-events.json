@@ -2,6 +2,13 @@
 	"LISTEN_TO_GAME": "listenToGame",
 	"SPECTATE": "spectate",
 	"DISCONNECT": "disconnect",
+	"CONNECT": "connect",
 	"PLAYER_ATTEMPTED_LEAVE": "player-attempted-leave",
-	"NOTIFY_PLAYER_LEAVING": "notify-player-leaving"
+	"NOTIFY_PLAYER_LEAVING": "notify-player-leaving",
+	"PLAYER_SENT_INTERACTION": "player-sent-interaction",
+	"PLAYER_SENT_EMOTE": "player-sent-emote",
+	"PLAYER_ADDED": "playerAdded",
+	"PLAYER_REMOVED": "playerRemoved",
+	"PROCESS_ACTION": "processAction",
+	"REMATCH": "rematch"
 }

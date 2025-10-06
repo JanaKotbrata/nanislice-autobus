@@ -22,6 +22,7 @@
         "UPDATE": "/api/user/update",
         "DELETE": "/api/user/delete",
         "DELETE_ALL_TOKEN": "/api/service/user/token/deleteAll",
-        "TOKEN_GET": "/api/service/user/token/get"
+        "TOKEN_GET": "/api/service/user/token/get",
+        "RECALCULATE_LEVEL": "/api/service/user/level/recalculate"
     }
 }

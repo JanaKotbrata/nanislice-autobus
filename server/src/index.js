@@ -15,6 +15,8 @@ const getPathFromRoot = require("./utils/get-path-from-root");
 const Config = require("../../shared/config/config.json");
 const Events = require("../../shared/constants/websocket-events.json");
 const { initJwtStrategy } = require("./services/auth/jwt-auth");
+const GamesRepository = require("./models/games-repository");
+const games = new GamesRepository();
 
 // Init express
 const app = express();
@@ -65,15 +67,52 @@ io.on("connection", (socket) => {
 
   socket.on(
     Events.PLAYER_ATTEMPTED_LEAVE,
-    ({ userId, gameCode, playerName, playerIdList }) => {
-      console.log("Someone is attempting to leave:", playerName, playerIdList);
-      playerIdList.forEach((uid) => {
-        if (uid !== userId) {
-          socket.to(`${gameCode}_${uid}`).emit(Events.NOTIFY_PLAYER_LEAVING, {
-            playerName,
-          });
-        }
-      });
+    async ({ userId, gameCode, playerName }) => {
+      try {
+        const game = await games.getByCode(gameCode);
+        if (!game || !Array.isArray(game.playerList)) return;
+        game.playerList.forEach((player) => {
+          if (player.userId !== userId) {
+            socket
+              .to(`${gameCode}_${player.userId}`)
+              .emit(Events.NOTIFY_PLAYER_LEAVING, {
+                playerName,
+              });
+          }
+        });
+      } catch (err) {
+        console.error("Failed to notify player leaving:", err);
+      }
+    },
+  );
+
+  socket.on(
+    Events.PLAYER_SENT_EMOTE,
+    async ({ userId, gameCode, playerName, emote }) => {
+      console.log("Player sent emote:", playerName, emote);
+      try {
+        const game = await games.getByCode(gameCode);
+        if (!game || !Array.isArray(game.playerList)) return;
+        game.playerList.forEach((player) => {
+          if (player.userId !== userId) {
+            socket
+              .to(`${gameCode}_${player.userId}`)
+              .emit(Events.PLAYER_SENT_INTERACTION, {
+                playerName,
+                emote,
+                userId,
+              });
+          }
+        });
+        // emit to spectators as well
+        socket.to(`spectate_${gameCode}`).emit(Events.PLAYER_SENT_INTERACTION, {
+          playerName,
+          emote,
+          userId,
+        });
+      } catch (err) {
+        console.error("Failed to send emote to all players:", err);
+      }
     },
   );
 });

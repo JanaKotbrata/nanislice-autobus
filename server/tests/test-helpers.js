@@ -1,6 +1,7 @@
 const request = require("supertest");
 const { setupTestServer } = require("./services/test-setup");
 const { userMock } = require("./helpers/default-mocks");
+const {ObjectId} = require("mongodb");
 
 async function apiRequestSuccess(
   app,
@@ -90,13 +91,17 @@ async function cleanupTestContext({ usersCollection, gamesCollection }) {
   if (gamesCollection) await gamesCollection.deleteMany({});
 }
 
-async function createUser(usersCollection, userData = {}) {
-  const result = await usersCollection.insertOne(userMock(userData));
-  let user = await usersCollection.findOne({ _id: result.insertedId });
+async function createUser(usersCollection, userData = {}, extraData = {}) {
+  const result = await usersCollection.insertOne(userMock(userData, extraData));
+  let user = await getUserById(usersCollection, result.insertedId.toString());
   user.id = user._id.toString();
   return user;
 }
-
+async function getUserById(usersCollection, id) {
+  let user = await usersCollection.findOne({ _id: new ObjectId(id) });
+  if (user) user.id = user._id.toString();
+  return user;
+}
 async function apiRequest(
   app,
   method,
@@ -122,6 +127,7 @@ module.exports = {
   setupTestContext,
   cleanupTestContext,
   createUser,
+  getUserById,
   apiRequest,
   apiRequestSuccess,
   apiRequestError,

@@ -1,9 +1,9 @@
-const { authorizeUser, authorizePlayer } = require("./auth/auth-service");
-const { getGame } = require("./game-service");
+const {authorizeUser, authorizePlayer} = require("./auth/auth-service");
+const {getGame} = require("./game-service");
 const InvalidDataError = require("../errors/invalid-data");
 const GameErrors = require("../errors/game/game-errors");
-const { Roles, States } = require("../../../shared/constants/game-constants");
-const { getUser } = require("./user-service");
+const {Roles, States} = require("../../../shared/constants/game-constants");
+const {getUser} = require("./user-service");
 
 /**
  * Validates request data using the provided Joi schema.
@@ -14,20 +14,25 @@ const { getUser } = require("./user-service");
  * @returns {object} - Validated data
  */
 function validateData(req, schema) {
-  const bodyResult = schema.validate(req.body);
-  if (!bodyResult.error) {
-    return bodyResult.value;
+  // Try to validate body if not empty
+  if (Object.keys(req.body).length !== 0) {
+    const bodyResult = schema.validate(req.body);
+    if (!bodyResult.error) return bodyResult.value;
+    // If body is not valid, try query
+    const queryResult = schema.validate(req.query);
+    if (!queryResult.error) return queryResult.value;
+    // Prefer error from body if present
+    throw new InvalidDataError(bodyResult.error);
   }
-
-  const queryResult = schema.validate(req.query);
-  if (!queryResult.error) {
-    return queryResult.value;
-  }
-
-  // If both fail, prefer the error from query if query was present, otherwise from body
-  if (req.query && Object.keys(req.query).length > 0 && queryResult.error) {
+  // If body is empty, try query
+  if (Object.keys(req.query).length !== 0) {
+    const queryResult = schema.validate(req.query);
+    if (!queryResult.error) return queryResult.value;
     throw new InvalidDataError(queryResult.error);
   }
+  // Both body and query are empty, validate body (for default values)
+  const bodyResult = schema.validate(req.body);
+  if (!bodyResult.error) return bodyResult.value;
   throw new InvalidDataError(bodyResult.error);
 }
 
@@ -84,7 +89,7 @@ async function validateAndGetUser(
     missingError,
   );
 
-  return { validData, user };
+  return {validData, user};
 }
 
 /**
@@ -95,14 +100,14 @@ async function validateAndGetUser(
  * @returns {Promise<{validData: object, user: object, game: object}>}
  */
 async function validateAndGetGame(req, schema, roles = Roles.ALL) {
-  const { validData, user } = await validateAndGetUser(req, schema, roles);
-  const { gameId, gameCode, id, code } = validData;
+  const {validData, user} = await validateAndGetUser(req, schema, roles);
+  const {gameId, gameCode, id, code} = validData;
   const game = await getGame(
     gameId || id,
     gameCode || code,
     GameErrors.GameDoesNotExist,
   );
-  return { validData, user, game };
+  return {validData, user, game};
 }
 
 /**
@@ -119,14 +124,14 @@ async function validateAndAuthorizeForGame(
   PlayerNotAuthorized,
   roles = Roles.ALL,
 ) {
-  const { validData, user, game } = await validateAndGetGame(
+  const {validData, user, game} = await validateAndGetGame(
     req,
     schema,
     roles,
   );
 
   await authorizePlayer(user, game, PlayerNotAuthorized);
-  return { validData, user, game };
+  return {validData, user, game};
 }
 
 /**
@@ -149,7 +154,7 @@ async function validateAndAuthorizeForCloseGame(
   PlayerNotAuthorized,
   roles = Roles.ALL,
 ) {
-  const { validData, user, game } = await validateAndGetGame(
+  const {validData, user, game} = await validateAndGetGame(
     req,
     schema,
     roles,
@@ -157,7 +162,7 @@ async function validateAndAuthorizeForCloseGame(
 
   // If user is admin, skip all validation and authorize
   if (user.role === Roles.ADMIN) {
-    return { validData, user, game };
+    return {validData, user, game};
   }
 
   // Game must be in 'finished' state for non-admins
@@ -180,7 +185,7 @@ async function validateAndAuthorizeForCloseGame(
     throw new PlayerNotAuthorized(validData);
   }
 
-  return { validData, user, game };
+  return {validData, user, game};
 }
 
 module.exports = {

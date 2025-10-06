@@ -42,7 +42,13 @@ class AddGamePlayer extends AuthenticatedPostResponseHandler {
     const newPlayerList = {
       playerList: [
         ...game.playerList,
-        { userId, name: user.name, creator: false, rev: user.sys.rev },
+        {
+          userId,
+          name: user.name,
+          level: user.level,
+          creator: false,
+          rev: user.sys.rev,
+        },
       ],
     };
     try {

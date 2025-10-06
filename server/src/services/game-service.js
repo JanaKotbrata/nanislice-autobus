@@ -218,6 +218,16 @@ async function getPlayersNotFinishedGame(userId) {
   }
 }
 
+function calculateLevel(xp) {
+  let level = 1;
+  let nextLevelXp = 100;
+  while (xp >= nextLevelXp) {
+    level++;
+    nextLevelXp += level * 100;
+  }
+  return level;
+}
+
 module.exports = {
   transformCurrentPlayerData,
   getGame,
@@ -231,4 +241,5 @@ module.exports = {
   initializeAndDealDeck,
   removePlayer,
   getPlayersNotFinishedGame,
+  calculateLevel
 };

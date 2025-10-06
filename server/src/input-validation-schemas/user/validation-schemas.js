@@ -24,6 +24,7 @@ const update = Joi.object()
     picture: Joi.string().optional(),
     volume: Joi.number().optional(),
     cardStyle: Joi.string().optional(),
+    gameboardColor: Joi.string().optional(),
   })
-  .or("name", "picture", "language", "volume", "cardStyle");
+  .or("name", "picture", "language", "volume", "cardStyle", "gameboardColor");
 module.exports = { list, update, deleteUser, getAvatar, tDelete };

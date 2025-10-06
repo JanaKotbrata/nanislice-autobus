@@ -69,7 +69,8 @@
     "CARDPACK_DECK": "cardpack_deck",
     "COMPLETED_CARDPACK_DECK": "completed_cardpack_deck",
     "GAMEBOARD_CARD": "gb_card_",
-    "GAMEBOARD_NO_CARD": "gb_nocard_"
+    "GAMEBOARD_NO_CARD": "gb_nocard_",
+    "COMPLETED_CARD_LIST": "completed_card_list"
   },
   "MIN_ZOOM": 0.5,
   "MAX_ZOOM": 1.25,

@@ -38,7 +38,15 @@ class CreateGame extends AuthenticatedPostResponseHandler {
         () => ({
           code: generateGameCode(),
           state: States.INITIAL,
-          playerList: [{ userId: user.id, name: user.name, creator: true }],
+          playerList: [
+            {
+              userId: user.id,
+              name: user.name,
+              level: user.level,
+              creator: true,
+              rev: user.sys.rev,
+            },
+          ],
           gameBoard: [],
           completedCardList: [],
         }),

@@ -52,7 +52,7 @@ describe("POST /game/action/process - move card to board from bus", () => {
   });
 
   it("Move card to board from bus - last card", async () => {
-    const user = await createUser(ctx.usersCollection);
+    const user = await createUser(ctx.usersCollection,{}, {level:4, xp:900});
     ctx.setTestUserId(user.id);
     const targetIndex = 0;
     const preferredRank = "2";
@@ -79,5 +79,7 @@ describe("POST /game/action/process - move card to board from bus", () => {
     );
 
     expect(response.body.newGame.state).toBe(States.FINISHED);
+    expect(response.body.xp[user.id].xp).toBe(1000);
+    expect(response.body.xp[user.id].level).toBe(5);
   });
 });

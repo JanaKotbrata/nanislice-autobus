@@ -79,7 +79,11 @@ class RematchGame extends AuthenticatedPostResponseHandler {
     let isThereCreator = false;
     for (let player of sortedList) {
       if (player.nextGame) {
-        let newPlayer = { userId: player.userId, name: player.name };
+        let newPlayer = {
+          userId: player.userId,
+          name: player.name,
+          level: player.level,
+        };
         if (player.creator) {
           isThereCreator = true;
           newPlayer = { ...newPlayer, creator: true };
