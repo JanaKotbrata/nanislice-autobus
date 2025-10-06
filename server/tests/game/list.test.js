@@ -43,6 +43,32 @@ describe("GET /game/list", () => {
     expect(response.body.pageInfo.totalCount).toBe(count);
   });
 
+  it("should list 2. page", async () => {
+    const user = await createUser(ctx.usersCollection, { role: Roles.ADMIN });
+    ctx.setTestUserId(user.id);
+    const pageSize = 5;
+    const count = 10;
+    let gameList = [];
+    for (let i = 0; i < count; i++) {
+      const mockGame = activeGame();
+      await ctx.gamesCollection.insertOne(mockGame);
+      gameList.push(mockGame);
+    }
+    const response = await apiRequestSuccess(
+      ctx.app,
+      "get",
+      Routes.Game.LIST,
+      ctx.getToken,
+      user.id,
+      { pageInfo: { pageSize, pageIndex: 1 } },
+    );
+
+    expect(response.body.list).toHaveLength(pageSize);
+    expect(response.body.list[0].code).toBe(gameList[5].code);
+    expect(response.body.pageInfo).toBeDefined();
+    expect(response.body.pageInfo.totalCount).toBe(count);
+  });
+
   test("should return empty list", async () => {
     const user = await createUser(ctx.usersCollection, { role: Roles.ADMIN });
     ctx.setTestUserId(user.id);

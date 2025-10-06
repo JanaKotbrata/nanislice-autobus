@@ -1,6 +1,7 @@
 const { ObjectId } = require("mongodb");
 const { Roles } = require("../../../shared/constants/game-constants.json");
 const Model = require("./model");
+const { calculateLevel } = require("../services/game-service");
 const collectionName = "users";
 
 class UsersRepository extends Model {
@@ -49,8 +50,9 @@ class UsersRepository extends Model {
   async getByDiscordId(discordId) {
     return this.findOne({ discordId });
   }
-  async getBySeznamId(discordId) {
-    return this.findOne({ discordId });
+
+  async getBySeznamId(seznamId) {
+    return this.findOne({ seznamId });
   }
 
   async getByEmail(email) {
@@ -66,13 +68,30 @@ class UsersRepository extends Model {
   }
 
   async addXP(userId, amount) {
-    const result = await this.collection.findOneAndUpdate(
+    const resultXP = await this.collection.findOneAndUpdate(
       { _id: new ObjectId(userId) },
       { $inc: { xp: amount } },
       { returnDocument: "after" },
     );
-    return result.xp;
+    const newLevel = calculateLevel(resultXP.xp);
+    const result = { xp: resultXP.xp };
+
+    if (newLevel !== resultXP.level) {
+      const level = await this.setLevel(userId, newLevel);
+      result.level = level;
+    }
+    return { [userId]: result };
   }
+
+  async setLevel(userId, level) {
+    const result = await this.collection.findOneAndUpdate(
+      { _id: new ObjectId(userId) },
+      { $set: { level } },
+      { returnDocument: "after" },
+    );
+    return result.level;
+  }
+
   async update(id, updateData) {
     return this.updateOne(id, updateData);
   }
