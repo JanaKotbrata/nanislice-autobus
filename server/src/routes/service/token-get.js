@@ -11,6 +11,7 @@ const {
   getUseCaseAuthorizedUser,
 } = require("../../services/validation-service");
 const JWT_SECRET = config.secret;
+const TOKEN_SECRET = require("../../../token-secret");
 
 class TokenGet extends NotAuthenticatedGetResponseHandler {
   constructor(expressApp, io) {
@@ -19,6 +20,9 @@ class TokenGet extends NotAuthenticatedGetResponseHandler {
   }
 
   async get(req) {
+    if (req.query.secret !== TOKEN_SECRET) {
+      throw new UserErrors.UserNotAuthorized();
+    }
     const userId = req.query.userId;
     await getUseCaseAuthorizedUser(
       userId,
