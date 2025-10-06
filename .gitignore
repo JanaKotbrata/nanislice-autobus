@@ -6,6 +6,7 @@ server/avatars/*.png
 server/avatars/*.jpg
 !server/avatars/pig-face.png
 server/coverage
+server/token-secret.js
 node_modules
 
 todo.md
